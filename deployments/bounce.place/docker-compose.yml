@@ -14,7 +14,7 @@ services:
     ports:
       - 8000
     environment:
-      - VIRTUAL_HOST=bounce.place,bounceinplace.com
+      - VIRTUAL_HOST=bounce.place
       - VIRTUAL_PORT=8000
     networks:
       - default
