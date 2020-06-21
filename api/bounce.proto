@@ -20,5 +20,6 @@ message Status {
   message Request {}
   message Response {
     int32 uptime = 1;
+    string hostname = 2;
   }
 }
