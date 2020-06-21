@@ -30,6 +30,14 @@ packr:
 	(cd static; git clean -fxd)
 	packr2
 
+.PHONY: deploy
+deploy: docker.push
+	ssh zrwf.m.42.am make -C infra/projects/bounce.place re
+
+.PHONY: prod-logs
+prod-logs:
+	ssh zrwf.m.42.am make -C infra/projects/bounce.place logs
+
 .PHONY: docker.push
 docker.push: tidy generate docker.build
 	docker push $(DOCKER_IMAGE)
