@@ -7,8 +7,8 @@ option go_package = "moul.io/bounce/pkg/bouncepb";
 import "google/api/annotations.proto";
 
 service WebAPI {
-  rpc Ping(Ping.Request) returns (Ping.Response) { option (google.api.http) = {get: "/ping"}; }
-  rpc Status(Status.Request) returns (Status.Response) { option (google.api.http) = {get: "/status"}; }
+  rpc Ping(Ping.Request) returns (Ping.Response) { option (google.api.http) = {get: "/api/ping"}; }
+  rpc Status(Status.Request) returns (Status.Response) { option (google.api.http) = {get: "/api/status"}; }
 }
 
 message Ping {

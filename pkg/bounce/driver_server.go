@@ -14,6 +14,8 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/jsonp"
+	packr "github.com/gobuffalo/packr/v2"
 	"github.com/gogo/gateway"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -156,7 +158,26 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		return nil, err
 	}
 
-	r.Mount("/", gwmux)
+	var handler http.Handler = gwmux
+
+	r.Route("/api", func(r chi.Router) {
+		//r.Use(auth(opts.BasicAuth, opts.Realm, opts.AuthSalt))
+		r.Use(jsonp.Handler)
+		r.Mount("/", handler)
+	})
+
+	box := packr.New("static", "../../static")
+	fs := http.FileServer(box)
+	r.Get("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			_, err := box.FindString(r.URL.Path)
+			if err != nil {
+				r.URL.Path = "/404.html" // 404 redirects to index.html
+			}
+		}
+		fs.ServeHTTP(w, r)
+	}))
+
 	if svc.opts.ServerWithPprof {
 		r.HandleFunc("/debug/pprof/*", pprof.Index)
 		r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
