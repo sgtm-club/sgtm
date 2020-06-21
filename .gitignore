@@ -1,3 +1,5 @@
+packrd/
+*-packr.go
 config.txt
 # Temporary files
 *~

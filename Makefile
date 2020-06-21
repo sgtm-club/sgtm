@@ -25,8 +25,13 @@ run-discord: install
 run-server: install
 	bounce --dev-mode --enable-server run
 
+.PHONY: packr
+packr:
+	(cd static; git clean -fxd)
+	packr2
+
 .PHONY: docker.push
-docker.push: generate docker.build
+docker.push: tidy generate docker.build
 	docker push $(DOCKER_IMAGE)
 
 PROTOS_SRC := $(wildcard ./api/*.proto)

@@ -2,7 +2,7 @@
 ## Specific to .dockerignore
 ##
 
-.git/
+#.git/
 Dockerfile
 contrib/
 

@@ -6,11 +6,13 @@ ARG             VERSION
 # build
 FROM            golang:1.14-alpine as builder
 RUN             apk add --no-cache git gcc musl-dev make
+RUN             go get -u github.com/gobuffalo/packr/v2/packr2
 ENV             GO111MODULE=on
 WORKDIR         /go/src/moul.io/bounce
 COPY            go.* ./
 RUN             go mod download
 COPY            . ./
+RUN             make packr
 RUN             make install
 
 # minimalist runtime
