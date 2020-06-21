@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  bounce:
+    image: moul/bounce:latest
+    restart: on-failure
+    volumes:
+      - .:/app
+    working_dir: /app
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    command:
+      run
+    ports:
+      - 8000
+    environment:
+      - VIRTUAL_HOST=bounce.place,bounceinplace.com
+      - VIRTUAL_PORT=8000
+    networks:
+      - default
+      - service-proxy
+
+networks:
+  service-proxy:
+    external: true

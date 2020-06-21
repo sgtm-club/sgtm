@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package bounce;
+
+option go_package = "moul.io/bounce/pkg/bouncepb";
+
+import "google/api/annotations.proto";
+
+service WebAPI {
+  rpc Ping(Ping.Request) returns (Ping.Response) { option (google.api.http) = {get: "/ping"}; };
+}
+
+message Ping {
+  message Request {}
+  message Response {}
+}

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"moul.io/motd"
 )
 
 func main() {
@@ -14,6 +16,7 @@ func main() {
 }
 
 func run(args []string) error {
+	fmt.Print(motd.Default())
 	fmt.Println("Hello World!")
 	return nil
 }
