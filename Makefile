@@ -8,9 +8,10 @@ PRE_TEST_STEPS += gen.sum
 PRE_BUILD_STEPS += gen.sum
 PRE_LINT_STEPsS += gen.sum
 PRE_TIDY_STEPS += gen.sum
-PRE_BUMPDEPS_STEPS += gen.sum
+PRE_BUMPDEPS_STEPS += gen.suma
 
 include rules.mk
+
 
 .PHONY: run
 run: install
@@ -23,6 +24,10 @@ run-discord: install
 .PHONY: run-server
 run-server: install
 	bounce --dev-mode --enable-server run
+
+.PHONY: docker.push
+docker.push: generate docker.build
+	docker push $(DOCKER_IMAGE)
 
 PROTOS_SRC := $(wildcard ./api/*.proto)
 GEN_DEPS := $(PROTOS_SRC) Makefile

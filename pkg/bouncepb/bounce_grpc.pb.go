@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WebAPIClient interface {
 	Ping(ctx context.Context, in *Ping_Request, opts ...grpc.CallOption) (*Ping_Response, error)
+	Status(ctx context.Context, in *Status_Request, opts ...grpc.CallOption) (*Status_Response, error)
 }
 
 type webAPIClient struct {
@@ -38,9 +39,19 @@ func (c *webAPIClient) Ping(ctx context.Context, in *Ping_Request, opts ...grpc.
 	return out, nil
 }
 
+func (c *webAPIClient) Status(ctx context.Context, in *Status_Request, opts ...grpc.CallOption) (*Status_Response, error) {
+	out := new(Status_Response)
+	err := c.cc.Invoke(ctx, "/bounce.WebAPI/Status", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WebAPIServer is the server API for WebAPI service.
 type WebAPIServer interface {
 	Ping(context.Context, *Ping_Request) (*Ping_Response, error)
+	Status(context.Context, *Status_Request) (*Status_Response, error)
 }
 
 // UnimplementedWebAPIServer can be embedded to have forward compatible implementations.
@@ -49,6 +60,9 @@ type UnimplementedWebAPIServer struct {
 
 func (*UnimplementedWebAPIServer) Ping(context.Context, *Ping_Request) (*Ping_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (*UnimplementedWebAPIServer) Status(context.Context, *Status_Request) (*Status_Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Status not implemented")
 }
 
 func RegisterWebAPIServer(s *grpc.Server, srv WebAPIServer) {
@@ -73,6 +87,24 @@ func _WebAPI_Ping_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WebAPI_Status_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Status_Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WebAPIServer).Status(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/bounce.WebAPI/Status",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WebAPIServer).Status(ctx, req.(*Status_Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _WebAPI_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "bounce.WebAPI",
 	HandlerType: (*WebAPIServer)(nil),
@@ -80,6 +112,10 @@ var _WebAPI_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Ping",
 			Handler:    _WebAPI_Ping_Handler,
+		},
+		{
+			MethodName: "Status",
+			Handler:    _WebAPI_Status_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
