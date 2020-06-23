@@ -1,4 +1,4 @@
-package bounce
+package sgtm
 
 import (
 	"context"
@@ -31,7 +31,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"moul.io/banner"
-	"moul.io/bounce/pkg/bouncepb"
+	"moul.io/sgtm/pkg/sgtmpb"
 )
 
 type serverDriver struct {
@@ -153,7 +153,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 	var gwmux http.Handler = runtimeMux
 	dialOpts := []grpc.DialOption{grpc.WithInsecure()}
 
-	err := bouncepb.RegisterWebAPIHandlerFromEndpoint(svc.ctx, runtimeMux, svc.ServerListenerAddr(), dialOpts)
+	err := sgtmpb.RegisterWebAPIHandlerFromEndpoint(svc.ctx, runtimeMux, svc.ServerListenerAddr(), dialOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +231,7 @@ func (svc *Service) grpcServer() *grpc.Server {
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(serverStreamOpts...)),
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(serverUnaryOpts...)),
 	)
-	bouncepb.RegisterWebAPIServer(grpcServer, svc)
+	sgtmpb.RegisterWebAPIServer(grpcServer, svc)
 
 	return grpcServer
 }

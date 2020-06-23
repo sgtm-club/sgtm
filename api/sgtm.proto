@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package bounce;
+package sgtm;
 
-option go_package = "moul.io/bounce/pkg/bouncepb";
+option go_package = "moul.io/sgtm/pkg/sgtmpb";
 
 import "google/api/annotations.proto";
 

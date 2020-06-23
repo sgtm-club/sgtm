@@ -1,4 +1,4 @@
-module moul.io/bounce
+module moul.io/sgtm
 
 go 1.14
 
@@ -28,6 +28,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20200506231410-2ff61e1afc86 // indirect
 	moul.io/banner v1.0.1
 	moul.io/godev v1.6.0
-	moul.io/motd v1.0.0
 	moul.io/srand v1.4.0
 )

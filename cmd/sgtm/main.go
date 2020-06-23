@@ -13,7 +13,7 @@ import (
 	"github.com/peterbourgon/ff/v3/ffcli"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"moul.io/bounce/pkg/bounce"
+	"moul.io/sgtm/pkg/sgtm"
 	"moul.io/srand"
 )
 
@@ -24,10 +24,10 @@ func main() {
 	}
 }
 
-var opts bounce.Opts
+var opts sgtm.Opts
 
 func app(args []string) error {
-	opts = bounce.DefaultOpts()
+	opts = sgtm.DefaultOpts()
 	rootFlags := flag.NewFlagSet("root", flag.ExitOnError)
 	rootFlags.BoolVar(&opts.DevMode, "dev-mode", opts.DevMode, "start in developer mode")
 	/// discord
@@ -45,7 +45,7 @@ func app(args []string) error {
 	root := &ffcli.Command{
 		FlagSet: rootFlags,
 		Options: []ff.Option{
-			ff.WithEnvVarPrefix("BOUNCE"),
+			ff.WithEnvVarPrefix("SGTM"),
 			ff.WithConfigFile("config.txt"),
 			ff.WithConfigFileParser(ff.PlainParser),
 		},
@@ -79,7 +79,7 @@ func runCmd(ctx context.Context, _ []string) error {
 	//opts.Context = ctx
 
 	// init service
-	svc := bounce.New(opts)
+	svc := sgtm.New(opts)
 	defer svc.Close()
 
 	// start

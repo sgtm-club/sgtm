@@ -1,6 +1,6 @@
-GOPKG ?=	moul.io/bounce
-DOCKER_IMAGE ?=	moul/bounce
-GOBINS ?=	./cmd/bounce
+GOPKG ?=	moul.io/sgtm
+DOCKER_IMAGE ?=	moul/sgtm
+GOBINS ?=	./cmd/sgtm
 
 PRE_INSTALL_STEPS += gen.sum
 PRE_UNITTEST_STEPS += gen.sum
@@ -15,15 +15,15 @@ include rules.mk
 
 .PHONY: run
 run: install
-	bounce --dev-mode --enable-server --enable-discord run
+	sgtm --dev-mode --enable-server --enable-discord run
 
 .PHONY: run-discord
 run-discord: install
-	bounce --dev-mode --enable-discord run
+	sgtm --dev-mode --enable-discord run
 
 .PHONY: run-server
 run-server: install
-	bounce --dev-mode --enable-server run
+	sgtm --dev-mode --enable-server run
 
 .PHONY: packr
 packr:
@@ -32,11 +32,11 @@ packr:
 
 .PHONY: deploy
 deploy: docker.push
-	ssh zrwf.m.42.am make -C infra/projects/bounce.place re
+	ssh zrwf.m.42.am make -C infra/projects/sgtm.place re
 
 .PHONY: prod-logs
 prod-logs:
-	ssh zrwf.m.42.am make -C infra/projects/bounce.place logs
+	ssh zrwf.m.42.am make -C infra/projects/sgtm.place logs
 
 .PHONY: docker.push
 docker.push: tidy generate docker.build
@@ -53,8 +53,8 @@ gen.sum: $(GEN_DEPS)
 	  GO111MODULE=on go mod vendor; \
 	  docker run \
 	    --user=`id -u` \
-	    --volume="$(PWD):/go/src/moul.io/bounce" \
-	    --workdir="/go/src/moul.io/bounce" \
+	    --volume="$(PWD):/go/src/moul.io/sgtm" \
+	    --workdir="/go/src/moul.io/sgtm" \
 	    --entrypoint="sh" \
 	    --rm \
 	    moul/moul-bot-protoc:1 \
