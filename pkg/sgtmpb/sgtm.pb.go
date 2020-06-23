@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.24.0-devel
 // 	protoc        v3.11.2
-// source: bounce.proto
+// source: sgtm.proto
 
-package bouncepb
+package sgtmpb
 
 import (
 	reflect "reflect"
@@ -36,7 +36,7 @@ type Ping struct {
 func (x *Ping) Reset() {
 	*x = Ping{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_bounce_proto_msgTypes[0]
+		mi := &file_sgtm_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -49,7 +49,7 @@ func (x *Ping) String() string {
 func (*Ping) ProtoMessage() {}
 
 func (x *Ping) ProtoReflect() protoreflect.Message {
-	mi := &file_bounce_proto_msgTypes[0]
+	mi := &file_sgtm_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -62,7 +62,7 @@ func (x *Ping) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ping.ProtoReflect.Descriptor instead.
 func (*Ping) Descriptor() ([]byte, []int) {
-	return file_bounce_proto_rawDescGZIP(), []int{0}
+	return file_sgtm_proto_rawDescGZIP(), []int{0}
 }
 
 type Status struct {
@@ -74,7 +74,7 @@ type Status struct {
 func (x *Status) Reset() {
 	*x = Status{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_bounce_proto_msgTypes[1]
+		mi := &file_sgtm_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -87,7 +87,7 @@ func (x *Status) String() string {
 func (*Status) ProtoMessage() {}
 
 func (x *Status) ProtoReflect() protoreflect.Message {
-	mi := &file_bounce_proto_msgTypes[1]
+	mi := &file_sgtm_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -100,7 +100,7 @@ func (x *Status) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Status.ProtoReflect.Descriptor instead.
 func (*Status) Descriptor() ([]byte, []int) {
-	return file_bounce_proto_rawDescGZIP(), []int{1}
+	return file_sgtm_proto_rawDescGZIP(), []int{1}
 }
 
 type Ping_Request struct {
@@ -112,7 +112,7 @@ type Ping_Request struct {
 func (x *Ping_Request) Reset() {
 	*x = Ping_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_bounce_proto_msgTypes[2]
+		mi := &file_sgtm_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -125,7 +125,7 @@ func (x *Ping_Request) String() string {
 func (*Ping_Request) ProtoMessage() {}
 
 func (x *Ping_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_bounce_proto_msgTypes[2]
+	mi := &file_sgtm_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -138,7 +138,7 @@ func (x *Ping_Request) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ping_Request.ProtoReflect.Descriptor instead.
 func (*Ping_Request) Descriptor() ([]byte, []int) {
-	return file_bounce_proto_rawDescGZIP(), []int{0, 0}
+	return file_sgtm_proto_rawDescGZIP(), []int{0, 0}
 }
 
 type Ping_Response struct {
@@ -150,7 +150,7 @@ type Ping_Response struct {
 func (x *Ping_Response) Reset() {
 	*x = Ping_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_bounce_proto_msgTypes[3]
+		mi := &file_sgtm_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -163,7 +163,7 @@ func (x *Ping_Response) String() string {
 func (*Ping_Response) ProtoMessage() {}
 
 func (x *Ping_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_bounce_proto_msgTypes[3]
+	mi := &file_sgtm_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -176,7 +176,7 @@ func (x *Ping_Response) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ping_Response.ProtoReflect.Descriptor instead.
 func (*Ping_Response) Descriptor() ([]byte, []int) {
-	return file_bounce_proto_rawDescGZIP(), []int{0, 1}
+	return file_sgtm_proto_rawDescGZIP(), []int{0, 1}
 }
 
 type Status_Request struct {
@@ -188,7 +188,7 @@ type Status_Request struct {
 func (x *Status_Request) Reset() {
 	*x = Status_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_bounce_proto_msgTypes[4]
+		mi := &file_sgtm_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -201,7 +201,7 @@ func (x *Status_Request) String() string {
 func (*Status_Request) ProtoMessage() {}
 
 func (x *Status_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_bounce_proto_msgTypes[4]
+	mi := &file_sgtm_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -214,7 +214,7 @@ func (x *Status_Request) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Status_Request.ProtoReflect.Descriptor instead.
 func (*Status_Request) Descriptor() ([]byte, []int) {
-	return file_bounce_proto_rawDescGZIP(), []int{1, 0}
+	return file_sgtm_proto_rawDescGZIP(), []int{1, 0}
 }
 
 type Status_Response struct {
@@ -229,7 +229,7 @@ type Status_Response struct {
 func (x *Status_Response) Reset() {
 	*x = Status_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_bounce_proto_msgTypes[5]
+		mi := &file_sgtm_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -242,7 +242,7 @@ func (x *Status_Response) String() string {
 func (*Status_Response) ProtoMessage() {}
 
 func (x *Status_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_bounce_proto_msgTypes[5]
+	mi := &file_sgtm_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -255,7 +255,7 @@ func (x *Status_Response) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Status_Response.ProtoReflect.Descriptor instead.
 func (*Status_Response) Descriptor() ([]byte, []int) {
-	return file_bounce_proto_rawDescGZIP(), []int{1, 1}
+	return file_sgtm_proto_rawDescGZIP(), []int{1, 1}
 }
 
 func (x *Status_Response) GetUptime() int32 {
@@ -272,61 +272,60 @@ func (x *Status_Response) GetHostname() string {
 	return ""
 }
 
-var File_bounce_proto protoreflect.FileDescriptor
+var File_sgtm_proto protoreflect.FileDescriptor
 
-var file_bounce_proto_rawDesc = []byte{
-	0x0a, 0x0c, 0x62, 0x6f, 0x75, 0x6e, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x06,
-	0x62, 0x6f, 0x75, 0x6e, 0x63, 0x65, 0x1a, 0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x22, 0x1d, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x1a, 0x09, 0x0a, 0x07,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0a, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x53, 0x0a, 0x06, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x1a, 0x09, 0x0a,
-	0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x3e, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x75, 0x70, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x75, 0x70, 0x74, 0x69, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08,
-	0x68, 0x6f, 0x73, 0x74, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
-	0x68, 0x6f, 0x73, 0x74, 0x6e, 0x61, 0x6d, 0x65, 0x32, 0xa0, 0x01, 0x0a, 0x06, 0x57, 0x65, 0x62,
-	0x41, 0x50, 0x49, 0x12, 0x46, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x12, 0x14, 0x2e, 0x62, 0x6f,
-	0x75, 0x6e, 0x63, 0x65, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x15, 0x2e, 0x62, 0x6f, 0x75, 0x6e, 0x63, 0x65, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x2e,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x11, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0b,
-	0x12, 0x09, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x69, 0x6e, 0x67, 0x12, 0x4e, 0x0a, 0x06, 0x53,
-	0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x16, 0x2e, 0x62, 0x6f, 0x75, 0x6e, 0x63, 0x65, 0x2e, 0x53,
-	0x74, 0x61, 0x74, 0x75, 0x73, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e,
-	0x62, 0x6f, 0x75, 0x6e, 0x63, 0x65, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x2e, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x13, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0d, 0x12, 0x0b,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x1d, 0x5a, 0x1b, 0x6d,
-	0x6f, 0x75, 0x6c, 0x2e, 0x69, 0x6f, 0x2f, 0x62, 0x6f, 0x75, 0x6e, 0x63, 0x65, 0x2f, 0x70, 0x6b,
-	0x67, 0x2f, 0x62, 0x6f, 0x75, 0x6e, 0x63, 0x65, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+var file_sgtm_proto_rawDesc = []byte{
+	0x0a, 0x0a, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x04, 0x73, 0x67,
+	0x74, 0x6d, 0x1a, 0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61,
+	0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x22, 0x1d, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x1a, 0x09, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x0a, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x53, 0x0a, 0x06, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x1a, 0x09, 0x0a, 0x07, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x3e, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x16, 0x0a, 0x06, 0x75, 0x70, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x06, 0x75, 0x70, 0x74, 0x69, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x68, 0x6f, 0x73, 0x74,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x68, 0x6f, 0x73, 0x74,
+	0x6e, 0x61, 0x6d, 0x65, 0x32, 0x98, 0x01, 0x0a, 0x06, 0x57, 0x65, 0x62, 0x41, 0x50, 0x49, 0x12,
+	0x42, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x12, 0x12, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x50,
+	0x69, 0x6e, 0x67, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x73, 0x67,
+	0x74, 0x6d, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x11, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0b, 0x12, 0x09, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x70,
+	0x69, 0x6e, 0x67, 0x12, 0x4a, 0x0a, 0x06, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x14, 0x2e,
+	0x73, 0x67, 0x74, 0x6d, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x2e, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x13, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x0d, 0x12, 0x0b, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42,
+	0x19, 0x5a, 0x17, 0x6d, 0x6f, 0x75, 0x6c, 0x2e, 0x69, 0x6f, 0x2f, 0x73, 0x67, 0x74, 0x6d, 0x2f,
+	0x70, 0x6b, 0x67, 0x2f, 0x73, 0x67, 0x74, 0x6d, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x33,
 }
 
 var (
-	file_bounce_proto_rawDescOnce sync.Once
-	file_bounce_proto_rawDescData = file_bounce_proto_rawDesc
+	file_sgtm_proto_rawDescOnce sync.Once
+	file_sgtm_proto_rawDescData = file_sgtm_proto_rawDesc
 )
 
-func file_bounce_proto_rawDescGZIP() []byte {
-	file_bounce_proto_rawDescOnce.Do(func() {
-		file_bounce_proto_rawDescData = protoimpl.X.CompressGZIP(file_bounce_proto_rawDescData)
+func file_sgtm_proto_rawDescGZIP() []byte {
+	file_sgtm_proto_rawDescOnce.Do(func() {
+		file_sgtm_proto_rawDescData = protoimpl.X.CompressGZIP(file_sgtm_proto_rawDescData)
 	})
-	return file_bounce_proto_rawDescData
+	return file_sgtm_proto_rawDescData
 }
 
-var file_bounce_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_bounce_proto_goTypes = []interface{}{
-	(*Ping)(nil),            // 0: bounce.Ping
-	(*Status)(nil),          // 1: bounce.Status
-	(*Ping_Request)(nil),    // 2: bounce.Ping.Request
-	(*Ping_Response)(nil),   // 3: bounce.Ping.Response
-	(*Status_Request)(nil),  // 4: bounce.Status.Request
-	(*Status_Response)(nil), // 5: bounce.Status.Response
+var file_sgtm_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_sgtm_proto_goTypes = []interface{}{
+	(*Ping)(nil),            // 0: sgtm.Ping
+	(*Status)(nil),          // 1: sgtm.Status
+	(*Ping_Request)(nil),    // 2: sgtm.Ping.Request
+	(*Ping_Response)(nil),   // 3: sgtm.Ping.Response
+	(*Status_Request)(nil),  // 4: sgtm.Status.Request
+	(*Status_Response)(nil), // 5: sgtm.Status.Response
 }
-var file_bounce_proto_depIdxs = []int32{
-	2, // 0: bounce.WebAPI.Ping:input_type -> bounce.Ping.Request
-	4, // 1: bounce.WebAPI.Status:input_type -> bounce.Status.Request
-	3, // 2: bounce.WebAPI.Ping:output_type -> bounce.Ping.Response
-	5, // 3: bounce.WebAPI.Status:output_type -> bounce.Status.Response
+var file_sgtm_proto_depIdxs = []int32{
+	2, // 0: sgtm.WebAPI.Ping:input_type -> sgtm.Ping.Request
+	4, // 1: sgtm.WebAPI.Status:input_type -> sgtm.Status.Request
+	3, // 2: sgtm.WebAPI.Ping:output_type -> sgtm.Ping.Response
+	5, // 3: sgtm.WebAPI.Status:output_type -> sgtm.Status.Response
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -334,13 +333,13 @@ var file_bounce_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_bounce_proto_init() }
-func file_bounce_proto_init() {
-	if File_bounce_proto != nil {
+func init() { file_sgtm_proto_init() }
+func file_sgtm_proto_init() {
+	if File_sgtm_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_bounce_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_sgtm_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Ping); i {
 			case 0:
 				return &v.state
@@ -352,7 +351,7 @@ func file_bounce_proto_init() {
 				return nil
 			}
 		}
-		file_bounce_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_sgtm_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Status); i {
 			case 0:
 				return &v.state
@@ -364,7 +363,7 @@ func file_bounce_proto_init() {
 				return nil
 			}
 		}
-		file_bounce_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_sgtm_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Ping_Request); i {
 			case 0:
 				return &v.state
@@ -376,7 +375,7 @@ func file_bounce_proto_init() {
 				return nil
 			}
 		}
-		file_bounce_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_sgtm_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Ping_Response); i {
 			case 0:
 				return &v.state
@@ -388,7 +387,7 @@ func file_bounce_proto_init() {
 				return nil
 			}
 		}
-		file_bounce_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_sgtm_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Status_Request); i {
 			case 0:
 				return &v.state
@@ -400,7 +399,7 @@ func file_bounce_proto_init() {
 				return nil
 			}
 		}
-		file_bounce_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_sgtm_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Status_Response); i {
 			case 0:
 				return &v.state
@@ -417,18 +416,18 @@ func file_bounce_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_bounce_proto_rawDesc,
+			RawDescriptor: file_sgtm_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_bounce_proto_goTypes,
-		DependencyIndexes: file_bounce_proto_depIdxs,
-		MessageInfos:      file_bounce_proto_msgTypes,
+		GoTypes:           file_sgtm_proto_goTypes,
+		DependencyIndexes: file_sgtm_proto_depIdxs,
+		MessageInfos:      file_sgtm_proto_msgTypes,
 	}.Build()
-	File_bounce_proto = out.File
-	file_bounce_proto_rawDesc = nil
-	file_bounce_proto_goTypes = nil
-	file_bounce_proto_depIdxs = nil
+	File_sgtm_proto = out.File
+	file_sgtm_proto_rawDesc = nil
+	file_sgtm_proto_goTypes = nil
+	file_sgtm_proto_depIdxs = nil
 }

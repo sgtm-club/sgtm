@@ -1,8 +1,8 @@
 version: '3.7'
 
 services:
-  bounce:
-    image: moul/bounce:latest
+  sgtm:
+    image: moul/sgtm:latest
     restart: on-failure
     volumes:
       - .:/app
@@ -14,7 +14,7 @@ services:
     ports:
       - 8000
     environment:
-      - VIRTUAL_HOST=bounce.place
+      - VIRTUAL_HOST=sgtm.place
       - VIRTUAL_PORT=8000
     networks:
       - default
