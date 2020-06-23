@@ -32,11 +32,11 @@ packr:
 
 .PHONY: deploy
 deploy: docker.push
-	ssh zrwf.m.42.am make -C infra/projects/sgtm.place re
+	ssh zrwf.m.42.am make -C infra/projects/sgtm.club re
 
 .PHONY: prod-logs
 prod-logs:
-	ssh zrwf.m.42.am make -C infra/projects/sgtm.place logs
+	ssh zrwf.m.42.am make -C infra/projects/sgtm.club logs
 
 .PHONY: docker.push
 docker.push: tidy generate docker.build
