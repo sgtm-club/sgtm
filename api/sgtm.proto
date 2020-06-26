@@ -5,6 +5,9 @@ package sgtm;
 option go_package = "moul.io/sgtm/pkg/sgtmpb";
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "patch/go.proto";
+import "patch/go/field.proto";
 
 service WebAPI {
   rpc Ping(Ping.Request) returns (Ping.Response) { option (google.api.http) = {get: "/api/ping"}; }
@@ -22,4 +25,23 @@ message Status {
     int32 uptime = 1;
     string hostname = 2;
   }
+}
+
+/// Models
+
+message User {
+  int64 id = 1 [(go.field.options) = {name: 'ID', tags: 'gorm:"primary_key"'}];
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+
+  string email = 4 [(go.field.options) = {tags: 'gorm:"size:255;not null;index:,unique"'}];
+  string username = 5 [(go.field.options) = {tags: 'gorm:"size:32;not null;default:\'\'"'}];
+  string firstname = 6 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+  string lastname = 7 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+}
+
+message Post {
+  int64 id = 1 [(go.field.options) = {name: 'ID', tags: 'gorm:"primary_key"'}];
+  User user = 2;
+  int64 user_id = 3 [(go.field.options) = {name: 'UserID'}];
 }

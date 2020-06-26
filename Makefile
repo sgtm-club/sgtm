@@ -28,7 +28,7 @@ run-server: install
 .PHONY: packr
 packr:
 	(cd static; git clean -fxd)
-	packr2
+	cd pkg/sgtm && packr2
 
 .PHONY: deploy
 deploy: docker.push
@@ -48,36 +48,38 @@ GEN_DEPS := $(PROTOS_SRC) Makefile
 generate: gen.sum
 gen.sum: $(GEN_DEPS)
 	shasum $(GEN_DEPS) | sort > gen.sum.tmp
-	@diff -q gen.sum gen.sum.tmp || ( \
-	  set -xe; \
-	  GO111MODULE=on go mod vendor; \
-	  docker run \
-	    --user=`id -u` \
-	    --volume="$(PWD):/go/src/moul.io/sgtm" \
-	    --workdir="/go/src/moul.io/sgtm" \
-	    --entrypoint="sh" \
-	    --rm \
-	    moul/moul-bot-protoc:1 \
-	    -xec 'make generate_local'; \
-	    make tidy \
-	)
+	@diff -q gen.sum gen.sum.tmp || make generate.protoc generate.sum
 	@rm -f gen.sum.tmp
 
-PROTOC_OPTS = -I ./api:/protobuf
-.PHONY: generate_local
-generate_local:
-	@set -e; for proto in $(PROTOS_SRC); do ( set -xe; \
-	  protoc $(PROTOC_OPTS) \
+.PHONY: generate.sum
+generate.sum:
+	shasum $(GEN_DEPS) | sort > gen.sum.tmp
+	mv gen.sum.tmp gen.sum
+
+.PHONY: generate.protoc
+generate.protoc:
+	go install github.com/alta/protopatch/cmd/protoc-gen-go-patch
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	go install google.golang.org/protobuf/cmd/protoc-gen-go
+	@set -e; for proto in $(PROTOS_SRC); do ( set -e; \
+	  proto_dirs=./api:`go list -m -f {{.Dir}} github.com/alta/protopatch`:`go list -m -f {{.Dir}} google.golang.org/protobuf`:`go list -m -f {{.Dir}} github.com/grpc-ecosystem/grpc-gateway`/third_party/googleapis; \
+	  set -x; \
+	  protoc \
+	    -I $$proto_dirs \
 	    --grpc-gateway_out=logtostderr=true:"$(GOPATH)/src" \
-	    --go_out="$(GOPATH)/src" \
-	    --go-grpc_out="$(GOPATH)/src" \
+	    --go-patch_out=plugin=go,paths=import:$(GOPATH)/src \
+	    --go-patch_out=plugin=go-grpc,requireUnimplementedServers=false,paths=import:$(GOPATH)/src \
 	    "$$proto" \
 	); done
 	goimports -w ./pkg ./cmd ./internal
-	shasum $(GEN_SRC) | sort > gen.sum.tmp
-	mv gen.sum.tmp gen.sum
+
+.PHONY: gen.clean
+gen.clean:
+	rm -f gen.sum $(wildcard */*/*.pb.go */*/*.pb.gw.go */*/*/*_grpc.pb.go)
 
 .PHONY: clean
-clean:
-	rm -f gen.sum $(wildcard */*/*.pb.go */*/*.pb.gw.go)
+clean: generate.clean
 	@# packr
+
+.PHONY: regenerate
+regenerate: gen.clean generate
