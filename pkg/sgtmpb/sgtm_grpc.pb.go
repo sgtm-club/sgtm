@@ -49,12 +49,14 @@ func (c *webAPIClient) Status(ctx context.Context, in *Status_Request, opts ...g
 }
 
 // WebAPIServer is the server API for WebAPI service.
+// All implementations should embed UnimplementedWebAPIServer
+// for forward compatibility
 type WebAPIServer interface {
 	Ping(context.Context, *Ping_Request) (*Ping_Response, error)
 	Status(context.Context, *Status_Request) (*Status_Response, error)
 }
 
-// UnimplementedWebAPIServer can be embedded to have forward compatible implementations.
+// UnimplementedWebAPIServer should be embedded to have forward compatible implementations.
 type UnimplementedWebAPIServer struct {
 }
 
