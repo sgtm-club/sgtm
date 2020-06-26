@@ -60,6 +60,7 @@ generate.sum:
 generate.protoc:
 	go install github.com/alta/protopatch/cmd/protoc-gen-go-patch
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	go install google.golang.org/protobuf/cmd/protoc-gen-go
 	@set -e; for proto in $(PROTOS_SRC); do ( set -e; \
 	  proto_dirs=./api:`go list -m -f {{.Dir}} github.com/alta/protopatch`:`go list -m -f {{.Dir}} google.golang.org/protobuf`:`go list -m -f {{.Dir}} github.com/grpc-ecosystem/grpc-gateway`/third_party/googleapis; \
 	  set -x; \
