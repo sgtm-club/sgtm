@@ -18,6 +18,9 @@ type Opts struct {
 	DiscordToken        string
 	DiscordAdminChannel string
 
+	/// DB
+	DBPath string
+
 	/// Server
 
 	EnableServer             bool
@@ -46,6 +49,9 @@ func (opts *Opts) applyDefaults() {
 	}
 	if opts.ServerShutdownTimeout == 0 {
 		opts.ServerShutdownTimeout = 6 * time.Second
+	}
+	if opts.DBPath == "" {
+		opts.DBPath = "/tmp/sgtm.db"
 	}
 }
 

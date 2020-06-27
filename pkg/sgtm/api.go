@@ -19,3 +19,13 @@ func (svc *Service) Status(context.Context, *sgtmpb.Status_Request) (*sgtmpb.Sta
 		Hostname: hostname,
 	}, nil
 }
+
+func (svc *Service) UserList(context.Context, *sgtmpb.UserList_Request) (*sgtmpb.UserList_Response, error) {
+	ret := &sgtmpb.UserList_Response{}
+	return ret, svc.db.Find(&ret.Users).Error
+}
+
+func (svc *Service) PostList(context.Context, *sgtmpb.PostList_Request) (*sgtmpb.PostList_Response, error) {
+	ret := &sgtmpb.PostList_Response{}
+	return ret, svc.db.Find(&ret.Posts).Error
+}

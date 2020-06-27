@@ -8,39 +8,49 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/bwmarrin/snowflake"
 	"github.com/oklog/run"
 	ff "github.com/peterbourgon/ff/v3"
 	"github.com/peterbourgon/ff/v3/ffcli"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	gormlogger "gorm.io/gorm/logger"
 	"moul.io/sgtm/pkg/sgtm"
 	"moul.io/srand"
+	"moul.io/zapgorm2"
 )
 
 func main() {
-	if err := app(os.Args); err != nil {
+	err := app(os.Args)
+	switch {
+	case err == nil:
+	case err == run.SignalError{Signal: os.Interrupt}:
+	default:
 		log.Fatalf("error: %v", err)
 		os.Exit(1)
 	}
 }
 
-var opts sgtm.Opts
+var svcOpts sgtm.Opts
 
 func app(args []string) error {
-	opts = sgtm.DefaultOpts()
+	svcOpts = sgtm.DefaultOpts()
 	rootFlags := flag.NewFlagSet("root", flag.ExitOnError)
-	rootFlags.BoolVar(&opts.DevMode, "dev-mode", opts.DevMode, "start in developer mode")
+	rootFlags.BoolVar(&svcOpts.DevMode, "dev-mode", svcOpts.DevMode, "start in developer mode")
 	/// discord
-	rootFlags.BoolVar(&opts.EnableDiscord, "enable-discord", opts.EnableDiscord, "enable discord bot")
-	rootFlags.StringVar(&opts.DiscordToken, "discord-token", opts.DiscordToken, "discord bot token")
-	rootFlags.StringVar(&opts.DiscordAdminChannel, "discord-admin-channel", opts.DiscordAdminChannel, "discord channel ID for admin messages")
+	rootFlags.BoolVar(&svcOpts.EnableDiscord, "enable-discord", svcOpts.EnableDiscord, "enable discord bot")
+	rootFlags.StringVar(&svcOpts.DiscordToken, "discord-token", svcOpts.DiscordToken, "discord bot token")
+	rootFlags.StringVar(&svcOpts.DiscordAdminChannel, "discord-admin-channel", svcOpts.DiscordAdminChannel, "discord channel ID for admin messages")
 	/// server
-	rootFlags.BoolVar(&opts.EnableServer, "enable-server", opts.EnableServer, "enable HTTP+gRPC Server")
-	rootFlags.StringVar(&opts.ServerBind, "server-bind", opts.ServerBind, "server bind (HTTP + gRPC)")
-	rootFlags.StringVar(&opts.ServerCORSAllowedOrigins, "server-cors-allowed-origins", opts.ServerCORSAllowedOrigins, "allowed CORS origins")
-	rootFlags.DurationVar(&opts.ServerRequestTimeout, "server-request-timeout", opts.ServerRequestTimeout, "server request timeout")
-	rootFlags.DurationVar(&opts.ServerShutdownTimeout, "server-shutdown-timeout", opts.ServerShutdownTimeout, "server shutdown timeout")
-	rootFlags.BoolVar(&opts.ServerWithPprof, "server-with-pprof", opts.ServerWithPprof, "enable pprof on HTTP server")
+	rootFlags.StringVar(&svcOpts.DBPath, "db-path", svcOpts.DBPath, "database path")
+	rootFlags.BoolVar(&svcOpts.EnableServer, "enable-server", svcOpts.EnableServer, "enable HTTP+gRPC Server")
+	rootFlags.StringVar(&svcOpts.ServerBind, "server-bind", svcOpts.ServerBind, "server bind (HTTP + gRPC)")
+	rootFlags.StringVar(&svcOpts.ServerCORSAllowedOrigins, "server-cors-allowed-origins", svcOpts.ServerCORSAllowedOrigins, "allowed CORS origins")
+	rootFlags.DurationVar(&svcOpts.ServerRequestTimeout, "server-request-timeout", svcOpts.ServerRequestTimeout, "server request timeout")
+	rootFlags.DurationVar(&svcOpts.ServerShutdownTimeout, "server-shutdown-timeout", svcOpts.ServerShutdownTimeout, "server shutdown timeout")
+	rootFlags.BoolVar(&svcOpts.ServerWithPprof, "server-with-pprof", svcOpts.ServerWithPprof, "enable pprof on HTTP server")
 
 	root := &ffcli.Command{
 		FlagSet: rootFlags,
@@ -63,31 +73,64 @@ func app(args []string) error {
 func runCmd(ctx context.Context, _ []string) error {
 	// init
 	rand.Seed(srand.Secure())
-	gr := run.Group{}
-	gr.Add(run.SignalHandler(ctx, syscall.SIGTERM, syscall.SIGINT, os.Interrupt, os.Kill))
 
 	// bearer
-	config := zap.NewDevelopmentConfig()
-	config.Level.SetLevel(zap.DebugLevel)
-	config.DisableStacktrace = true
-	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	logger, err := config.Build()
-	if err != nil {
-		return err
+	// FIXME: TODO
+
+	// zap logger
+	{
+		config := zap.NewDevelopmentConfig()
+		config.Level.SetLevel(zap.DebugLevel)
+		config.DisableStacktrace = true
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		logger, err := config.Build()
+		if err != nil {
+			return err
+		}
+		svcOpts.Logger = logger
 	}
-	opts.Logger = logger
-	//opts.Context = ctx
+
+	// init db
+	var db *gorm.DB
+	{
+		var err error
+		zg := zapgorm2.New(svcOpts.Logger.Named("gorm"))
+		zg.LogLevel = gormlogger.Info
+		zg.SetAsDefault()
+		config := &gorm.Config{Logger: zg}
+		db, err = gorm.Open(sqlite.Open(svcOpts.DBPath), config)
+		if err != nil {
+			return err
+		}
+
+		sfn, err := snowflake.NewNode(1)
+		if err != nil {
+			return err
+		}
+		err = sgtm.DBInit(db, sfn)
+		if err != nil {
+			return err
+		}
+	}
 
 	// init service
-	svc := sgtm.New(opts)
-	defer svc.Close()
-
-	// start
-	if opts.EnableDiscord {
-		gr.Add(svc.StartDiscord, svc.CloseDiscord)
+	var svc sgtm.Service
+	{
+		//svcOpts.Context = ctx
+		svc = sgtm.New(db, svcOpts)
+		defer svc.Close()
 	}
-	if opts.EnableServer {
-		gr.Add(svc.StartServer, svc.CloseServer)
+
+	// run.Group
+	var gr run.Group
+	{
+		gr.Add(run.SignalHandler(ctx, syscall.SIGTERM, syscall.SIGINT, os.Interrupt, os.Kill))
+		if svcOpts.EnableDiscord {
+			gr.Add(svc.StartDiscord, svc.CloseDiscord)
+		}
+		if svcOpts.EnableServer {
+			gr.Add(svc.StartServer, svc.CloseServer)
+		}
 	}
 	return gr.Run()
 }

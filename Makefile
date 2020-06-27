@@ -42,6 +42,10 @@ prod-logs:
 docker.push: tidy generate docker.build
 	docker push $(DOCKER_IMAGE)
 
+.PHONY: flushdb
+flushdb:
+	rm -f /tmp/sgtm.db
+
 PROTOS_SRC := $(wildcard ./api/*.proto)
 GEN_DEPS := $(PROTOS_SRC) Makefile
 .PHONY: generate

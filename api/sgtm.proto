@@ -5,13 +5,13 @@ package sgtm;
 option go_package = "moul.io/sgtm/pkg/sgtmpb";
 
 import "google/api/annotations.proto";
-import "google/protobuf/timestamp.proto";
-import "patch/go.proto";
 import "patch/go/field.proto";
 
 service WebAPI {
-  rpc Ping(Ping.Request) returns (Ping.Response) { option (google.api.http) = {get: "/api/ping"}; }
-  rpc Status(Status.Request) returns (Status.Response) { option (google.api.http) = {get: "/api/status"}; }
+  rpc UserList(UserList.Request) returns (UserList.Response) { option (google.api.http) = {get: "/api/v1/UserList"}; }
+  rpc PostList(PostList.Request) returns (PostList.Response) { option (google.api.http) = {get: "/api/v1/PostList"}; }
+  rpc Ping(Ping.Request) returns (Ping.Response) { option (google.api.http) = {get: "/api/v1/Ping"}; }
+  rpc Status(Status.Request) returns (Status.Response) { option (google.api.http) = {get: "/api/v1/Status"}; }
 }
 
 message Ping {
@@ -27,21 +27,40 @@ message Status {
   }
 }
 
+message UserList {
+  message Request {}
+  message Response {
+    repeated User users = 1;
+  }
+}
+
+message PostList {
+  message Request {}
+  message Response {
+    repeated Post posts = 1;
+  }
+}
+
 /// Models
 
 message User {
   int64 id = 1 [(go.field.options) = {name: 'ID', tags: 'gorm:"primary_key"'}];
-  google.protobuf.Timestamp created_at = 2;
-  google.protobuf.Timestamp updated_at = 3;
+  int64 created_at = 2 [(go.field.options) = {tags: 'gorm:"autocreatetime:nano"'}];
+  int64 updated_at = 3 [(go.field.options) = {tags: 'gorm:"autoupdatetime:nano"'}];
+  int64 deleted_at = 4;
 
-  string email = 4 [(go.field.options) = {tags: 'gorm:"size:255;not null;index:,unique"'}];
-  string username = 5 [(go.field.options) = {tags: 'gorm:"size:32;not null;default:\'\'"'}];
-  string firstname = 6 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
-  string lastname = 7 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+  string email = 10 [(go.field.options) = {tags: 'gorm:"size:255;not null;index:,unique"'}];
+  string username = 11 [(go.field.options) = {tags: 'gorm:"size:32;not null;default:\'\'"'}];
+  string firstname = 12 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+  string lastname = 13 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
 }
 
 message Post {
   int64 id = 1 [(go.field.options) = {name: 'ID', tags: 'gorm:"primary_key"'}];
-  User user = 2;
-  int64 user_id = 3 [(go.field.options) = {name: 'UserID'}];
+  int64 created_at = 2 [(go.field.options) = {tags: 'gorm:"autocreatetime:nano"'}];
+  int64 updated_at = 3 [(go.field.options) = {tags: 'gorm:"autoupdatetime:nano"'}];
+  int64 deleted_at = 4;
+
+  User user = 10;
+  int64 user_id = 11 [(go.field.options) = {name: 'UserID'}];
 }

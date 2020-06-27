@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/alta/protopatch v0.0.0-20200625224233-3948e4f364d5
 	github.com/bwmarrin/discordgo v0.21.1
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/jsonp v0.0.0-20170809160916-b971022286e2
 	github.com/gobuffalo/packr/v2 v2.8.0
@@ -32,7 +33,10 @@ require (
 	google.golang.org/grpc/examples v0.0.0-20200626030347-424195440776 // indirect
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
+	gorm.io/driver/sqlite v1.0.8
+	gorm.io/gorm v0.2.18
 	moul.io/banner v1.0.1
 	moul.io/godev v1.6.0
 	moul.io/srand v1.4.0
+	moul.io/zapgorm2 v1.0.1
 )
