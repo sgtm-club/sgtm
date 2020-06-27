@@ -7,10 +7,12 @@ import (
 	"time"
 
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"moul.io/banner"
 )
 
 type Service struct {
+	db        *gorm.DB
 	logger    *zap.Logger
 	opts      Opts
 	ctx       context.Context
@@ -23,11 +25,12 @@ type Service struct {
 	server  serverDriver
 }
 
-func New(opts Opts) Service {
+func New(db *gorm.DB, opts Opts) Service {
 	opts.applyDefaults()
 	fmt.Fprintln(os.Stderr, banner.Inline("moul-bot"))
 	ctx, cancel := context.WithCancel(opts.Context)
 	svc := Service{
+		db:        db,
 		logger:    opts.Logger,
 		opts:      opts,
 		ctx:       ctx,

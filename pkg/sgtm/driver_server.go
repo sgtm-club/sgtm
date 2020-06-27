@@ -100,14 +100,18 @@ func (svc *Service) StartServer() error {
 	gr.Add(
 		smux.Serve,
 		func(err error) {
-			svc.logger.Warn("cmux terminated", zap.Error(err))
+			if err != nil {
+				svc.logger.Warn("cmux terminated", zap.Error(err))
+			} else {
+				svc.logger.Debug("cmux terminated")
+			}
 		},
 	)
 
 	// context
 	gr.Add(func() error {
 		<-svc.ctx.Done()
-		svc.logger.Warn("parent ctx done")
+		svc.logger.Debug("parent ctx done")
 		return nil
 	}, func(error) {})
 
