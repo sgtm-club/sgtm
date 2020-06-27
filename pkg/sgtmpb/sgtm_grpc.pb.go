@@ -18,6 +18,7 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WebAPIClient interface {
+	Register(ctx context.Context, in *Register_Request, opts ...grpc.CallOption) (*Register_Response, error)
 	UserList(ctx context.Context, in *UserList_Request, opts ...grpc.CallOption) (*UserList_Response, error)
 	PostList(ctx context.Context, in *PostList_Request, opts ...grpc.CallOption) (*PostList_Response, error)
 	Ping(ctx context.Context, in *Ping_Request, opts ...grpc.CallOption) (*Ping_Response, error)
@@ -30,6 +31,15 @@ type webAPIClient struct {
 
 func NewWebAPIClient(cc grpc.ClientConnInterface) WebAPIClient {
 	return &webAPIClient{cc}
+}
+
+func (c *webAPIClient) Register(ctx context.Context, in *Register_Request, opts ...grpc.CallOption) (*Register_Response, error) {
+	out := new(Register_Response)
+	err := c.cc.Invoke(ctx, "/sgtm.WebAPI/Register", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *webAPIClient) UserList(ctx context.Context, in *UserList_Request, opts ...grpc.CallOption) (*UserList_Response, error) {
@@ -72,6 +82,7 @@ func (c *webAPIClient) Status(ctx context.Context, in *Status_Request, opts ...g
 // All implementations should embed UnimplementedWebAPIServer
 // for forward compatibility
 type WebAPIServer interface {
+	Register(context.Context, *Register_Request) (*Register_Response, error)
 	UserList(context.Context, *UserList_Request) (*UserList_Response, error)
 	PostList(context.Context, *PostList_Request) (*PostList_Response, error)
 	Ping(context.Context, *Ping_Request) (*Ping_Response, error)
@@ -82,6 +93,9 @@ type WebAPIServer interface {
 type UnimplementedWebAPIServer struct {
 }
 
+func (*UnimplementedWebAPIServer) Register(context.Context, *Register_Request) (*Register_Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
 func (*UnimplementedWebAPIServer) UserList(context.Context, *UserList_Request) (*UserList_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserList not implemented")
 }
@@ -97,6 +111,24 @@ func (*UnimplementedWebAPIServer) Status(context.Context, *Status_Request) (*Sta
 
 func RegisterWebAPIServer(s *grpc.Server, srv WebAPIServer) {
 	s.RegisterService(&_WebAPI_serviceDesc, srv)
+}
+
+func _WebAPI_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Register_Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WebAPIServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sgtm.WebAPI/Register",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WebAPIServer).Register(ctx, req.(*Register_Request))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _WebAPI_UserList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -175,6 +207,10 @@ var _WebAPI_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "sgtm.WebAPI",
 	HandlerType: (*WebAPIServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Register",
+			Handler:    _WebAPI_Register_Handler,
+		},
 		{
 			MethodName: "UserList",
 			Handler:    _WebAPI_UserList_Handler,

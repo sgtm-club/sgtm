@@ -17,6 +17,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 	"moul.io/sgtm/pkg/sgtm"
 	"moul.io/srand"
 	"moul.io/zapgorm2"
@@ -97,7 +98,10 @@ func runCmd(ctx context.Context, _ []string) error {
 		zg := zapgorm2.New(svcOpts.Logger.Named("gorm"))
 		zg.LogLevel = gormlogger.Info
 		zg.SetAsDefault()
-		config := &gorm.Config{Logger: zg}
+		config := &gorm.Config{
+			Logger:         zg,
+			NamingStrategy: schema.NamingStrategy{TablePrefix: "sgtm_", SingularTable: true},
+		}
 		db, err = gorm.Open(sqlite.Open(svcOpts.DBPath), config)
 		if err != nil {
 			return err
@@ -107,7 +111,7 @@ func runCmd(ctx context.Context, _ []string) error {
 		if err != nil {
 			return err
 		}
-		err = sgtm.DBInit(db, sfn)
+		err = sgtm.DBInit(db, sfn, svcOpts.Logger)
 		if err != nil {
 			return err
 		}
@@ -124,7 +128,9 @@ func runCmd(ctx context.Context, _ []string) error {
 	// run.Group
 	var gr run.Group
 	{
-		gr.Add(run.SignalHandler(ctx, syscall.SIGTERM, syscall.SIGINT, os.Interrupt, os.Kill))
+		if svcOpts.EnableDiscord || svcOpts.EnableServer {
+			gr.Add(run.SignalHandler(ctx, syscall.SIGTERM, syscall.SIGINT, os.Interrupt, os.Kill))
+		}
 		if svcOpts.EnableDiscord {
 			gr.Add(svc.StartDiscord, svc.CloseDiscord)
 		}

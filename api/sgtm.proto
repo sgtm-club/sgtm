@@ -8,6 +8,7 @@ import "google/api/annotations.proto";
 import "patch/go/field.proto";
 
 service WebAPI {
+  rpc Register(Register.Request) returns (Register.Response) { option (google.api.http) = {post: "/api/v1/Register", body: "*"}; }
   rpc UserList(UserList.Request) returns (UserList.Response) { option (google.api.http) = {get: "/api/v1/UserList"}; }
   rpc PostList(PostList.Request) returns (PostList.Response) { option (google.api.http) = {get: "/api/v1/PostList"}; }
   rpc Ping(Ping.Request) returns (Ping.Response) { option (google.api.http) = {get: "/api/v1/Ping"}; }
@@ -24,6 +25,18 @@ message Status {
   message Response {
     int32 uptime = 1;
     string hostname = 2;
+  }
+}
+
+message Register {
+  message Request {
+    string email = 10 [(go.field.options) = {tags: 'gorm:"size:255;not null;index:,unique"'}];
+    string username = 11 [(go.field.options) = {tags: 'gorm:"size:32;not null;default:\'\'"'}];
+    string firstname = 12 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+    string lastname = 13 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+  }
+  message Response {
+    User user = 1;
   }
 }
 
