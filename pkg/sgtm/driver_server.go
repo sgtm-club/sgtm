@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"html/template"
 	"log"
 	"net"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"os"
 	"runtime/debug"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -164,24 +166,53 @@ func (svc *Service) httpServer() (*http.Server, error) {
 
 	var handler http.Handler = gwmux
 
+	// api
 	r.Route("/api", func(r chi.Router) {
 		//r.Use(auth(opts.BasicAuth, opts.Realm, opts.AuthSalt))
 		r.Use(jsonp.Handler)
 		r.Mount("/", handler)
 	})
 
+	// fs
 	box := packr.New("static", "../../static")
-	fs := http.FileServer(box)
-	r.Get("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			_, err := box.FindString(r.URL.Path)
-			if err != nil {
-				r.URL.Path = "/404.html" // 404 redirects to index.html
-			}
-		}
-		fs.ServeHTTP(w, r)
-	}))
 
+	// dynamic pages
+	{
+		src, err := box.FindString("index.tmpl.html")
+		if err != nil {
+			return nil, err
+		}
+		tmpl := template.Must(template.New("index").Parse(src))
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			data := struct {
+				Title string
+				Date  time.Time
+			}{
+				Title: "SGTM",
+				Date:  time.Now(),
+			}
+			tmpl.Execute(w, data)
+		})
+	}
+
+	// static files & 404
+	{
+		fs := http.FileServer(box)
+		r.Get("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasSuffix(r.URL.Path, ".tmpl.html") { // hide sensitive files
+				r.URL.Path = "/404.html"
+			}
+			if r.URL.Path != "/" {
+				_, err := box.FindString(r.URL.Path)
+				if err != nil {
+					r.URL.Path = "/404.html" // 404 redirects to index.html
+				}
+			}
+			fs.ServeHTTP(w, r)
+		}))
+	}
+
+	// pprof
 	if svc.opts.ServerWithPprof {
 		r.HandleFunc("/debug/pprof/*", pprof.Index)
 		r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
@@ -189,6 +220,8 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		r.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 		r.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	}
+
+	// configure server
 	http.DefaultServeMux = http.NewServeMux() // disables default handlers registered by importing net/http/pprof for security reasons
 	return &http.Server{
 		Addr:    "osef",

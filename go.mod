@@ -3,6 +3,7 @@ module moul.io/sgtm
 go 1.14
 
 require (
+	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc
 	github.com/alta/protopatch v0.0.0-20200626224044-476e721b7775
 	github.com/bwmarrin/discordgo v0.21.1
 	github.com/bwmarrin/snowflake v0.3.0
