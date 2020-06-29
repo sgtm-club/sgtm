@@ -25,25 +25,25 @@ func TestDBUserCreate(t *testing.T) {
 		},*/
 		{
 			"manfred",
-			&sgtmpb.User{Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am", Username: "moul"},
-			&sgtmpb.User{Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am", Username: "moul"},
+			&sgtmpb.User{Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am", Slug: "moul"},
+			&sgtmpb.User{Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am", Slug: "moul"},
 			false,
 		},
 		{
 			"manfred2",
-			&sgtmpb.User{Firstname: "Manfred2", Lastname: "Touron2", Email: "m@42.am2", Username: "moul2"},
-			&sgtmpb.User{Firstname: "Manfred2", Lastname: "Touron2", Email: "m@42.am2", Username: "moul2"},
+			&sgtmpb.User{Firstname: "Manfred2", Lastname: "Touron2", Email: "m@42.am2", Slug: "moul2"},
+			&sgtmpb.User{Firstname: "Manfred2", Lastname: "Touron2", Email: "m@42.am2", Slug: "moul2"},
 			false,
 		},
 		{
 			"manfred:again",
-			&sgtmpb.User{Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am", Username: "moul"},
+			&sgtmpb.User{Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am", Slug: "moul"},
 			nil,
 			true,
 		},
 		{
 			"manfred2:again",
-			&sgtmpb.User{Firstname: "Manfred2", Lastname: "Touron2", Email: "m@42.am2", Username: "moul2"},
+			&sgtmpb.User{Firstname: "Manfred2", Lastname: "Touron2", Email: "m@42.am2", Slug: "moul2"},
 			nil,
 			true,
 		},

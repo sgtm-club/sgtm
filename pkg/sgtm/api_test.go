@@ -24,17 +24,17 @@ func TestServiceRegister(t *testing.T) {
 	}{
 		{"nil", nil, nil, true},
 		{"empty", &sgtmpb.Register_Request{}, nil, true},
-		{"no-email", &sgtmpb.Register_Request{Username: "moul", Firstname: "Manfred", Lastname: "Touron"}, nil, true},
-		{"no-username", &sgtmpb.Register_Request{Email: "m@42.am", Firstname: "Manfred", Lastname: "Touron"}, nil, true},
+		{"no-email", &sgtmpb.Register_Request{Slug: "moul", Firstname: "Manfred", Lastname: "Touron"}, nil, true},
+		{"no-slug", &sgtmpb.Register_Request{Email: "m@42.am", Firstname: "Manfred", Lastname: "Touron"}, nil, true},
 		{
 			"manfred",
-			&sgtmpb.Register_Request{Username: "moul", Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am"},
-			&sgtmpb.Register_Response{User: &sgtmpb.User{Username: "moul", Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am"}},
+			&sgtmpb.Register_Request{Slug: "moul", Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am"},
+			&sgtmpb.Register_Response{User: &sgtmpb.User{Slug: "moul", Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am"}},
 			false,
 		},
 		{
 			"manfred.bis",
-			&sgtmpb.Register_Request{Username: "moul", Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am"},
+			&sgtmpb.Register_Request{Slug: "moul", Firstname: "Manfred", Lastname: "Touron", Email: "m@42.am"},
 			nil,
 			true,
 		},

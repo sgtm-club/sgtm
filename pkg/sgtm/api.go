@@ -12,16 +12,16 @@ import (
 
 func (svc *Service) Register(ctx context.Context, input *sgtmpb.Register_Request) (*sgtmpb.Register_Response, error) {
 	fmt.Println(godev.PrettyJSON(input))
-	if input == nil || input.Email == "" || input.Username == "" {
+	if input == nil || input.Email == "" || input.Slug == "" {
 		return nil, fmt.Errorf("missing required fields")
 	}
 
-	// FIXME: generate username if empty
+	// FIXME: generate slug if empty
 	// FIXME: captcha
 	// FIXME: validate valid email
 	// FIXME: activity -> register (in a transaction)
 	user := sgtmpb.User{
-		Username:  input.Username,
+		Slug:      input.Slug,
 		Email:     input.Email,
 		Firstname: input.Firstname,
 		Lastname:  input.Lastname,

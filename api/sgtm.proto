@@ -30,10 +30,10 @@ message Status {
 
 message Register {
   message Request {
-    string email = 10 [(go.field.options) = {tags: 'gorm:"size:255;not null;index:,unique"'}];
-    string username = 11 [(go.field.options) = {tags: 'gorm:"size:32;not null;default:\'\'"'}];
-    string firstname = 12 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
-    string lastname = 13 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+    string email = 10;
+    string slug = 11;
+    string firstname = 12;
+    string lastname = 13;
   }
   message Response {
     User user = 1;
@@ -56,6 +56,19 @@ message PostList {
 
 /// Models
 
+/*
+╔══════════════╗    ╔══════════════╗
+║     Post     ║    ║     User     ║
+║              ║    ║              ║
+║    Author    ║    ║    Email     ║
+║    Title     ║    ║     Slug     ║
+║     Slug     ║────║     Name     ║
+║   ReplyTo    ║    ║              ║
+║    ForkOf    ║    ║              ║
+║     Kind     ║    ║              ║
+╚══════════════╝    ╚══════════════╝
+ */
+
 message User {
   int64 id = 1 [(go.field.options) = {name: 'ID', tags: 'gorm:"primary_key"'}];
   int64 created_at = 2 [(go.field.options) = {tags: 'gorm:"autocreatetime:nano"'}];
@@ -63,9 +76,13 @@ message User {
   int64 deleted_at = 4;
 
   string email = 10 [(go.field.options) = {tags: 'gorm:"size:255;not null;index:,unique"'}];
-  string username = 11 [(go.field.options) = {tags: 'gorm:"size:32;not null;default:\'\'"'}];
+  string slug = 11 [(go.field.options) = {tags: 'gorm:"size:32;not null;default:\'\'"'}];
   string firstname = 12 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
   string lastname = 13 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+  // bio
+  // timezone
+  // location
+  // avatar
 }
 
 message Post {
@@ -74,6 +91,19 @@ message Post {
   int64 updated_at = 3 [(go.field.options) = {tags: 'gorm:"autoupdatetime:nano"'}];
   int64 deleted_at = 4;
 
-  User user = 10;
-  int64 user_id = 11 [(go.field.options) = {name: 'UserID'}];
+  User author = 10;
+  int64 author_id = 11 [(go.field.options) = {name: 'AuthorID'}];
+  string title = 12;
+  string slug = 13;
+  int64 thread_post_id = 14 [(go.field.options) = {name: 'ThreadPostID'}];
+  Post thread_post = 15;
+  int64 reply_to_id = 16 [(go.field.options) = {name: 'ReplyToID'}];
+  Post reply_to = 17;
+  Kind kind = 18;
+
+  enum Kind {
+    Unknown = 0;
+    Post = 1;
+    Comment = 2;
+  }
 }
