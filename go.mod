@@ -3,7 +3,6 @@ module moul.io/sgtm
 go 1.14
 
 require (
-	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc
 	github.com/alta/protopatch v0.0.0-20200626224044-476e721b7775
 	github.com/bwmarrin/discordgo v0.21.1
 	github.com/bwmarrin/snowflake v0.3.0
@@ -36,7 +35,7 @@ require (
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/driver/sqlite v1.0.8
-	gorm.io/gorm v0.2.18
+	gorm.io/gorm v0.2.19
 	moul.io/banner v1.0.1
 	moul.io/godev v1.6.0
 	moul.io/srand v1.4.0
