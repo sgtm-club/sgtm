@@ -191,7 +191,9 @@ func (svc *Service) httpServer() (*http.Server, error) {
 				Title: "SGTM",
 				Date:  time.Now(),
 			}
-			tmpl.Execute(w, data)
+			if err := tmpl.Execute(w, data); err != nil {
+				svc.logger.Warn("failed to reply", zap.Error(err))
+			}
 		})
 	}
 
