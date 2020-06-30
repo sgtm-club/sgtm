@@ -25,15 +25,7 @@ func DBInit(db *gorm.DB, sfn *snowflake.Node, logger *zap.Logger) error {
 }
 
 func beforeCreate(sfn *snowflake.Node, logger *zap.Logger) func(*gorm.DB) {
-	return func(db *gorm.DB) {
-		if db.Statement == nil || db.Statement.Schema == nil || !db.Statement.ReflectValue.IsValid() {
-			return
-		}
-		field := db.Statement.Schema.LookUpField("ID")
-		id := sfn.Generate().Int64()
-		err := field.Set(db.Statement.ReflectValue, id)
-		if err != nil {
-			logger.Error("beforeCreate", zap.Error(err))
-		}
-	}
+	return func(tx *gorm.DB) {
+                tx.Statement.SetColumn("ID", sfn.Generate().Int64())
+        }
 }
