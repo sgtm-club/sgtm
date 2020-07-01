@@ -111,7 +111,7 @@ func runCmd(ctx context.Context, _ []string) error {
 		if err != nil {
 			return err
 		}
-		err = sgtm.DBInit(db, sfn, svcOpts.Logger)
+		err = sgtm.DBInit(db, sfn)
 		if err != nil {
 			return err
 		}

@@ -58,7 +58,7 @@ func TestingDB(t *testing.T) *gorm.DB {
 		t.Fatalf("snowflake.NewNode")
 	}
 
-	err = DBInit(db, sfn, logger)
+	err = DBInit(db, sfn)
 	if err != nil {
 		t.Fatalf("DBInit")
 	}
