@@ -2,13 +2,12 @@ package sgtm
 
 import (
 	"github.com/bwmarrin/snowflake"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
-func DBInit(db *gorm.DB, sfn *snowflake.Node, logger *zap.Logger) error {
-	err := db.Callback().Create().Before("gorm:create").Register("sgtm_before_create", beforeCreate(sfn, logger))
+func DBInit(db *gorm.DB, sfn *snowflake.Node) error {
+	err := db.Callback().Create().Before("gorm:create").Register("sgtm_before_create", beforeCreate(sfn))
 	if err != nil {
 		return err
 	}
@@ -24,16 +23,8 @@ func DBInit(db *gorm.DB, sfn *snowflake.Node, logger *zap.Logger) error {
 	return nil
 }
 
-func beforeCreate(sfn *snowflake.Node, logger *zap.Logger) func(*gorm.DB) {
-	return func(db *gorm.DB) {
-		if db.Statement == nil || db.Statement.Schema == nil || !db.Statement.ReflectValue.IsValid() {
-			return
-		}
-		field := db.Statement.Schema.LookUpField("ID")
-		id := sfn.Generate().Int64()
-		err := field.Set(db.Statement.ReflectValue, id)
-		if err != nil {
-			logger.Error("beforeCreate", zap.Error(err))
-		}
+func beforeCreate(sfn *snowflake.Node) func(*gorm.DB) {
+	return func(tx *gorm.DB) {
+		tx.Statement.SetColumn("ID", sfn.Generate().Int64())
 	}
 }
