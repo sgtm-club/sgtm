@@ -11,6 +11,7 @@ type Opts struct {
 	Context context.Context
 	Logger  *zap.Logger
 	DevMode bool
+	Seed    string
 
 	/// Discord
 
@@ -21,6 +22,7 @@ type Opts struct {
 	DiscordClientSecret string
 
 	/// DB
+
 	DBPath string
 
 	/// Server

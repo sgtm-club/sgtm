@@ -5,5 +5,12 @@
   <body>
     <h1>SGTM</h1>
     <h2>Date: {{.Date}}</h2>
+    {{if .OAuthToken}}
+    <hr />
+    <div>Token: {{.OAuthToken}}</div>
+    <div><a href="/logout">Logout</a></div>
+    {{else}}
+    <div><a href="/login">Login</a></div>
+    {{end}}
   </body>
 </html>

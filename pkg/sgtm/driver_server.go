@@ -185,11 +185,15 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		tmpl := template.Must(template.New("index").Parse(src))
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			data := struct {
-				Title string
-				Date  time.Time
+				Title      string
+				Date       time.Time
+				OAuthToken string
 			}{
 				Title: "SGTM",
 				Date:  time.Now(),
+			}
+			if cookie, err := r.Cookie(oauthTokenCookie); err == nil {
+				data.OAuthToken = cookie.Value
 			}
 			if err := tmpl.Execute(w, data); err != nil {
 				svc.logger.Warn("failed to reply", zap.Error(err))
@@ -199,7 +203,9 @@ func (svc *Service) httpServer() (*http.Server, error) {
 
 	// auth
 	{
-		r.Get("/auth/callback", httpAuthCallback)
+		r.Get("/login", svc.httpAuthLogin)
+		r.Get("/logout", svc.httpAuthLogout)
+		r.Get("/auth/callback", svc.httpAuthCallback)
 	}
 
 	// static files & 404
