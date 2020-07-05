@@ -27,7 +27,7 @@ type Service struct {
 
 func New(db *gorm.DB, opts Opts) Service {
 	opts.applyDefaults()
-	fmt.Fprintln(os.Stderr, banner.Inline("moul-bot"))
+	fmt.Fprintln(os.Stderr, banner.Inline("sgtm"))
 	ctx, cancel := context.WithCancel(opts.Context)
 	svc := Service{
 		db:        db,

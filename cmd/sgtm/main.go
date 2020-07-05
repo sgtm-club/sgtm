@@ -52,6 +52,8 @@ func app(args []string) error {
 	rootFlags.DurationVar(&svcOpts.ServerRequestTimeout, "server-request-timeout", svcOpts.ServerRequestTimeout, "server request timeout")
 	rootFlags.DurationVar(&svcOpts.ServerShutdownTimeout, "server-shutdown-timeout", svcOpts.ServerShutdownTimeout, "server shutdown timeout")
 	rootFlags.BoolVar(&svcOpts.ServerWithPprof, "server-with-pprof", svcOpts.ServerWithPprof, "enable pprof on HTTP server")
+	rootFlags.StringVar(&svcOpts.DiscordClientID, "discord-client-id", svcOpts.DiscordClientID, "discord client ID (oauth)")
+	rootFlags.StringVar(&svcOpts.DiscordClientSecret, "discord-client-secret", svcOpts.DiscordClientSecret, "discord client secret (oauth)")
 
 	root := &ffcli.Command{
 		FlagSet: rootFlags,

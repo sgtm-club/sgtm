@@ -120,8 +120,8 @@ func (svc *Service) StartServer() error {
 	return gr.Run()
 }
 
-func (svc *Service) CloseServer(error) {
-	svc.logger.Debug("closing server", zap.Bool("was-started", svc.server.listener != nil))
+func (svc *Service) CloseServer(err error) {
+	svc.logger.Debug("closing server", zap.Bool("was-started", svc.server.listener != nil), zap.Error(err))
 	if svc.server.listener != nil {
 		svc.server.listener.Close()
 	}
@@ -197,10 +197,15 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		})
 	}
 
+	// auth
+	{
+		r.Get("/auth/callback", httpAuthCallback)
+	}
+
 	// static files & 404
 	{
 		fs := http.FileServer(box)
-		r.Get("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasSuffix(r.URL.Path, ".tmpl.html") { // hide sensitive files
 				r.URL.Path = "/404.html"
 			}
@@ -211,7 +216,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 				}
 			}
 			fs.ServeHTTP(w, r)
-		}))
+		})
 	}
 
 	// pprof

@@ -17,6 +17,8 @@ type Opts struct {
 	EnableDiscord       bool
 	DiscordToken        string
 	DiscordAdminChannel string
+	DiscordClientID     string
+	DiscordClientSecret string
 
 	/// DB
 	DBPath string
