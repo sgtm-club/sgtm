@@ -37,6 +37,7 @@ type Opts struct {
 	ServerRequestTimeout     time.Duration
 	ServerShutdownTimeout    time.Duration
 	ServerWithPprof          bool
+	Hostname                 string
 }
 
 func (opts *Opts) applyDefaults() error {

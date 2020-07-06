@@ -55,6 +55,7 @@ func app(args []string) error {
 	rootFlags.StringVar(&svcOpts.DiscordClientID, "discord-client-id", svcOpts.DiscordClientID, "discord client ID (oauth)")
 	rootFlags.StringVar(&svcOpts.DiscordClientSecret, "discord-client-secret", svcOpts.DiscordClientSecret, "discord client secret (oauth)")
 	rootFlags.StringVar(&svcOpts.JWTSigningKey, "jwt-signing-key", svcOpts.JWTSigningKey, "HMAC secret to sign JWT tokens")
+	rootFlags.StringVar(&svcOpts.Hostname, "hostname", svcOpts.Hostname, "I.e., https://sgtm.club")
 
 	root := &ffcli.Command{
 		FlagSet: rootFlags,

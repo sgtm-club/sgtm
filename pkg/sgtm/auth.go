@@ -178,11 +178,14 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func (svc *Service) authConfigFromReq(r *http.Request) *oauth2.Config {
-	scheme := "http"
-	if r.TLS != nil {
-		scheme = "https"
+	hostname := svc.opts.Hostname
+	if hostname == "" {
+		scheme := "http"
+		if r.TLS != nil {
+			scheme = "https"
+		}
+		hostname = fmt.Sprintf("%s://%s", scheme, r.Host)
 	}
-	hostname := fmt.Sprintf("%s://%s", scheme, r.Host)
 	return &oauth2.Config{
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   "https://discordapp.com/api/oauth2/authorize",
