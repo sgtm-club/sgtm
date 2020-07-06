@@ -5,22 +5,16 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
-	"github.com/moogar0880/problems"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
-	"moul.io/godev"
-)
-
-var (
-	invalidStateProblem = problems.NewDetailedProblem(http.StatusBadRequest, "invalid state")
-	codeExchangeProblem = problems.NewDetailedProblem(http.StatusInternalServerError, "oauth code exchange")
-	// internalProblem     = problems.NewDetailedProblem(http.StatusInternalServerError, "internal problem")
 )
 
 const (
 	oauthTokenCookie = "oauth-token"
+	// sessionError
 )
 
 func (svc *Service) httpAuthLogin(w http.ResponseWriter, r *http.Request) {
@@ -45,8 +39,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 		got := r.URL.Query().Get("state")
 		expected := svc.authGenerateState(r)
 		if expected != got {
-			svc.logger.Warn("invalid oauth2 state", zap.String("expected", expected), zap.String("got", got))
-			problems.StatusProblemHandler(invalidStateProblem)(w, r)
+			svc.errRender(w, r, fmt.Errorf("invalid oauth2 state"), http.StatusBadRequest)
 			return
 		}
 	}
@@ -58,8 +51,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 		var err error
 		token, err = conf.Exchange(context.Background(), code)
 		if err != nil {
-			svc.logger.Warn("code exchange failed", zap.Error(err))
-			problems.StatusProblemHandler(codeExchangeProblem)(w, r)
+			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
 			return
 		}
 		cookie := http.Cookie{
@@ -70,31 +62,27 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 			Path:     "/",
 			//Domain:   r.Host,
 		}
-		fmt.Println(godev.PrettyJSON(cookie))
+		svc.logger.Debug("set user cookie", zap.Any("cookie", cookie))
 		http.SetCookie(w, &cookie)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	}
 
 	// FIXME: configure jwt, embed username, email, create account if not exists, set roles in jwt
-	/*
-		// get user's info
-		{
-			res, err := conf.Client(context.Background(), token).Get("https://discordapp.com/api/v6/users/@me")
-			if err != nil {
-				svc.logger.Warn("init discord client", zap.Error(err))
-				problems.StatusProblemHandler(internalProblem)(w, r)
-				return
-			}
-			defer res.Body.Close()
-			body, err := ioutil.ReadAll(res.Body)
-			if err != nil {
-				svc.logger.Warn("init discord client", zap.Error(err))
-				problems.StatusProblemHandler(internalProblem)(w, r)
-				return
-			}
-			_, _ = w.Write(body)
+	// get user's info
+	{
+		res, err := conf.Client(context.Background(), token).Get("https://discordapp.com/api/v6/users/@me")
+		if err != nil {
+			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			return
 		}
-	*/
+		defer res.Body.Close()
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		_, _ = w.Write(body)
+	}
 }
 
 func (svc *Service) authConfigFromReq(r *http.Request) *oauth2.Config {

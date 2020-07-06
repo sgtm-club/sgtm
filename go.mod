@@ -10,6 +10,7 @@ require (
 	github.com/githubnemo/CompileDaemon v1.2.1
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/jsonp v0.0.0-20170809160916-b971022286e2
+	github.com/go-chi/render v1.0.1
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gogo/gateway v1.1.0
 	github.com/golang/protobuf v1.4.2
@@ -17,7 +18,6 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.14.6
 	github.com/karrick/godirwalk v1.15.6 // indirect
-	github.com/moogar0880/problems v0.1.1
 	github.com/oklog/run v1.1.1-0.20200508094559-c7096881717e
 	github.com/peterbourgon/ff/v3 v3.0.0
 	github.com/rs/cors v1.7.0

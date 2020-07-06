@@ -17,6 +17,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jsonp"
+	"github.com/go-chi/render"
 	packr "github.com/gobuffalo/packr/v2"
 	"github.com/gogo/gateway"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -147,6 +148,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 	r.Use(middleware.Timeout(svc.opts.ServerRequestTimeout))
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RequestID)
+	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	runtimeMux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &gateway.JSONPb{
@@ -189,11 +191,23 @@ func (svc *Service) httpServer() (*http.Server, error) {
 				Date       time.Time
 				OAuthToken string
 			}{
-				Title: "SGTM!",
+				Title: "SGTM",
 				Date:  time.Now(),
 			}
 			if cookie, err := r.Cookie(oauthTokenCookie); err == nil {
 				data.OAuthToken = cookie.Value
+			}
+			if svc.opts.DevMode {
+				src, err := box.FindString("index.tmpl.html")
+				if err != nil {
+					svc.errRender(w, r, err, http.StatusInternalServerError)
+					return
+				}
+				tmpl, err = template.New("index").Parse(src)
+				if err != nil {
+					svc.errRender(w, r, err, http.StatusInternalServerError)
+					return
+				}
 			}
 			if err := tmpl.Execute(w, data); err != nil {
 				svc.logger.Warn("failed to reply", zap.Error(err))
