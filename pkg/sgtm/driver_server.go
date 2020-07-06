@@ -189,7 +189,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 				Date       time.Time
 				OAuthToken string
 			}{
-				Title: "SGTM",
+				Title: "SGTM!",
 				Date:  time.Now(),
 			}
 			if cookie, err := r.Cookie(oauthTokenCookie); err == nil {

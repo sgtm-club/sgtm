@@ -6,6 +6,8 @@ require (
 	github.com/alta/protopatch v0.0.0-20200626224044-476e721b7775
 	github.com/bwmarrin/discordgo v0.21.1
 	github.com/bwmarrin/snowflake v0.3.0
+	github.com/fatih/color v1.9.0 // indirect
+	github.com/githubnemo/CompileDaemon v1.2.1
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/jsonp v0.0.0-20170809160916-b971022286e2
 	github.com/gobuffalo/packr/v2 v2.8.0
