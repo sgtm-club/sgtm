@@ -79,10 +79,13 @@ message User {
   string slug = 11 [(go.field.options) = {tags: 'gorm:"size:32;not null;default:\'\'"'}];
   string firstname = 12 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
   string lastname = 13 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+  string locale = 14 [(go.field.options) = {tags: 'gorm:"size:32;not null;default:\'\'"'}];
+  string avatar = 15 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+  string discord_id = 16 [(go.field.options) = {name: "DiscordID", tags: 'gorm:"size:255;not null;default:\'\'"'}];
+  string discord_username = 17 [(go.field.options) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
   // bio
   // timezone
   // location
-  // avatar
 }
 
 message Post {
@@ -111,6 +114,6 @@ message Post {
 /// Internal
 
 message Session {
-  string DiscordAccessToken = 1;
-  string DiscordID = 2;
+  int64 user_id = 1 [(go.field.options) = {name: "UserID"}];
+  string discord_access_token = 2;
 }

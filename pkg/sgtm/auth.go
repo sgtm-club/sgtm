@@ -15,6 +15,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
+	"gorm.io/gorm"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
@@ -114,31 +115,53 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 			svc.errRender(w, r, fmt.Errorf("email not verified"), http.StatusForbidden)
 			return
 		}
+		if discordUser.Bot {
+			svc.errRender(w, r, fmt.Errorf("access denied for bots"), http.StatusForbidden)
+			return
+		}
 		svc.logger.Debug("get user settings", zap.Any("user", discordUser))
 	}
 
 	// create/update user in DB
+	var dbUser sgtmpb.User
 	{
-		// FIXME: TODO
+		dbUser.Email = discordUser.Email
+		err := svc.db.Where(&dbUser).First(&dbUser).Error
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			// user not found, creating it
+			dbUser = sgtmpb.User{
+				Email:           discordUser.Email,
+				Avatar:          fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", discordUser.ID, discordUser.Avatar),
+				Slug:            discordUser.Username,
+				Locale:          discordUser.Locale,
+				DiscordID:       discordUser.ID,
+				DiscordUsername: fmt.Sprintf("%s#%s", discordUser.Username, discordUser.Discriminator),
+				// Firstname
+				// Lastname
+			}
+			// FIXME: check if slug already exists, if yes, append something
+			svc.db.Create(&dbUser)
+
+		case err == nil:
+			// user exists
+			// FIXME: update user in DB if needed
+
+		default:
+			// unexpected error
+			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
 	}
 
 	// prepare JWT token
 	var tokenString string
 	{
 		session := &sgtmpb.Session{
-			DiscordID:          discordUser.ID,
+			UserID:             dbUser.ID,
 			DiscordAccessToken: token.AccessToken,
 		}
 		svc.logger.Debug("user session", zap.Any("session", session))
-
-		/*
-			sessionBytes, err := proto.Marshal(session)
-			if err != nil {
-				svc.errRender(w, r, err, http.StatusUnprocessableEntity)
-				return
-			}
-		*/
-
 		sessionID := fmt.Sprintf("%d", svc.opts.Snowflake.Generate().Int64())
 		claims := jwtClaims{
 			Session: session,

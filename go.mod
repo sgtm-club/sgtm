@@ -24,6 +24,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.14.6
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.9 // indirect
+	github.com/jinzhu/gorm v1.9.14
 	github.com/karrick/godirwalk v1.15.6 // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/oklog/run v1.1.1-0.20200508094559-c7096881717e

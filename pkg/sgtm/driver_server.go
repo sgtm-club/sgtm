@@ -199,10 +199,11 @@ func (svc *Service) httpServer() (*http.Server, error) {
 				Duration time.Duration
 				Opts     Opts
 				Lang     string
+				User     sgtmpb.User
 			}{
 				Title: "SGTM",
 				Date:  time.Now(),
-				Opts:  svc.opts,
+				Opts:  svc.opts.Filtered(),
 				Lang:  "en",
 			}
 			if cookie, err := r.Cookie(oauthTokenCookie); err == nil {
@@ -212,6 +213,12 @@ func (svc *Service) httpServer() (*http.Server, error) {
 				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
+				}
+				if err := svc.db.First(&data.User, data.Claims.Session.UserID).Error; err != nil {
+					if err != nil {
+						svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+						return
+					}
 				}
 			}
 			if svc.opts.DevMode {
@@ -227,7 +234,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 				}
 			}
 			data.Duration = time.Since(started)
-			if err := tmpl.Execute(w, data); err != nil {
+			if err := tmpl.Execute(w, &data); err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
 			}

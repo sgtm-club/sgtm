@@ -30,6 +30,7 @@
 
     <header>
       <!-- FIXME: add search form -->
+      {{if .JWTToken}}
       <div class="collapse bg-dark" id="navbarHeader">
         <div class="container">
           <div class="row">
@@ -38,16 +39,17 @@
               <p class="text-muted">Lorem Ipsum.</p>
             </div>
             <div class="col-sm-4 offset-md-1 py-4">
-              <h4 class="text-white">Menu</h4>
+              <h4 class="text-white">@{{.User.Slug}}</h4>
               <ul class="list-unstyled">
-                <li><a href="#" class="text-white">Profile</a></li>
-                <li><a href="#" class="text-white">Settings</a></li>
+                <li><a href="/@{{.User.Slug}}" class="text-white">Profile</a></li>
+                <li><a href="/settings" class="text-white">Settings</a></li>
                 <li><a href="/logout" class="text-muted">Sign out</a></li>
               </ul>
             </div>
           </div>
         </div>
       </div>
+      {{end}}
       <div class="navbar navbar-light bg-light shadow-sm">
         <div class="container d-flex justify-content-between">
           <a href="/" class="navbar-brand d-flex align-items-center">
@@ -57,8 +59,8 @@
           </a>
           {{if .JWTToken}}
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-            <!-- FIXME: Avatar -->
-            <span class="navbar-toggler-icon"></span>
+            <img class="avatar" src="{{.User.Avatar}}" />
+            <!--<span class="navbar-toggler-icon"></span>-->
           </button>
           {{else}}
           <ul class="navbar-nav flex-row ml-md-auth d-none d-md-flex">
@@ -108,10 +110,7 @@
             <div class="col">
               <div class="collapse" id="devtools">
                 <div class="card card-body">
-                  <!--<div>OAuthToken (cookie): {{.JWTToken}}</div>-->
-                  <div>JWT Token: <pre><code>{{.Claims | toPrettyJson}}</code></pre></div>
-                  <div>Date: {{.Date}}</div>
-                  <div>Opts: <pre><code>{{.Opts.Filtered | toPrettyJson}}</code></pre></div>
+                  <div>All: <pre><code>{{. | toPrettyJson}}</code></pre></div>
                 </div>
               </div>
             </div>
