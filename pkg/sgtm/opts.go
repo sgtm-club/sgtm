@@ -4,21 +4,29 @@ import (
 	"context"
 	"time"
 
+	"github.com/bwmarrin/snowflake"
 	"go.uber.org/zap"
 )
 
+const filteringString = "*FILTERED*"
+
 type Opts struct {
-	Context context.Context
-	Logger  *zap.Logger
-	DevMode bool
+	Context       context.Context
+	Logger        *zap.Logger
+	DevMode       bool
+	JWTSigningKey string
+	Snowflake     *snowflake.Node
 
 	/// Discord
 
 	EnableDiscord       bool
 	DiscordToken        string
 	DiscordAdminChannel string
+	DiscordClientID     string
+	DiscordClientSecret string
 
 	/// DB
+
 	DBPath string
 
 	/// Server
@@ -31,13 +39,27 @@ type Opts struct {
 	ServerWithPprof          bool
 }
 
-func (opts *Opts) applyDefaults() {
+func (opts *Opts) applyDefaults() error {
 	if opts.Context == nil {
 		opts.Context = context.TODO()
 	}
 	if opts.Logger == nil {
 		opts.Logger = zap.NewNop()
 	}
+	if opts.Snowflake == nil {
+		var err error
+		opts.Snowflake, err = snowflake.NewNode(1)
+		if err != nil {
+			return err
+		}
+	}
+	if opts.JWTSigningKey == "" {
+		opts.JWTSigningKey = randString(42)
+	}
+	return nil
+}
+
+func (opts *Opts) setDefaults() {
 	if opts.ServerBind == "" {
 		opts.ServerBind = ":8000"
 	}
@@ -55,19 +77,25 @@ func (opts *Opts) applyDefaults() {
 	}
 }
 
-func (opts *Opts) Filtered() Opts {
-	filtered := *opts
+func (opts Opts) Filtered() Opts {
+	filtered := opts
 	if filtered.DiscordToken != "" {
-		filtered.DiscordToken = "*FILTERED*"
+		filtered.DiscordToken = filteringString
 	}
 	if filtered.DiscordAdminChannel != "" {
-		filtered.DiscordAdminChannel = "*FILTERED*"
+		filtered.DiscordAdminChannel = filteringString
+	}
+	if filtered.DiscordClientSecret != "" {
+		filtered.DiscordClientSecret = filteringString
+	}
+	if filtered.JWTSigningKey != "" {
+		filtered.JWTSigningKey = filteringString
 	}
 	return filtered
 }
 
 func DefaultOpts() Opts {
 	opts := Opts{}
-	opts.applyDefaults()
+	opts.setDefaults()
 	return opts
 }

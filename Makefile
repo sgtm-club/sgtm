@@ -12,18 +12,19 @@ PRE_BUMPDEPS_STEPS += gen.suma
 
 include rules.mk
 
+COMPILEDAEMON_OPTIONS ?= -exclude-dir=.git -color=true -build=go\ install -build-dir=./cmd/sgtm
 
 .PHONY: run
-run: install
-	sgtm --dev-mode --enable-server --enable-discord run
+run: _devserver generate
+	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server --enable-discord run"
 
 .PHONY: run-discord
-run-discord: install
-	sgtm --dev-mode --enable-discord run
+run-discord: _devserver generate
+	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-discord run"
 
 .PHONY: run-server
-run-server: install
-	sgtm --dev-mode --enable-server run
+run-server: _devserver generate
+	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server run"
 
 .PHONY: packr
 packr:
@@ -87,3 +88,7 @@ clean: generate.clean
 
 .PHONY: regenerate
 regenerate: gen.clean generate
+
+.PHONY: _devserver
+_devserver:
+	go install github.com/githubnemo/CompileDaemon

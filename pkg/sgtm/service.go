@@ -25,9 +25,11 @@ type Service struct {
 	server  serverDriver
 }
 
-func New(db *gorm.DB, opts Opts) Service {
-	opts.applyDefaults()
-	fmt.Fprintln(os.Stderr, banner.Inline("moul-bot"))
+func New(db *gorm.DB, opts Opts) (Service, error) {
+	if err := opts.applyDefaults(); err != nil {
+		return Service{}, err
+	}
+	fmt.Fprintln(os.Stderr, banner.Inline("sgtm"))
 	ctx, cancel := context.WithCancel(opts.Context)
 	svc := Service{
 		db:        db,
@@ -38,7 +40,7 @@ func New(db *gorm.DB, opts Opts) Service {
 		startedAt: time.Now(),
 	}
 	svc.logger.Info("service initialized", zap.Bool("dev-mode", opts.DevMode))
-	return svc
+	return svc, nil
 }
 
 func (svc *Service) Close() {

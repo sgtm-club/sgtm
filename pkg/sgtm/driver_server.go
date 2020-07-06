@@ -14,9 +14,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Masterminds/sprig"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jsonp"
+	"github.com/go-chi/render"
 	packr "github.com/gobuffalo/packr/v2"
 	"github.com/gogo/gateway"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -120,8 +122,8 @@ func (svc *Service) StartServer() error {
 	return gr.Run()
 }
 
-func (svc *Service) CloseServer(error) {
-	svc.logger.Debug("closing server", zap.Bool("was-started", svc.server.listener != nil))
+func (svc *Service) CloseServer(err error) {
+	svc.logger.Debug("closing server", zap.Bool("was-started", svc.server.listener != nil), zap.Error(err))
 	if svc.server.listener != nil {
 		svc.server.listener.Close()
 	}
@@ -147,6 +149,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 	r.Use(middleware.Timeout(svc.opts.ServerRequestTimeout))
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RequestID)
+	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	runtimeMux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &gateway.JSONPb{
@@ -182,25 +185,64 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		if err != nil {
 			return nil, err
 		}
-		tmpl := template.Must(template.New("index").Parse(src))
+		tmpl, err := template.New("index").Funcs(sprig.FuncMap()).Parse(src)
+		if err != nil {
+			return nil, err
+		}
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			started := time.Now()
 			data := struct {
-				Title string
-				Date  time.Time
+				Title    string
+				Date     time.Time
+				JWTToken string
+				Claims   *jwtClaims
+				Duration time.Duration
+				Opts     Opts
 			}{
 				Title: "SGTM",
 				Date:  time.Now(),
+				Opts:  svc.opts,
 			}
+			if cookie, err := r.Cookie(oauthTokenCookie); err == nil {
+				data.JWTToken = cookie.Value
+				var err error
+				data.Claims, err = svc.parseJWTToken(data.JWTToken)
+				if err != nil {
+					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+					return
+				}
+			}
+			if svc.opts.DevMode {
+				src, err := box.FindString("index.tmpl.html")
+				if err != nil {
+					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+					return
+				}
+				tmpl, err = template.New("index").Funcs(sprig.FuncMap()).Parse(src)
+				if err != nil {
+					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+					return
+				}
+			}
+			data.Duration = time.Since(started)
 			if err := tmpl.Execute(w, data); err != nil {
-				svc.logger.Warn("failed to reply", zap.Error(err))
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
 			}
 		})
+	}
+
+	// auth
+	{
+		r.Get("/login", svc.httpAuthLogin)
+		r.Get("/logout", svc.httpAuthLogout)
+		r.Get("/auth/callback", svc.httpAuthCallback)
 	}
 
 	// static files & 404
 	{
 		fs := http.FileServer(box)
-		r.Get("/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasSuffix(r.URL.Path, ".tmpl.html") { // hide sensitive files
 				r.URL.Path = "/404.html"
 			}
@@ -211,7 +253,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 				}
 			}
 			fs.ServeHTTP(w, r)
-		}))
+		})
 	}
 
 	// pprof
