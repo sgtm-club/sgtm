@@ -198,10 +198,12 @@ func (svc *Service) httpServer() (*http.Server, error) {
 				Claims   *jwtClaims
 				Duration time.Duration
 				Opts     Opts
+				Lang     string
 			}{
 				Title: "SGTM",
 				Date:  time.Now(),
 				Opts:  svc.opts,
+				Lang:  "en",
 			}
 			if cookie, err := r.Cookie(oauthTokenCookie); err == nil {
 				data.JWTToken = cookie.Value
