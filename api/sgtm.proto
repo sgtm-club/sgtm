@@ -107,3 +107,10 @@ message Post {
     Comment = 2;
   }
 }
+
+/// Internal
+
+message Session {
+  string DiscordAccessToken = 1;
+  string DiscordID = 2;
+}

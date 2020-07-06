@@ -8,3 +8,4 @@ discord-client-secret REPLACE_ME
 ## Server
 #enable-server true
 server-bind 0.0.0.0:7676
+jwt-signing-key REPLACE_ME

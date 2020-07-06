@@ -15,15 +15,15 @@ include rules.mk
 COMPILEDAEMON_OPTIONS ?= -exclude-dir=.git -color=true -build=go\ install -build-dir=./cmd/sgtm
 
 .PHONY: run
-run: _devserver
+run: _devserver generate
 	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server --enable-discord run"
 
 .PHONY: run-discord
-run-discord: _devserver
+run-discord: _devserver generate
 	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-discord run"
 
 .PHONY: run-server
-run-server: _devserver
+run-server: _devserver generate
 	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server run"
 
 .PHONY: packr

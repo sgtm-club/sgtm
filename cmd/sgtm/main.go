@@ -54,6 +54,7 @@ func app(args []string) error {
 	rootFlags.BoolVar(&svcOpts.ServerWithPprof, "server-with-pprof", svcOpts.ServerWithPprof, "enable pprof on HTTP server")
 	rootFlags.StringVar(&svcOpts.DiscordClientID, "discord-client-id", svcOpts.DiscordClientID, "discord client ID (oauth)")
 	rootFlags.StringVar(&svcOpts.DiscordClientSecret, "discord-client-secret", svcOpts.DiscordClientSecret, "discord client secret (oauth)")
+	rootFlags.StringVar(&svcOpts.JWTSigningKey, "jwt-signing-key", svcOpts.JWTSigningKey, "HMAC secret to sign JWT tokens")
 
 	root := &ffcli.Command{
 		FlagSet: rootFlags,
@@ -76,6 +77,7 @@ func app(args []string) error {
 func runCmd(ctx context.Context, _ []string) error {
 	// init
 	rand.Seed(srand.Secure())
+	svcOpts.Context = ctx
 
 	// bearer
 	// FIXME: TODO
@@ -113,6 +115,7 @@ func runCmd(ctx context.Context, _ []string) error {
 		if err != nil {
 			return err
 		}
+		svcOpts.Snowflake = sfn
 		err = sgtm.DBInit(db, sfn)
 		if err != nil {
 			return err
@@ -122,8 +125,11 @@ func runCmd(ctx context.Context, _ []string) error {
 	// init service
 	var svc sgtm.Service
 	{
-		//svcOpts.Context = ctx
-		svc = sgtm.New(db, svcOpts)
+		var err error
+		svc, err = sgtm.New(db, svcOpts)
+		if err != nil {
+			return err
+		}
 		defer svc.Close()
 	}
 

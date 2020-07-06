@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Masterminds/sprig"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jsonp"
@@ -184,33 +185,49 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		if err != nil {
 			return nil, err
 		}
-		tmpl := template.Must(template.New("index").Parse(src))
+		tmpl, err := template.New("index").Funcs(sprig.FuncMap()).Parse(src)
+		if err != nil {
+			return nil, err
+		}
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			started := time.Now()
 			data := struct {
-				Title      string
-				Date       time.Time
-				OAuthToken string
+				Title    string
+				Date     time.Time
+				JWTToken string
+				Claims   *jwtClaims
+				Duration time.Duration
+				Opts     Opts
 			}{
 				Title: "SGTM",
 				Date:  time.Now(),
+				Opts:  svc.opts,
 			}
 			if cookie, err := r.Cookie(oauthTokenCookie); err == nil {
-				data.OAuthToken = cookie.Value
+				data.JWTToken = cookie.Value
+				var err error
+				data.Claims, err = svc.parseJWTToken(data.JWTToken)
+				if err != nil {
+					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+					return
+				}
 			}
 			if svc.opts.DevMode {
 				src, err := box.FindString("index.tmpl.html")
 				if err != nil {
-					svc.errRender(w, r, err, http.StatusInternalServerError)
+					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
 				}
-				tmpl, err = template.New("index").Parse(src)
+				tmpl, err = template.New("index").Funcs(sprig.FuncMap()).Parse(src)
 				if err != nil {
-					svc.errRender(w, r, err, http.StatusInternalServerError)
+					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
 				}
 			}
+			data.Duration = time.Since(started)
 			if err := tmpl.Execute(w, data); err != nil {
-				svc.logger.Warn("failed to reply", zap.Error(err))
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
 			}
 		})
 	}
