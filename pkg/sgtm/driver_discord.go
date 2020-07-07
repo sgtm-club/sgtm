@@ -47,10 +47,10 @@ func (svc *Service) StartDiscord() error {
 				return
 			}
 			log.Println(godev.JSON(m))
-			_, err := s.ChannelMessageSend(m.ChannelID, ">>> "+m.Content)
+			/*_, err := s.ChannelMessageSend(m.ChannelID, ">>> "+m.Content)
 			if err != nil {
 				svc.logger.Error("discord.ChannelMessageSend", zap.Error(err))
-			}
+			}*/
 		})
 	}
 
