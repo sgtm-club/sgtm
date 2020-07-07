@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"html/template"
 	"log"
 	"net"
 	"net/http"
@@ -12,9 +11,7 @@ import (
 	"os"
 	"runtime/debug"
 	"strings"
-	"time"
 
-	"github.com/Masterminds/sprig"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jsonp"
@@ -181,64 +178,8 @@ func (svc *Service) httpServer() (*http.Server, error) {
 
 	// dynamic pages
 	{
-		src, err := box.FindString("index.tmpl.html")
-		if err != nil {
-			return nil, err
-		}
-		tmpl, err := template.New("index").Funcs(sprig.FuncMap()).Parse(src)
-		if err != nil {
-			return nil, err
-		}
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			started := time.Now()
-			data := struct {
-				Title    string
-				Date     time.Time
-				JWTToken string
-				Claims   *jwtClaims
-				Duration time.Duration
-				Opts     Opts
-				Lang     string
-				User     sgtmpb.User
-			}{
-				Title: "SGTM",
-				Date:  time.Now(),
-				Opts:  svc.opts.Filtered(),
-				Lang:  "en",
-			}
-			if cookie, err := r.Cookie(oauthTokenCookie); err == nil {
-				data.JWTToken = cookie.Value
-				var err error
-				data.Claims, err = svc.parseJWTToken(data.JWTToken)
-				if err != nil {
-					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-					return
-				}
-				if err := svc.db.First(&data.User, data.Claims.Session.UserID).Error; err != nil {
-					if err != nil {
-						svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-						return
-					}
-				}
-			}
-			if svc.opts.DevMode {
-				src, err := box.FindString("index.tmpl.html")
-				if err != nil {
-					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-					return
-				}
-				tmpl, err = template.New("index").Funcs(sprig.FuncMap()).Parse(src)
-				if err != nil {
-					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-					return
-				}
-			}
-			data.Duration = time.Since(started)
-			if err := tmpl.Execute(w, &data); err != nil {
-				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-				return
-			}
-		})
+		r.Get("/", svc.indexPage(box))
+		r.Get("/settings", svc.settingsPage(box))
 	}
 
 	// auth
