@@ -17,6 +17,14 @@ logs-once:
 ps pull restart stop kill:
 	docker-compose $@
 
+.PHONY: dbdump
+dbdump:
+	sqlite3 sgtm.db .dump
+
+.PHONY: dbflush
+dbflush:
+	rm -f sgtm.db
+
 .PHONY: down
 down:
 	docker-compose down --remove-orphans
