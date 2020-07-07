@@ -15,7 +15,7 @@ import (
 )
 
 func (svc *Service) indexPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "index.tmpl.html")
+	tmpl := loadTemplate(box, "_layouts/index.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
@@ -24,7 +24,7 @@ func (svc *Service) indexPage(box *packr.Box) func(w http.ResponseWriter, r *htt
 			return
 		}
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "index.tmpl.html")
+			tmpl = loadTemplate(box, "_layouts/index.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.ExecuteTemplate(w, "base", &data); err != nil {
@@ -35,7 +35,7 @@ func (svc *Service) indexPage(box *packr.Box) func(w http.ResponseWriter, r *htt
 }
 
 func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "settings.tmpl.html")
+	tmpl := loadTemplate(box, "_layouts/settings.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
@@ -44,7 +44,7 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 			return
 		}
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "settings.tmpl.html")
+			tmpl = loadTemplate(box, "_layouts/settings.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.Execute(w, &data); err != nil {
@@ -55,7 +55,7 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 }
 
 func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "profile.tmpl.html")
+	tmpl := loadTemplate(box, "_layouts/profile.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
@@ -70,7 +70,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 		}
 
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "profile.tmpl.html")
+			tmpl = loadTemplate(box, "_layouts/profile.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.Execute(w, &data); err != nil {
@@ -86,6 +86,9 @@ func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 		Date:  time.Now(),
 		Opts:  svc.opts.Filtered(),
 		Lang:  "en", // FIXME: dynamic
+	}
+	if svc.opts.DevMode {
+		data.Title += " (dev)"
 	}
 
 	if cookie, err := r.Cookie(oauthTokenCookie); err == nil {
@@ -108,7 +111,7 @@ func loadTemplate(box *packr.Box, filepath string) *template.Template {
 	if err != nil {
 		panic(err)
 	}
-	base, err := box.FindString("base.tmpl.html")
+	base, err := box.FindString("_layouts/base.tmpl.html")
 	if err != nil {
 		panic(err)
 	}
