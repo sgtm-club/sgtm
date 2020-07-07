@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Masterminds/sprig"
+	sprig "github.com/Masterminds/sprig/v3"
 	"github.com/go-chi/chi"
 	packr "github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
