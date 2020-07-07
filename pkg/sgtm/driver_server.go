@@ -177,6 +177,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 	box := packr.New("static", "../../static")
 
 	// dynamic pages
+	error404Page := svc.error404Page(box)
 	{
 		r.Get("/", svc.indexPage(box))
 		r.Get("/settings", svc.settingsPage(box))
@@ -195,12 +196,14 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		fs := http.FileServer(box)
 		r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasSuffix(r.URL.Path, ".tmpl.html") { // hide sensitive files
-				r.URL.Path = "/404.html"
+				error404Page(w, r)
+				return
 			}
 			if r.URL.Path != "/" {
 				_, err := box.FindString(r.URL.Path)
 				if err != nil {
-					r.URL.Path = "/404.html" // 404 redirects to index.html
+					error404Page(w, r)
+					return
 				}
 			}
 			fs.ServeHTTP(w, r)

@@ -54,6 +54,28 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 	}
 }
 
+func (svc *Service) error404Page(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+	tmpl := loadTemplate(box, "_layouts/error404.tmpl.html")
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+
+		started := time.Now()
+		data, err := svc.newTemplateData(r)
+		if err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		if svc.opts.DevMode {
+			tmpl = loadTemplate(box, "_layouts/error404.tmpl.html")
+		}
+		data.Duration = time.Since(started)
+		if err := tmpl.Execute(w, &data); err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+	}
+}
+
 func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	tmpl := loadTemplate(box, "_layouts/profile.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -82,10 +104,11 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 
 func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 	data := templateData{
-		Title: "SGTM",
-		Date:  time.Now(),
-		Opts:  svc.opts.Filtered(),
-		Lang:  "en", // FIXME: dynamic
+		Title:   "SGTM",
+		Date:    time.Now(),
+		Opts:    svc.opts.Filtered(),
+		Lang:    "en", // FIXME: dynamic
+		Request: r,
 	}
 	if svc.opts.DevMode {
 		data.Title += " (dev)"
@@ -138,6 +161,7 @@ type templateData struct {
 	Lang     string
 	User     sgtmpb.User
 	Error    string
+	Request  *http.Request `json:"-"`
 
 	// specific
 
