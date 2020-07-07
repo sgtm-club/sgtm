@@ -80,11 +80,21 @@
       </div>
     </header>
 
+    {{if .Error}}
+    <section>
+      <div class="container">
+        <div class="row alert alert-danger" role="alert">
+          {{.Error}}
+        </div>
+      </div>
+    </section>
+    {{end}}
+
     <main role="main">
       {{template "content" .}}
     </main>
 
-    <footer class="text-muted">
+    <footer class="page-footer text-muted bg-light">
       <div class="container">
         <p class="float-right">
           <a href="#">Back to top</a>
