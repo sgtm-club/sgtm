@@ -80,7 +80,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 	}
 }
 
-func (svc *Service) newTemplateData(r *http.Request) (templateData, error) {
+func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 	data := templateData{
 		Title: "SGTM",
 		Date:  time.Now(),
@@ -93,14 +93,14 @@ func (svc *Service) newTemplateData(r *http.Request) (templateData, error) {
 		var err error
 		data.Claims, err = svc.parseJWTToken(data.JWTToken)
 		if err != nil {
-			return data, fmt.Errorf("parse jwt token: %w", err)
+			return nil, fmt.Errorf("parse jwt token: %w", err)
 		}
 		if err := svc.db.First(&data.User, data.Claims.Session.UserID).Error; err != nil {
 			svc.logger.Warn("load user from DB", zap.Error(err))
 		}
 	}
 
-	return data, nil
+	return &data, nil
 }
 
 func loadTemplate(box *packr.Box, filepath string) *template.Template {
