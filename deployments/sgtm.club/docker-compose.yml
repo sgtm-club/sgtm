@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  sgtm:
+  sgtm-server:
     image: moul/sgtm:latest
     restart: on-failure
     volumes:
@@ -9,8 +9,7 @@ services:
     working_dir: /app
     labels:
       com.centurylinklabs.watchtower.enable: "true"
-    command:
-      run
+    command: --enable-server run
     ports:
       - 8000
     environment:
@@ -19,6 +18,18 @@ services:
     networks:
       - default
       - service-proxy
+
+  sgtm-discord:
+    image: moul/sgtm:latest
+    restart: on-failure
+    volumes:
+      - .:/app
+    working_dir: /app
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    command: --enable-discord run
+    networks:
+      - default
 
 networks:
   service-proxy:
