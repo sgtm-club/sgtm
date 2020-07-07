@@ -35,8 +35,8 @@ packr:
 deploy: docker.push
 	ssh zrwf.m.42.am make -C infra/projects/sgtm.club re
 
-.PHONY: prod-logs
-prod-logs:
+.PHONY: deploy.logs
+deploy.logs:
 	ssh zrwf.m.42.am make -C infra/projects/sgtm.club logs
 
 .PHONY: docker.push
@@ -46,6 +46,14 @@ docker.push: tidy generate docker.build
 .PHONY: flushdb
 flushdb:
 	rm -f /tmp/sgtm.db
+
+.PHONY: deploy.fast
+deploy.fast: generate packr
+	GOOS=linux GOARCH=amd64 $(GO) build -ldflags "-linkmode external -extldflags -static" -o sgtm-linux-static ./cmd/sgtm
+	rm -rf ./pkg/sgtm/packrd ./pkg/sgtm/sgtm-packr.go
+	docker build -f Dockerfile.fast -t $(DOCKER_IMAGE) .
+	docker push $(DOCKER_IMAGE)
+	ssh zrwf.m.42.am make -C infra/projects/sgtm.club re
 
 PROTOS_SRC := $(wildcard ./api/*.proto)
 GEN_DEPS := $(PROTOS_SRC) Makefile
@@ -84,7 +92,7 @@ gen.clean:
 
 .PHONY: clean
 clean: generate.clean
-	@# packr
+	rm -rf ./pkg/sgtm/packrd ./pkg/sgtm/sgtm-packr.go
 
 .PHONY: regenerate
 regenerate: gen.clean generate
