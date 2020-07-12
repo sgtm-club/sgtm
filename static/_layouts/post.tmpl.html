@@ -9,9 +9,10 @@
       <iframe width=100% height=166 scrolling=no frameborder=no allow=autoplay
         src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/{{.Post.Post.SoundCloudID}}{{with .Post.Post.SoundCloudSecretToken}}%3Fsecret_token%3D{{.}}{{end}}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"></iframe>
       {{with .Post.Post.Body}}<p>{{.}}</p>{{end}}
-      {{with .Post.Post.Genre}}<div>📁 Genre: <span class="badge">{{.}}</span></div>{{end}}
-      {{if .Post.Post.Duration}}<div>⏱ Duration: {{.Post.Post.GoDuration}}</div>{{end}}
+      {{with .Post.Post.Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
+      {{if .Post.Post.Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.GoDuration}}">{{.Post.Post.GoDuration | prettyDuration}}</span></div>{{end}}
       {{with .Post.Post.DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}
+      <div>📆 Added <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.SortDate | fromUnixNano | date "2006-01-02 15:04"}}">{{.Post.Post.SortDate | fromUnixNano | prettyAgo}}</span></div>
     </div>
   </div>
 </div>

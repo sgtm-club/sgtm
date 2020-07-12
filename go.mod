@@ -8,6 +8,7 @@ require (
 	github.com/bwmarrin/discordgo v0.21.1
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/githubnemo/CompileDaemon v1.2.1
 	github.com/go-chi/chi v4.1.2+incompatible
@@ -19,6 +20,7 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.14.6
+	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.9 // indirect
 	github.com/karrick/godirwalk v1.15.6 // indirect

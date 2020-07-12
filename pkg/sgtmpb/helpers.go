@@ -40,3 +40,8 @@ func (u *User) ApplyDefaults() {
 func (u *User) CanonicalURL() string {
 	return fmt.Sprintf("/@%s", u.Slug)
 }
+
+func (u *User) DisplayName() string {
+	// FIXME: firstname, lastname
+	return fmt.Sprintf("@%s", u.Slug)
+}
