@@ -146,7 +146,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					post.Title = track.Title
 					createdAt, err := time.Parse("2006/01/02 15:04:05 +0000", track.CreatedAt)
 					if err == nil {
-						post.ProviderCreatedAt = createdAt.Unix()
+						post.ProviderCreatedAt = createdAt.UnixNano()
 					}
 					post.Genre = track.Genre
 					post.Duration = track.Duration
@@ -232,12 +232,46 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 			return
 		}
 		// custom
-		userSlug := chi.URLParam(r, "user_slug")
-		var user sgtmpb.User
-		if err := svc.db.Where(sgtmpb.User{Slug: userSlug}).First(&user).Error; err != nil {
-			data.Error = err.Error()
+
+		// load profile
+		{
+			userSlug := chi.URLParam(r, "user_slug")
+			var user sgtmpb.User
+			if err := svc.db.
+				Where(sgtmpb.User{Slug: userSlug}).
+				First(&user).
+				Error; err != nil {
+				svc.error404Page(box)(w, r)
+				return
+			}
+			data.Profile.User = &user
 		}
-		data.Profile.User = &user
+
+		// tracks
+		{
+			query := svc.db.
+				Model(&sgtmpb.Post{}).
+				Where(sgtmpb.Post{
+					AuthorID:   data.Profile.User.ID,
+					Kind:       sgtmpb.Post_TrackKind,
+					Visibility: sgtmpb.Visibility_Public,
+				})
+			if err := query.Count(&data.Profile.Stats.Tracks).Error; err != nil {
+				data.Error = "Cannot fetch last tracks: " + err.Error()
+			}
+			if data.Profile.Stats.Tracks > 0 {
+				if err := query.
+					Order("created_at desc").
+					Limit(10). // FIXME: pagination
+					Find(&data.Profile.LastTracks).
+					Error; err != nil {
+					data.Error = "Cannot fetch last tracks: " + err.Error()
+				}
+			}
+			for _, track := range data.Profile.LastTracks {
+				track.ApplyDefaults()
+			}
+		}
 		// end of custom
 		if svc.opts.DevMode {
 			tmpl = loadTemplate(box, "_layouts/profile.tmpl.html")
@@ -270,9 +304,11 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		}
 		var post sgtmpb.Post
 		if err := query.First(&post).Error; err != nil {
-			data.Error = err.Error()
+			svc.error404Page(box)(w, r)
+			return
 		}
 		data.Post.Post = &post
+		data.Post.Post.ApplyDefaults()
 
 		// end of custom
 		if svc.opts.DevMode {
@@ -328,7 +364,11 @@ func loadTemplate(box *packr.Box, filepath string) *template.Template {
 		strings.TrimSpace(src),
 		strings.TrimSpace(base),
 	}, "\n")
-	tmpl, err := template.New("index").Funcs(sprig.FuncMap()).Parse(allInOne)
+	funcmap := sprig.FuncMap()
+	funcmap["fromUnixNano"] = func(input int64) time.Time {
+		return time.Unix(0, input)
+	}
+	tmpl, err := template.New("index").Funcs(funcmap).Parse(allInOne)
 	if err != nil {
 		panic(err)
 	}
@@ -351,10 +391,17 @@ type templateData struct {
 
 	// specific
 
-	Index    struct{}                    `json:"Index,omitempty"`
-	Settings struct{}                    `json:"Settings,omitempty"`
-	Profile  struct{ User *sgtmpb.User } `json:"Profile,omitempty"`
-	New      struct {
+	Index    struct{} `json:"Index,omitempty"`
+	Settings struct{} `json:"Settings,omitempty"`
+	Profile  struct {
+		User       *sgtmpb.User
+		LastTracks []*sgtmpb.Post
+		Stats      struct {
+			Tracks int64
+			// Drafts int64
+		}
+	} `json:"Profile,omitempty"`
+	New struct {
 		URLValue      string
 		URLInvalidMsg string
 	} `json:"New,omitempty"`
