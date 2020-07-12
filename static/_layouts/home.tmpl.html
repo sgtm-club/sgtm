@@ -22,7 +22,6 @@
                     {{with .Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
                     {{if .Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.GoDuration}}">{{.GoDuration | prettyDuration}}</span></div>{{end}}
                     {{with .DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}
-                    <!--<div>📆 Added: {{.CreatedAt | fromUnixNano | date "2006-01-02"}}</div>-->
                   </div>
                 </div>
               </div>

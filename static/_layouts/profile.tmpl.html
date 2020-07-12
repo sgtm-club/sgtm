@@ -25,7 +25,6 @@
               {{with .Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
               {{if .Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.GoDuration}}">{{.GoDuration | prettyDuration}}</span></div>{{end}}
               {{with .DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}
-              <!--<div>📆 Added: {{.CreatedAt | fromUnixNano | date "2006-01-02"}}</div>-->
             </div>
           </div>
         </div>
@@ -35,9 +34,7 @@
     <div class="col-md-4">
       <h1>{{.Profile.User.DisplayName}}</h1>
       <div><img src="{{.Profile.User.Avatar}}" class="mb-3" /></div>
-      <!--<div>📆 Joined: {{.Profile.User.CreatedAt | fromUnixNano | date "2006-01-02"}}</div>-->
-      <div>📆 Joined <span data-toggle="tooltip" data-placement="top" title="{{.Profile.User.CreatedAt | fromUnixNano | date "2006-01-02 15:04"}}">{{.Profile.User.CreatedAt | fromUnixNano | prettyAgo}}</span></div>
-      <!--<div>🗣 Language: {{.Profile.User.Locale}}</div>-->
+      <div>📆 Joined <span data-toggle="tooltip" data-placement="top" title="{{.Profile.User.CreatedAt | fromUnixNano | prettyDate}}">{{.Profile.User.CreatedAt | fromUnixNano | prettyAgo}}</span></div>
       <div>🎶 {{.Profile.Stats.Tracks}} tracks</div>
     </div>
   </div>

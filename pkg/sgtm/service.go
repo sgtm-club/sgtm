@@ -17,7 +17,7 @@ type Service struct {
 	opts      Opts
 	ctx       context.Context
 	cancel    func()
-	startedAt time.Time
+	StartedAt time.Time
 
 	/// drivers
 
@@ -37,7 +37,7 @@ func New(db *gorm.DB, opts Opts) (Service, error) {
 		opts:      opts,
 		ctx:       ctx,
 		cancel:    cancel,
-		startedAt: time.Now(),
+		StartedAt: time.Now(),
 	}
 	svc.logger.Info("service initialized", zap.Bool("dev-mode", opts.DevMode))
 	return svc, nil

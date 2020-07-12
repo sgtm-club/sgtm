@@ -414,6 +414,7 @@ func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 		Opts:    svc.opts.Filtered(),
 		Lang:    "en", // FIXME: dynamic
 		Request: r,
+		Service: svc,
 	}
 	if svc.opts.DevMode {
 		data.Title += " (dev)"
@@ -459,6 +460,9 @@ func loadTemplate(box *packr.Box, filepath string) *template.Template {
 	funcmap["prettyDuration"] = func(input time.Duration) string {
 		return durafmt.Parse(input).LimitFirstN(2).String()
 	}
+	funcmap["prettyDate"] = func(input time.Time) string {
+		return input.Format("2006-01-02 15:04")
+	}
 	tmpl, err := template.New("tmpl").Funcs(funcmap).Parse(allInOne)
 	if err != nil {
 		panic(err)
@@ -478,6 +482,7 @@ type templateData struct {
 	Lang     string
 	User     *sgtmpb.User
 	Error    string
+	Service  *Service      `json:"-"`
 	Request  *http.Request `json:"-"`
 
 	// specific
