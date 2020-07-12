@@ -182,10 +182,10 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		r.Get("/", svc.homePage(box))
 		r.Get("/settings", svc.settingsPage(box))
 		r.Get("/@{user_slug}", svc.profilePage(box))
+		r.Get("/open", svc.openPage(box))
 		r.Get("/new", svc.newPage(box))
 		r.Post("/new", svc.newPage(box))
 		r.Get("/post/{post_slug}", svc.postPage(box))
-		r.Post("/post/{post_slug}", svc.postPage(box)) // required because we are redirected after a successful post
 		// FIXME: r.Use(ModeratorOnly) + r.Get("/moderator")
 		// FIXME: r.Use(AdminOnly) + r.Get("/admin")
 	}

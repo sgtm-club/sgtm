@@ -107,6 +107,7 @@ message Post {
   string url = 16 [(go.field) = {name: 'URL'}];
   Provider provider = 17;
   string body = 18;
+  int64 sort_date = 19;
 
   /// comment
 

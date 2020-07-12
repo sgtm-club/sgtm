@@ -9,32 +9,34 @@
   <div class="row">
     <div class="col-md-8">
       <h2>🎶 Last Tracks</h2>
+      {{ if .Profile.LastTracks | empty }}
+      <p>No track found.</p>
+      <p><small class="text-muted">This musician is just getting started.</small></p>
+      {{end}}
       {{ range .Profile.LastTracks }}
-      <div class="container card my-2">
-        <div class="row p-1">
-          {{ if .ArtworkURL }}
-          <div class="col-xs-3">
-            <a href="{{.CanonicalURL}}">
-              <img src="{{ .ArtworkURL }}" class="pr-2" />
-            </a>
-          </div>
-          {{ end }}
-          <div class="col-xs-9">
-            <a href="{{.CanonicalURL}}">{{.Title}}</a>
-            {{with .Body}}<p>{{.}}</p>{{end}}
-            {{with .Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
-            {{if .Duration}}<div>⏱ Duration: {{.GoDuration}}</div>{{end}}
-            {{with .DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}
-            <div>📆 Added: {{.CreatedAt | fromUnixNano | date "2006-01-02"}}</div>
+      <div class="card my-2">
+        <div class="media">
+          <a href="{{.CanonicalURL}}"><img src="{{ .ArtworkURL }}" class="p-1 mr-3" alt="Artwork" /></a>
+          <div class="media-body">
+            <a href="{{.CanonicalURL}}"><h5 class="mt-0 d-inline-block">{{.Title}}</h5></a>
+            <a href="{{.CanonicalURL}}"><small class="text-muted">{{.SortDate | fromUnixNano | prettyAgo}}</small></a>
+            <div>
+              {{with .Body}}<p>{{.}}</p>{{end}}
+              {{with .Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
+              {{if .Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.GoDuration}}">{{.GoDuration | prettyDuration}}</span></div>{{end}}
+              {{with .DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}
+              <!--<div>📆 Added: {{.CreatedAt | fromUnixNano | date "2006-01-02"}}</div>-->
+            </div>
           </div>
         </div>
       </div>
       {{ end }}
     </div>
     <div class="col-md-4">
-      <h1>@{{.Profile.User.Slug}}</h1>
-      <div><img src="{{.Profile.User.Avatar}}" /></div>
-      <div>📆 Joined: {{.Profile.User.CreatedAt | fromUnixNano | date "2006-01-02"}}</div>
+      <h1>{{.Profile.User.DisplayName}}</h1>
+      <div><img src="{{.Profile.User.Avatar}}" class="mb-3" /></div>
+      <!--<div>📆 Joined: {{.Profile.User.CreatedAt | fromUnixNano | date "2006-01-02"}}</div>-->
+      <div>📆 Joined <span data-toggle="tooltip" data-placement="top" title="{{.Profile.User.CreatedAt | fromUnixNano | date "2006-01-02 15:04"}}">{{.Profile.User.CreatedAt | fromUnixNano | prettyAgo}}</span></div>
       <!--<div>🗣 Language: {{.Profile.User.Locale}}</div>-->
       <div>🎶 {{.Profile.Stats.Tracks}} tracks</div>
     </div>

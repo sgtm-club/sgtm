@@ -12,8 +12,10 @@ import (
 	"time"
 
 	sprig "github.com/Masterminds/sprig/v3"
+	humanize "github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
 	packr "github.com/gobuffalo/packr/v2"
+	"github.com/hako/durafmt"
 	"github.com/yanatan16/golang-soundcloud/soundcloud"
 	"go.uber.org/zap"
 	"moul.io/godev"
@@ -39,7 +41,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 					Kind:       sgtmpb.Post_TrackKind,
 					Visibility: sgtmpb.Visibility_Public,
 				}).
-				Order("created_at desc").
+				Order("sort_date desc").
 				Limit(50). // FIXME: pagination
 				Find(&data.Home.LastTracks).
 				Error; err != nil {
@@ -101,6 +103,54 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 	}
 }
 
+func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+	tmpl := loadTemplate(box, "_layouts/open.tmpl.html")
+	return func(w http.ResponseWriter, r *http.Request) {
+		started := time.Now()
+		data, err := svc.newTemplateData(r)
+		if err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		// custom
+		if err := svc.db.
+			Model(&sgtmpb.Post{}).
+			Where(sgtmpb.Post{
+				Kind:       sgtmpb.Post_TrackKind,
+				Visibility: sgtmpb.Visibility_Public,
+			}).
+			Count(&data.Open.Tracks).
+			Error; err != nil {
+			data.Error = "Cannot fetch last tracks: " + err.Error()
+		}
+		if err := svc.db.
+			Model(&sgtmpb.Post{}).
+			Where(sgtmpb.Post{
+				Kind:       sgtmpb.Post_TrackKind,
+				Visibility: sgtmpb.Visibility_Draft,
+			}).
+			Count(&data.Open.TrackDrafts).
+			Error; err != nil {
+			data.Error = "Cannot fetch last track drafts: " + err.Error()
+		}
+		if err := svc.db.
+			Model(&sgtmpb.User{}).
+			Count(&data.Open.Users).
+			Error; err != nil {
+			data.Error = "Cannot fetch last users: " + err.Error()
+		}
+		// end of custom
+		if svc.opts.DevMode {
+			tmpl = loadTemplate(box, "_layouts/open.tmpl.html")
+		}
+		data.Duration = time.Since(started)
+		if err := tmpl.Execute(w, &data); err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+	}
+}
+
 func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	tmpl := loadTemplate(box, "_layouts/new.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -134,6 +184,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					AuthorID:   data.User.ID,
 					Slug:       "",
 					Title:      "",
+					SortDate:   time.Now().UnixNano(),
 				}
 
 				u, err := url.Parse(r.Form.Get("url"))
@@ -180,6 +231,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					createdAt, err := time.Parse("2006/01/02 15:04:05 +0000", track.CreatedAt)
 					if err == nil {
 						post.ProviderCreatedAt = createdAt.UnixNano()
+						post.SortDate = createdAt.UnixNano()
 					}
 					post.Genre = track.Genre
 					post.Duration = track.Duration
@@ -294,7 +346,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 			}
 			if data.Profile.Stats.Tracks > 0 {
 				if err := query.
-					Order("created_at desc").
+					Order("sort_date desc").
 					Limit(50). // FIXME: pagination
 					Find(&data.Profile.LastTracks).
 					Error; err != nil {
@@ -401,6 +453,12 @@ func loadTemplate(box *packr.Box, filepath string) *template.Template {
 	funcmap["fromUnixNano"] = func(input int64) time.Time {
 		return time.Unix(0, input)
 	}
+	funcmap["prettyAgo"] = func(input time.Time) string {
+		return humanize.RelTime(input, time.Now(), "ago", "in the future(!?)")
+	}
+	funcmap["prettyDuration"] = func(input time.Duration) string {
+		return durafmt.Parse(input).LimitFirstN(2).String()
+	}
 	tmpl, err := template.New("tmpl").Funcs(funcmap).Parse(allInOne)
 	if err != nil {
 		panic(err)
@@ -437,6 +495,11 @@ type templateData struct {
 			// Drafts int64
 		}
 	} `json:"Profile,omitempty"`
+	Open struct {
+		Users       int64
+		Tracks      int64
+		TrackDrafts int64
+	} `json:"Open,omitempty"`
 	New struct {
 		URLValue      string
 		URLInvalidMsg string

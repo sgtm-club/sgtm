@@ -5,28 +5,29 @@
     <div class="col-sm-8">
       <h2>🎶 Last Tracks</h2>
       {{range .Home.LastTracks}}
-      <div class="container card my-1">
-        <div class="row p-1">
-          <div class="col-xs-3">
-            <a href="{{.Author.CanonicalURL}}">
-              <img src="{{ .Author.Avatar }}" class="pr-2 rounded-circle" height="60" />
-            </a>
-          </div>
-          <div class="col-xs-9">
-            <div>
-              <a href="{{.Author.CanonicalURL}}">@{{ .Author.Slug }}</a>
-              <a href="{{.CanonicalURL}}">
-                <small class="text-muted">{{.CreatedAt | fromUnixNano | ago}}</small>
-              </a>
+      <div class="card my-2 p-1">
+        <div class="media">
+          <a href="{{.Author.CanonicalURL}}"><img src="{{ .Author.Avatar }}" class="pr-2 rounded-circle" height="60" /></a>
+          <div class="media-body">
+            <a href="{{.Author.CanonicalURL}}"><h5 class="mt-0 d-inline-block">{{.Author.DisplayName}}</h5></a>
+            <a href="{{.CanonicalURL}}"><small class="text-muted">{{.SortDate | fromUnixNano | prettyAgo}}</small></a>
+
+            <div class="card2 mr-1 mb-1">
+              <div class="media">
+                <a href="{{.CanonicalURL}}"><img src="{{ .ArtworkURL }}" class="p-1 mr-3" alt="Artwork" /></a>
+                <div class="media-body">
+                  <a href="{{.CanonicalURL}}"><h5 class="mt-0 d-inline-block">{{.Title}}</h5></a>
+                  <div>
+                    {{with .Body}}<p>{{.}}</p>{{end}}
+                    {{with .Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
+                    {{if .Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.GoDuration}}">{{.GoDuration | prettyDuration}}</span></div>{{end}}
+                    {{with .DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}
+                    <!--<div>📆 Added: {{.CreatedAt | fromUnixNano | date "2006-01-02"}}</div>-->
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              {{ if .ArtworkURL }}
-              <a href="{{.CanonicalURL}}">
-                <img src="{{ .ArtworkURL }}" width="80" class="m-2 pr-2 rounded" />
-              </a>
-              {{ end }}
-              <a href="{{.CanonicalURL}}">{{.Title}}</a>
-            </div>
+
           </div>
         </div>
       </div>
