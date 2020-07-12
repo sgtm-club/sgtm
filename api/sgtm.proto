@@ -103,12 +103,29 @@ message Post {
   int64 reply_to_id = 16 [(go.field) = {name: 'ReplyToID'}];
   Post reply_to = 17;
   Kind kind = 18;
+  Visibility visibility = 19;
+  string url = 20 [(go.field) = {name: 'URL'}];
+  Driver driver = 21;
+  string sound_cloud_track_secret_token = 22;
+  uint64 sound_cloud_track_id = 23 [(go.field) = {name: 'SoundCloudTrackID'}];
 
   enum Kind {
-    Unknown = 0;
-    Post = 1;
-    Comment = 2;
+    UnknownKind = 0;
+    PostKind = 1;
+    CommentKind = 2;
   }
+}
+
+/// Common enums
+
+enum Visibility {
+  UnknownVisibility = 0;
+  Public = 1;
+  Draft = 2;
+}
+enum Driver {
+  UnknownDriver = 0;
+  SoundCloud = 1;
 }
 
 /// Internal

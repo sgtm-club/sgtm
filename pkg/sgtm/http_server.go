@@ -182,6 +182,10 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		r.Get("/", svc.indexPage(box))
 		r.Get("/settings", svc.settingsPage(box))
 		r.Get("/@{user_slug}", svc.profilePage(box))
+		r.Get("/new", svc.newPage(box))
+		r.Post("/new", svc.newPage(box))
+		// FIXME: r.Use(ModeratorOnly) + r.Get("/moderator")
+		// FIXME: r.Use(AdminOnly) + r.Get("/admin")
 	}
 
 	// auth

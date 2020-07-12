@@ -30,6 +30,7 @@ require (
 	github.com/soheilhy/cmux v0.1.4
 	github.com/stretchr/testify v1.6.1
 	github.com/treastech/logger v0.0.0-20180705232552-e381e9ecf2e3
+	github.com/yanatan16/golang-soundcloud v0.0.0-20161013200625-a182dd459b66
 	go.uber.org/zap v1.15.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
