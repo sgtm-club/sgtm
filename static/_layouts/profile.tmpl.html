@@ -13,13 +13,13 @@
       <div class="container card my-2">
         <div class="row p-1">
           {{ if .ArtworkURL }}
-          <div class="col-xs-4">
+          <div class="col-xs-3">
             <a href="{{.CanonicalURL}}">
               <img src="{{ .ArtworkURL }}" class="pr-2" />
             </a>
           </div>
           {{ end }}
-          <div class="col-xs-8">
+          <div class="col-xs-9">
             <a href="{{.CanonicalURL}}">{{.Title}}</a>
             {{with .Body}}<p>{{.}}</p>{{end}}
             {{with .Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}

@@ -20,8 +20,8 @@ import (
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
-func (svc *Service) indexPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "_layouts/index.tmpl.html")
+func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+	tmpl := loadTemplate(box, "_layouts/home.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
@@ -30,9 +30,42 @@ func (svc *Service) indexPage(box *packr.Box) func(w http.ResponseWriter, r *htt
 			return
 		}
 		// custom
+		// last tracks
+		{
+			if err := svc.db.
+				Model(&sgtmpb.Post{}).
+				Preload("Author").
+				Where(sgtmpb.Post{
+					Kind:       sgtmpb.Post_TrackKind,
+					Visibility: sgtmpb.Visibility_Public,
+				}).
+				Order("created_at desc").
+				Limit(50). // FIXME: pagination
+				Find(&data.Home.LastTracks).
+				Error; err != nil {
+				data.Error = "Cannot fetch last tracks: " + err.Error()
+			}
+			for _, track := range data.Home.LastTracks {
+				track.ApplyDefaults()
+			}
+		}
+
+		// last users
+		{
+			if err := svc.db.Model(&sgtmpb.User{}).
+				Order("created_at desc").
+				Limit(10).
+				Find(&data.Home.LastUsers).
+				Error; err != nil {
+				data.Error = "Cannot fetch last users: " + err.Error() // FIXME: use slice instead of string
+			}
+			for _, user := range data.Home.LastUsers {
+				user.ApplyDefaults()
+			}
+		}
 		// end of custom
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "_layouts/index.tmpl.html")
+			tmpl = loadTemplate(box, "_layouts/home.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.ExecuteTemplate(w, "base", &data); err != nil {
@@ -182,7 +215,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					return
 				}
 				svc.logger.Debug("new post", zap.Any("post", post))
-				http.Redirect(w, r, post.CanonicalURL(), http.StatusTemporaryRedirect)
+				http.Redirect(w, r, post.CanonicalURL(), http.StatusFound)
 				return
 			}
 		}
@@ -262,7 +295,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 			if data.Profile.Stats.Tracks > 0 {
 				if err := query.
 					Order("created_at desc").
-					Limit(10). // FIXME: pagination
+					Limit(50). // FIXME: pagination
 					Find(&data.Profile.LastTracks).
 					Error; err != nil {
 					data.Error = "Cannot fetch last tracks: " + err.Error()
@@ -368,7 +401,7 @@ func loadTemplate(box *packr.Box, filepath string) *template.Template {
 	funcmap["fromUnixNano"] = func(input int64) time.Time {
 		return time.Unix(0, input)
 	}
-	tmpl, err := template.New("index").Funcs(funcmap).Parse(allInOne)
+	tmpl, err := template.New("tmpl").Funcs(funcmap).Parse(allInOne)
 	if err != nil {
 		panic(err)
 	}
@@ -391,7 +424,10 @@ type templateData struct {
 
 	// specific
 
-	Index    struct{} `json:"Index,omitempty"`
+	Home struct {
+		LastTracks []*sgtmpb.Post
+		LastUsers  []*sgtmpb.User
+	} `json:"Home,omitempty"`
 	Settings struct{} `json:"Settings,omitempty"`
 	Profile  struct {
 		User       *sgtmpb.User

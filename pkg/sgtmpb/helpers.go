@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"moul.io/godev"
 	"ultre.me/calcbiz/pkg/soundcloud"
 )
+
+// Post
 
 func (p *Post) ApplyDefaults() {
 	if p.Title == "" {
@@ -17,7 +18,6 @@ func (p *Post) ApplyDefaults() {
 		var metadata soundcloud.Track
 		err := json.Unmarshal([]byte(p.ProviderMetadata), &metadata)
 		if err == nil {
-			fmt.Println(godev.PrettyJSON(metadata))
 			p.ArtworkURL = metadata.User.AvatarURL
 		}
 	}
@@ -29,6 +29,12 @@ func (p *Post) CanonicalURL() string {
 
 func (p *Post) GoDuration() time.Duration {
 	return time.Millisecond * time.Duration(p.Duration)
+}
+
+// User
+
+func (u *User) ApplyDefaults() {
+
 }
 
 func (u *User) CanonicalURL() string {
