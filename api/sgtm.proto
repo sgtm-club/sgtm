@@ -89,39 +89,61 @@ message User {
 }
 
 message Post {
+  /// model base
+
   int64 id = 1 [(go.field) = {name: 'ID', tags: 'gorm:"primary_key"'}];
   int64 created_at = 2 [(go.field) = {tags: 'gorm:"autocreatetime:nano"'}];
   int64 updated_at = 3 [(go.field) = {tags: 'gorm:"autoupdatetime:nano"'}];
   int64 deleted_at = 4;
 
+  /// generic
+
   User author = 10;
   int64 author_id = 11 [(go.field) = {name: 'AuthorID'}];
   string title = 12;
   string slug = 13;
-  int64 thread_post_id = 14 [(go.field) = {name: 'ThreadPostID'}];
-  Post thread_post = 15;
-  int64 reply_to_id = 16 [(go.field) = {name: 'ReplyToID'}];
-  Post reply_to = 17;
-  Kind kind = 18;
-  Visibility visibility = 19;
-  string url = 20 [(go.field) = {name: 'URL'}];
-  Driver driver = 21;
-  string sound_cloud_track_secret_token = 22;
-  uint64 sound_cloud_track_id = 23 [(go.field) = {name: 'SoundCloudTrackID'}];
-  string sound_cloud_metadata = 24;
-  string genre = 25;
-  uint64 duration = 26;
-  string artwork_url = 27 [(go.field) = {name: 'ArtworkURL'}];
-  double bpm = 28 [(go.field) = {name: 'BPM'}];
-  string key_signature = 29;
-  string isrc = 30 [(go.field) = {name: 'ISRC'}];
-  string description = 31;
-  string download_url = 32 [(go.field) = {name: 'DownloadURL'}];
+  Kind kind = 14;
+  Visibility visibility = 15;
+  string url = 16 [(go.field) = {name: 'URL'}];
+  Provider provider = 17;
+  string body = 18;
+
+  /// comment
+
+  //int64 thread_post_id = 20 [(go.field) = {name: 'ThreadPostID'}];
+  //Post thread_post = 21;
+  //int64 reply_to_id = 22 [(go.field) = {name: 'ReplyToID'}];
+  //Post reply_to = 23;
+
+  /// track
+
+  string genre = 40;
+  uint64 duration = 41;
+  string artwork_url = 42 [(go.field) = {name: 'ArtworkURL'}];
+  double bpm = 43 [(go.field) = {name: 'BPM'}];
+  string key_signature = 44;
+  string isrc = 45 [(go.field) = {name: 'ISRC'}];
+  string provider_description = 46;
+  string provider_download_url = 47 [(go.field) = {name: 'DownloadURL'}];
+  int64 provider_created_at = 48;
+  int64 provider_updated_at = 49;
+  string provider_metadata = 50;
+
+  // soundcloud post
+  string soundcloud_secret_token = 80 [(go.field) = {name: 'SoundCloudSecretToken'}];
+  uint64 soundcloud_id = 81 [(go.field) = {name: 'SoundCloudID'}];
+  SoundCloudKind soundcloud_kind = 83 [(go.field) = {name: 'SoundCloudKind'}];
+
+  enum SoundCloudKind {
+    UnknownSoundCloudKind = 0;
+    SoundCloudTrack = 1;
+    //SoundCloudPlaylist = 2;
+  }
 
   enum Kind {
     UnknownKind = 0;
-    PostKind = 1;
-    CommentKind = 2;
+    TrackKind = 1;
+    //CommentKind = 2;
   }
 }
 
@@ -132,8 +154,8 @@ enum Visibility {
   Public = 1;
   Draft = 2;
 }
-enum Driver {
-  UnknownDriver = 0;
+enum Provider {
+  UnknownProvider = 0;
   SoundCloud = 1;
 }
 

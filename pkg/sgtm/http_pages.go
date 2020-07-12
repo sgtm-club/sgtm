@@ -96,7 +96,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 
 				// FIXME: check if valid SoundCloud link
 				post := sgtmpb.Post{
-					Kind:       sgtmpb.Post_PostKind,
+					Kind:       sgtmpb.Post_TrackKind,
 					Visibility: sgtmpb.Visibility_Public,
 					AuthorID:   data.User.ID,
 					Slug:       "",
@@ -122,18 +122,19 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						data.New.URLInvalidMsg = "Invalid SoundCloud track link."
 						return nil
 					}
-					post.SoundCloudTrackID, err = strconv.ParseUint(matches[1], 10, 64)
+					post.SoundCloudKind = sgtmpb.Post_SoundCloudTrack
+					post.SoundCloudID, err = strconv.ParseUint(matches[1], 10, 64)
 					if err != nil {
 						data.New.URLInvalidMsg = fmt.Sprintf("Parse track ID: %s.", err.Error())
 						return nil
 					}
 
-					post.SoundCloudTrackSecretToken = u.Query().Get("secret_token")
+					post.SoundCloudSecretToken = u.Query().Get("secret_token")
 					params := url.Values{}
-					if post.SoundCloudTrackSecretToken != "" {
-						params.Set("secret_token", post.SoundCloudTrackSecretToken)
+					if post.SoundCloudSecretToken != "" {
+						params.Set("secret_token", post.SoundCloudSecretToken)
 					}
-					track, err := sc.Track(post.SoundCloudTrackID).Get(params)
+					track, err := sc.Track(post.SoundCloudID).Get(params)
 					if err != nil {
 						data.New.URLInvalidMsg = fmt.Sprintf("Fetch track info from SoundCloud: %s.", err.Error())
 						return nil
@@ -141,11 +142,11 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 
 					fmt.Println(godev.PrettyJSON(track))
 
-					post.SoundCloudMetadata = godev.JSON(track)
+					post.ProviderMetadata = godev.JSON(track)
 					post.Title = track.Title
 					createdAt, err := time.Parse("2006/01/02 15:04:05 +0000", track.CreatedAt)
 					if err == nil {
-						post.CreatedAt = createdAt.Unix()
+						post.ProviderCreatedAt = createdAt.Unix()
 					}
 					post.Genre = track.Genre
 					post.Duration = track.Duration
@@ -153,7 +154,8 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					post.ISRC = track.ISRC
 					post.BPM = track.Bpm
 					post.KeySignature = track.KeySignature
-					post.Description = track.Description
+					post.ProviderDescription = track.Description
+					post.Body = track.Description
 					/*post.Tags = track.TagList
 					post.WaveformURL = track.WaveformURL
 					post.License = track.License
@@ -162,7 +164,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						post.DownloadURL = track.DownloadUrl
 					}
 					post.URL = track.PermalinkUrl
-					post.Driver = sgtmpb.Driver_SoundCloud
+					post.Provider = sgtmpb.Provider_SoundCloud
 				default:
 					data.New.URLInvalidMsg = fmt.Sprintf("Unsupported provider: %s.", html.EscapeString(u.Host))
 					return nil
