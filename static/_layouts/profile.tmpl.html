@@ -3,11 +3,41 @@
 {{define "content"}}
 <div class="container">
   <div class="row">
-    {{if .Profile.User.Slug}}
-    <code><pre>{{.Profile.User|toPrettyJson}}</pre></code>
-    {{else}}
-    No such user.
-    {{end}}
+    <div class="col-md-12">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      <h2>🎶 Last Tracks</h2>
+      {{ range .Profile.LastTracks }}
+      <div class="container card my-2">
+        <div class="row p-1">
+          {{ if .ArtworkURL }}
+          <div class="col-xs-4">
+            <a href="{{.CanonicalURL}}">
+              <img src="{{ .ArtworkURL }}" class="pr-2" />
+            </a>
+          </div>
+          {{ end }}
+          <div class="col-xs-8">
+            <a href="{{.CanonicalURL}}">{{.Title}}</a>
+            {{with .Body}}<p>{{.}}</p>{{end}}
+            {{with .Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
+            {{if .Duration}}<div>⏱ Duration: {{.GoDuration}}</div>{{end}}
+            {{with .DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}
+            <div>📆 Added: {{.CreatedAt | fromUnixNano | date "2006-01-02"}}</div>
+          </div>
+        </div>
+      </div>
+      {{ end }}
+    </div>
+    <div class="col-md-4">
+      <h1>@{{.Profile.User.Slug}}</h1>
+      <div><img src="{{.Profile.User.Avatar}}" /></div>
+      <div>📆 Joined: {{.Profile.User.CreatedAt | fromUnixNano | date "2006-01-02"}}</div>
+      <!--<div>🗣 Language: {{.Profile.User.Locale}}</div>-->
+      <div>🎶 {{.Profile.Stats.Tracks}} tracks</div>
+    </div>
   </div>
 </div>
 {{end}}

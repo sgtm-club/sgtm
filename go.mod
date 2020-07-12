@@ -50,4 +50,5 @@ require (
 	moul.io/godev v1.6.0
 	moul.io/srand v1.4.0
 	moul.io/zapgorm2 v1.0.1
+	ultre.me/calcbiz v1.0.0
 )
