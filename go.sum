@@ -235,6 +235,8 @@ github.com/treastech/logger v0.0.0-20180705232552-e381e9ecf2e3/go.mod h1:duKQLZR
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
+github.com/yanatan16/golang-soundcloud v0.0.0-20161013200625-a182dd459b66 h1:Yb+kCRTXEQh5j5ifICcwCcpS399CvWLeo3vUj7g3k8c=
+github.com/yanatan16/golang-soundcloud v0.0.0-20161013200625-a182dd459b66/go.mod h1:O8c2uEu4wGmxSTy5w3LOeBAsHBYJS9X/YK6vjZiZc2g=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.uber.org/atomic v1.4.0/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=

@@ -25,6 +25,10 @@ type Opts struct {
 	DiscordClientID     string
 	DiscordClientSecret string
 
+	/// SoundCloud
+
+	SoundCloudClientID string
+
 	/// DB
 
 	DBPath string

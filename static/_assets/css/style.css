@@ -1,6 +1,11 @@
 html {
   position: relative;
   min-height: 100%;
+  background-color: #f8f9fa;
+}
+
+main {
+  margin: 2rem 0;
 }
 
 .navbar-brand strong {

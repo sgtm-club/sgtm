@@ -63,11 +63,20 @@
             <!-- FIXME: how it works link (when non-logged) -->
           </a>
           {{if .JWTToken}}
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-            <img class="avatar" src="{{.User.Avatar}}" />
-            <!--<span class="navbar-toggler-icon"></span>-->
-          </button>
+          <div>
+            <!--<a href="/new" class="btn btn-light">➕</a>-->
+            {{if eq .Request.URL.String "/new"}}
+            <a href="/new" class="btn btn-primary disabled">New</a>
+            {{else}}
+            <a href="/new" class="btn btn-primary">New</a>
+            {{end}}
+            <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+              <img class="avatar" src="{{.User.Avatar}}" />
+              <!--<span class="navbar-toggler-icon"></span>-->
+            </button>
+          </div>
           {{else}}
+          <!-- FIXME: fake link to New -->
           <ul class="navbar-nav flex-row ml-md-auth d-none d-md-flex">
             <!-- FIXME: always available search form (icon -> click == expand) -->
             <li class="nav-item">
@@ -98,18 +107,19 @@
       {{template "content" .}}
     </main>
 
-    <footer class="page-footer text-muted bg-light">
+    <footer class="page-footer text-muted bg-light py-3">
       <div class="container">
         <p class="float-right">
-          <a href="#">Back to top</a>
+          <a href="#">🔝 Back to top</a>
+          <!-- FIXME: use scroll -->
         </p>
-        <p>Lorem Ipsum</p>
-        <p>Lorem Ipsum</p>
+        <!--<p>Lorem Ipsum</p>
+        <p>Lorem Ipsum</p>-->
         {{ if .Opts.DevMode }}
         <!-- FIXME: switch to button opening a modal -->
         <div>
           <p>
-            <button class="btn" type="button" data-toggle="collapse" data-target="#devtools" aria-expanded="false" aria-controls="devtools">DevMode</button>
+            <button class="btn btn-danger stn-sm" data-toggle="collapse" data-target="#devtools" aria-expanded="false" aria-controls="devtools">🛠 DevMode</button>
           </p>
           <div class="row">
             <div class="col">
@@ -130,6 +140,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js" integrity="sha512-ubuT8Z88WxezgSqf3RLuNi5lmjstiJcyezx34yIU2gAHonIi27Na7atqzUZCOoY4CExaoFumzOsFQ2Ch+I/HCw==" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha512-G3jAqT2eM4MMkLMyQR5YBhvN5/Da3IG6kqgYqU9zlIH4+2a+GuMdLb5Kpxy6ItMdCfgaKlo2XFhI0dHtMJjoRw==" crossorigin="anonymous"></script>
+    <script src="/_assets/js/script.js"></script>
   </body>
 </html>
 {{end}}

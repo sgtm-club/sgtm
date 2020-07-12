@@ -40,11 +40,9 @@ func app(args []string) error {
 	svcOpts = sgtm.DefaultOpts()
 	rootFlags := flag.NewFlagSet("root", flag.ExitOnError)
 	rootFlags.BoolVar(&svcOpts.DevMode, "dev-mode", svcOpts.DevMode, "start in developer mode")
-	/// discord
 	rootFlags.BoolVar(&svcOpts.EnableDiscord, "enable-discord", svcOpts.EnableDiscord, "enable discord bot")
 	rootFlags.StringVar(&svcOpts.DiscordToken, "discord-token", svcOpts.DiscordToken, "discord bot token")
 	rootFlags.StringVar(&svcOpts.DiscordAdminChannel, "discord-admin-channel", svcOpts.DiscordAdminChannel, "discord channel ID for admin messages")
-	/// server
 	rootFlags.StringVar(&svcOpts.DBPath, "db-path", svcOpts.DBPath, "database path")
 	rootFlags.BoolVar(&svcOpts.EnableServer, "enable-server", svcOpts.EnableServer, "enable HTTP+gRPC Server")
 	rootFlags.StringVar(&svcOpts.ServerBind, "server-bind", svcOpts.ServerBind, "server bind (HTTP + gRPC)")
@@ -56,6 +54,7 @@ func app(args []string) error {
 	rootFlags.StringVar(&svcOpts.DiscordClientSecret, "discord-client-secret", svcOpts.DiscordClientSecret, "discord client secret (oauth)")
 	rootFlags.StringVar(&svcOpts.JWTSigningKey, "jwt-signing-key", svcOpts.JWTSigningKey, "HMAC secret to sign JWT tokens")
 	rootFlags.StringVar(&svcOpts.Hostname, "hostname", svcOpts.Hostname, "I.e., https://sgtm.club")
+	rootFlags.StringVar(&svcOpts.SoundCloudClientID, "soundcloud-client-id", svcOpts.SoundCloudClientID, "SoundCloud client ID")
 
 	root := &ffcli.Command{
 		FlagSet: rootFlags,
