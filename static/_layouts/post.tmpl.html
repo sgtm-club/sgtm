@@ -1,0 +1,26 @@
+{{ template "base" . }}
+
+{{define "content"}}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      {{if .Post.Post.ID}}
+      <h1>{{.Post.Post.Title}}</h1>
+      <p>by <a href="{{.Post.Post.Author.CanonicalURL}}"><img height="30" src="{{.Post.Post.Author.Avatar}}" />@{{.Post.Post.Author.Slug}}</a></p>
+      <iframe width=100% height=166 scrolling=no frameborder=no allow=autoplay
+        src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/{{.Post.Post.SoundCloudTrackID}}{{with .Post.Post.SoundCloudTrackSecretToken}}%3Fsecret_token%3D{{.}}{{end}}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"></iframe>
+      {{with .Post.Post.Description}}<p>{{.}}</p>{{end}}
+      {{with .Post.Post.Genre}}<div>📁 Genre: <span class="badge">{{.}}</span></div>{{end}}
+      {{if .Post.Post.Duration}}<div>⏱ Duration: {{.Post.Post.GoDuration}}</div>{{end}}
+      {{with .Post.Post.DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}
+      {{ else }}
+      No such post.
+      {{end}}
+    </div>
+  </div>
+</div>
+
+<!-- FIXME: use columns to make a nice display -->
+<!-- FIXME: set up artwork for twitter, facebook sharing etc -->
+
+{{end}}

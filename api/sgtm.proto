@@ -108,6 +108,15 @@ message Post {
   Driver driver = 21;
   string sound_cloud_track_secret_token = 22;
   uint64 sound_cloud_track_id = 23 [(go.field) = {name: 'SoundCloudTrackID'}];
+  string sound_cloud_metadata = 24;
+  string genre = 25;
+  uint64 duration = 26;
+  string artwork_url = 27 [(go.field) = {name: 'ArtworkURL'}];
+  double bpm = 28 [(go.field) = {name: 'BPM'}];
+  string key_signature = 29;
+  string isrc = 30 [(go.field) = {name: 'ISRC'}];
+  string description = 31;
+  string download_url = 32 [(go.field) = {name: 'DownloadURL'}];
 
   enum Kind {
     UnknownKind = 0;

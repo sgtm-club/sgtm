@@ -16,6 +16,7 @@ import (
 	packr "github.com/gobuffalo/packr/v2"
 	"github.com/yanatan16/golang-soundcloud/soundcloud"
 	"go.uber.org/zap"
+	"moul.io/godev"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
@@ -127,8 +128,40 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						return nil
 					}
 
-					post.URL = r.Form.Get("url")
 					post.SoundCloudTrackSecretToken = u.Query().Get("secret_token")
+					params := url.Values{}
+					if post.SoundCloudTrackSecretToken != "" {
+						params.Set("secret_token", post.SoundCloudTrackSecretToken)
+					}
+					track, err := sc.Track(post.SoundCloudTrackID).Get(params)
+					if err != nil {
+						data.New.URLInvalidMsg = fmt.Sprintf("Fetch track info from SoundCloud: %s.", err.Error())
+						return nil
+					}
+
+					fmt.Println(godev.PrettyJSON(track))
+
+					post.SoundCloudMetadata = godev.JSON(track)
+					post.Title = track.Title
+					createdAt, err := time.Parse("2006/01/02 15:04:05 +0000", track.CreatedAt)
+					if err == nil {
+						post.CreatedAt = createdAt.Unix()
+					}
+					post.Genre = track.Genre
+					post.Duration = track.Duration
+					post.ArtworkURL = track.ArtworkUrl
+					post.ISRC = track.ISRC
+					post.BPM = track.Bpm
+					post.KeySignature = track.KeySignature
+					post.Description = track.Description
+					/*post.Tags = track.TagList
+					post.WaveformURL = track.WaveformURL
+					post.License = track.License
+					track.User*/
+					if track.Downloadable {
+						post.DownloadURL = track.DownloadUrl
+					}
+					post.URL = track.PermalinkUrl
 					post.Driver = sgtmpb.Driver_SoundCloud
 				default:
 					data.New.URLInvalidMsg = fmt.Sprintf("Unsupported provider: %s.", html.EscapeString(u.Host))
@@ -198,12 +231,50 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 		}
 		// custom
 		userSlug := chi.URLParam(r, "user_slug")
-		if err := svc.db.Where(sgtmpb.User{Slug: userSlug}).First(&data.Profile.User).Error; err != nil {
+		var user sgtmpb.User
+		if err := svc.db.Where(sgtmpb.User{Slug: userSlug}).First(&user).Error; err != nil {
 			data.Error = err.Error()
 		}
+		data.Profile.User = &user
 		// end of custom
 		if svc.opts.DevMode {
 			tmpl = loadTemplate(box, "_layouts/profile.tmpl.html")
+		}
+		data.Duration = time.Since(started)
+		if err := tmpl.Execute(w, &data); err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+	}
+}
+
+func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+	tmpl := loadTemplate(box, "_layouts/post.tmpl.html")
+	return func(w http.ResponseWriter, r *http.Request) {
+		started := time.Now()
+		data, err := svc.newTemplateData(r)
+		if err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		// custom
+		postSlug := chi.URLParam(r, "post_slug")
+		query := svc.db.Preload("Author")
+		id, err := strconv.ParseInt(postSlug, 10, 64)
+		if err == nil {
+			query = query.Where(sgtmpb.Post{ID: id})
+		} else {
+			query = query.Where(sgtmpb.Post{Slug: postSlug})
+		}
+		var post sgtmpb.Post
+		if err := query.First(&post).Error; err != nil {
+			data.Error = err.Error()
+		}
+		data.Post.Post = &post
+
+		// end of custom
+		if svc.opts.DevMode {
+			tmpl = loadTemplate(box, "_layouts/post.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.Execute(w, &data); err != nil {
@@ -278,11 +349,12 @@ type templateData struct {
 
 	// specific
 
-	Index    struct{}
-	Settings struct{}
-	Profile  struct{ User *sgtmpb.User }
+	Index    struct{}                    `json:"Index,omitempty"`
+	Settings struct{}                    `json:"Settings,omitempty"`
+	Profile  struct{ User *sgtmpb.User } `json:"Profile,omitempty"`
 	New      struct {
 		URLValue      string
 		URLInvalidMsg string
-	}
+	} `json:"New,omitempty"`
+	Post struct{ Post *sgtmpb.Post } `json:"Post,omitempty"`
 }
