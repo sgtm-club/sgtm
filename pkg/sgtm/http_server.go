@@ -179,7 +179,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 	// dynamic pages
 	error404Page := svc.error404Page(box)
 	{
-		r.Get("/", svc.indexPage(box))
+		r.Get("/", svc.homePage(box))
 		r.Get("/settings", svc.settingsPage(box))
 		r.Get("/@{user_slug}", svc.profilePage(box))
 		r.Get("/new", svc.newPage(box))
