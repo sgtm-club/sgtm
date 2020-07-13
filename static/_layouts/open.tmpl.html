@@ -4,11 +4,16 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
+      <h1>📊 Open</h1>
+      <p>
+        View the timeline of changes on <a href="https://wip.chat/products/sgtm?ref=sgtm">WIP.chat</a>.
+      </p>
+      <h4>Statistics</h4>
       <ul>
         <li>Users: {{.Open.Users}}</li>
         <li>Tracks: {{.Open.Tracks}}</li>
         <li>Track drafts: {{.Open.TrackDrafts}}</li>
-        <li>Uptime: <span data-toggle="tooltip" data-placement="right" title="{{.Service.StartedAt | prettyDate}}">{{.Service.StartedAt | prettyAgo}}</span></li>
+        <li>Uptime: <span data-toggle="tooltip" data-placement="right" title="{{.Service.StartedAt | prettyDate}}">{{.Service.StartedAt | prettyAgo | trimSuffix " ago"}}</span></li>
       </ul>
     </div>
   </div>
