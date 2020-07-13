@@ -54,6 +54,10 @@
         <div class="card-header"><span class="fa fa-user-lock"></span> Admin</div>
         <div class="p-2">
           <div><a href="{{.Post.Post.CanonicalURL}}/sync" class="text-white"><span class="fa fa-sync"></span> Sync <span class="fab fa-soundcloud"></span></a></div>
+          {{if not (eq .Post.Post.Author.ID .User.ID)}}
+          <div><a href="{{.Post.Post.CanonicalURL}}/edit" class="text-white"><span class="fa fa-edit"></span> Edit</a></div>
+          <div><a href="{{.Post.Post.URL}}" class="text-white"><span class="fab fa-soundcloud"></span> See original</a></div>
+          {{end}}
         </div>
       </div>
       {{end}}
