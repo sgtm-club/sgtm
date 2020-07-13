@@ -3,7 +3,7 @@
 <html lang="{{.Lang}}">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="/_assets/css/style.css?t={{.Service.StartedAt | unixEpoch}}" />
     <title>{{.Title}}</title>
@@ -26,6 +26,7 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/_assets/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     {{if not .Opts.DevMode}}
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133664781-7"></script>
     <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-133664781-7');</script>
@@ -81,7 +82,7 @@
           </div>
           {{else}}
           <!-- FIXME: fake link to New -->
-          <ul class="navbar-nav flex-row ml-md-auth d-none d-md-flex">
+          <ul class="navbar-nav flex-row ml-md-auth d-md-flex">
             <!-- FIXME: always available search form (icon -> click == expand) -->
             <li class="nav-item">
               <!-- FIXME: open login or popup (https://hackernoon.com/how-we-use-a-popup-for-google-and-outlook-oauth-5d8c03652171) -->
@@ -89,7 +90,7 @@
             </li>
             <li class="nav-item ml-2">
               <!-- FIXME: open join modal -->
-              <a class="btn btn-primary disabled" href="/join">Sign up (coming soon)</a>
+              <a class="btn btn-primary" href="/login">Sign up</a>
             </li>
           </ul>
           {{end}}
@@ -117,8 +118,11 @@
           <a href="#">🔝 Back to top</a>
           <!-- FIXME: use scroll -->
         </p>
-        <!--<p>Lorem Ipsum</p>
-        <p>Lorem Ipsum</p>-->
+        <!-- https://wip.chat/products/sgtm -->
+        <!-- feedback -->
+        <!-- terms -->
+        <!--<p>Lorem Ipsum</p>-->
+        <!--<p>Lorem Ipsum</p>-->
         {{ if .Opts.DevMode }}
         <!-- FIXME: switch to button opening a modal -->
         <div>

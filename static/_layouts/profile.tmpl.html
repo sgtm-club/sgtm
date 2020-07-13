@@ -2,13 +2,13 @@
 
 {{define "content"}}
 <div class="container">
-  <div class="row">
+  <!--<div class="row">
     <div class="col-md-12">
     </div>
-  </div>
+  </div>-->
   <div class="row">
     <div class="col-md-8">
-      <h2>🎶 Last Tracks</h2>
+      <h2>🎶 Tracks by {{.Profile.User.DisplayName}}</h2>
       {{ if .Profile.LastTracks | empty }}
       <p>No track found.</p>
       <p><small class="text-muted">This musician is just getting started.</small></p>
@@ -32,8 +32,8 @@
       {{ end }}
     </div>
     <div class="col-md-4">
-      <h1>{{.Profile.User.DisplayName}}</h1>
       <div><img src="{{.Profile.User.Avatar}}" class="mb-3" /></div>
+      <div>{{.Profile.User.DisplayName}}</div>
       <div>📆 Joined <span data-toggle="tooltip" data-placement="top" title="{{.Profile.User.CreatedAt | fromUnixNano | prettyDate}}">{{.Profile.User.CreatedAt | fromUnixNano | prettyAgo}}</span></div>
       <div>🎶 {{.Profile.Stats.Tracks}} tracks</div>
     </div>
