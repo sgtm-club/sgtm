@@ -26,12 +26,37 @@
       {{if .Post.Post.Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.GoDuration}}">{{.Post.Post.GoDuration | prettyDuration}}</span></div>{{end}}
       <!--{{with .Post.Post.DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}-->
       <div>📆 Added <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.SortDate | fromUnixNano | prettyDate}}">{{.Post.Post.SortDate | fromUnixNano | prettyAgo}}</span></div>
+      <!--<div><span class="fa fa-soundcloud"></span> {{.Post.Post.URL}}</div>-->
     </div>
     <div class="col-md-4">
-      <div class="card p-2">
-        <h6>Actions</h6>
-        <a href="https://twitter.com/intent/tweet?url=https://sgtm.club{{.Post.Post.CanonicalURL}}&text={{.Post.Post.Title}}+by+{{.Post.Post.Author.DisplayName}}" target="_blank" title="Share on Twitter">Share on Twitter</a>
+      {{if eq .Post.Post.Author.ID .User.ID}}
+      <div class="card mb-3 bg-secondary text-white">
+        <div class="card-header"><span class="fa fa-user-cog"></span> Manage (author)</div>
+        <div class="p-2">
+          <div><a href="{{.Post.Post.CanonicalURL}}/edit" class="text-white"><span class="fa fa-edit"></span> Edit</a></div>
+          <div><a href="{{.Post.Post.URL}}" class="text-white"><span class="fab fa-soundcloud"></span> See original</a></div>
+        </div>
       </div>
+      {{end}}
+      <div class="card mb-3 bg-light">
+        <div class="card-header"><span class="fa fa-share-alt"></span> Sharing</div>
+        <div class="p-2">
+          <div><a href="https://twitter.com/intent/tweet?url=https://sgtm.club{{.Post.Post.CanonicalURL}}&text={{.Post.Post.Title}}+by+{{.Post.Post.Author.DisplayName}}" target="_blank" title="Share on Twitter">
+            <span class="fab fa-twitter" aria-hidden="true"></span> Share on Twitter
+          </a></div>
+          <div><a href="https://www.facebook.com/sharer/sharer.php?u=https://sgtm.club{{.Post.Post.CanonicalURL}}&t={{.Post.Post.Title}}+by+{{.Post.Post.Author.DisplayName}}" target="_blank" title="Share with Facebook">
+            <span class="fab fa-facebook" aria-hidden="true"></span> Share on facebook
+          </a></div>
+        </div>
+      </div>
+      {{if .IsAdmin}}
+      <div class="card mb-3 bg-danger text-white">
+        <div class="card-header"><span class="fa fa-user-lock"></span> Admin</div>
+        <div class="p-2">
+          <div><a href="{{.Post.Post.CanonicalURL}}/sync" class="text-white"><span class="fa fa-sync"></span> Sync <span class="fab fa-soundcloud"></span></a></div>
+        </div>
+      </div>
+      {{end}}
     </div>
   </div>
 </div>

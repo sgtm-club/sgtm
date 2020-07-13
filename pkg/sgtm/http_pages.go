@@ -472,6 +472,97 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 	}
 }
 
+func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+	tmpl := loadTemplates(box, "base.tmpl.html", "dummy.tmpl.html")
+	return func(w http.ResponseWriter, r *http.Request) {
+		started := time.Now()
+		data, err := svc.newTemplateData(r)
+		if err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		// custom
+		if data.User == nil {
+			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			return
+		}
+		postSlug := chi.URLParam(r, "post_slug")
+		query := svc.db.Preload("Author")
+		id, err := strconv.ParseInt(postSlug, 10, 64)
+		if err == nil {
+			query = query.Where(sgtmpb.Post{ID: id})
+		} else {
+			query = query.Where(sgtmpb.Post{Slug: postSlug})
+		}
+		var post sgtmpb.Post
+		if err := query.First(&post).Error; err != nil {
+			svc.error404Page(box)(w, r)
+			return
+		}
+		if !data.IsAdmin && data.User.ID != post.Author.ID {
+			svc.error404Page(box)(w, r)
+			return
+		}
+
+		// FIXME: do the sync here
+
+		http.Redirect(w, r, post.CanonicalURL(), http.StatusFound)
+		// end of custom
+		if svc.opts.DevMode {
+			tmpl = loadTemplates(box, "base.tmpl.html", "dummy.tmpl.html")
+		}
+		data.Duration = time.Since(started)
+		if err := tmpl.Execute(w, &data); err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+	}
+}
+
+func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+	tmpl := loadTemplates(box, "base.tmpl.html", "post-edit.tmpl.html")
+	return func(w http.ResponseWriter, r *http.Request) {
+		started := time.Now()
+		data, err := svc.newTemplateData(r)
+		if err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		// custom
+		if data.User == nil {
+			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			return
+		}
+		postSlug := chi.URLParam(r, "post_slug")
+		query := svc.db.Preload("Author")
+		id, err := strconv.ParseInt(postSlug, 10, 64)
+		if err == nil {
+			query = query.Where(sgtmpb.Post{ID: id})
+		} else {
+			query = query.Where(sgtmpb.Post{Slug: postSlug})
+		}
+		var post sgtmpb.Post
+		if err := query.First(&post).Error; err != nil {
+			svc.error404Page(box)(w, r)
+			return
+		}
+		data.PostEdit.Post = &post
+		if !data.IsAdmin && data.User.ID != post.Author.ID {
+			svc.error404Page(box)(w, r)
+			return
+		}
+		// end of custom
+		if svc.opts.DevMode {
+			tmpl = loadTemplates(box, "base.tmpl.html", "post-edit.tmpl.html")
+		}
+		data.Duration = time.Since(started)
+		if err := tmpl.Execute(w, &data); err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+	}
+}
+
 func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 	data := templateData{
 		Title:   "SGTM",
@@ -497,6 +588,7 @@ func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 			svc.logger.Warn("load user from DB", zap.Error(err))
 		}
 		data.User = &user
+		data.IsAdmin = user.ID == 1280639244955553792
 	}
 
 	return &data, nil
@@ -558,6 +650,7 @@ type templateData struct {
 	Duration time.Duration
 	Opts     Opts
 	Lang     string
+	IsAdmin  bool
 	User     *sgtmpb.User
 	Error    string
 	Service  *Service      `json:"-"`
@@ -591,5 +684,10 @@ type templateData struct {
 		URLValue      string
 		URLInvalidMsg string
 	} `json:"New,omitempty"`
-	Post struct{ Post *sgtmpb.Post } `json:"Post,omitempty"`
+	Post struct {
+		Post *sgtmpb.Post
+	} `json:"Post,omitempty"`
+	PostEdit struct {
+		Post *sgtmpb.Post
+	} `json:"PostEdit,omitempty"`
 }
