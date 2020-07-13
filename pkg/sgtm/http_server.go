@@ -189,6 +189,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		r.Get("/post/{post_slug}", svc.postPage(box))
 		// FIXME: r.Use(ModeratorOnly) + r.Get("/moderator")
 		// FIXME: r.Use(AdminOnly) + r.Get("/admin")
+		r.Get("/rss.xml", svc.rssPage(box))
 	}
 
 	// auth

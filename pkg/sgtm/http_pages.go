@@ -15,6 +15,7 @@ import (
 	humanize "github.com/dustin/go-humanize"
 	"github.com/go-chi/chi"
 	packr "github.com/gobuffalo/packr/v2"
+	striptags "github.com/grokify/html-strip-tags-go"
 	"github.com/hako/durafmt"
 	"github.com/yanatan16/golang-soundcloud/soundcloud"
 	"go.uber.org/zap"
@@ -23,7 +24,7 @@ import (
 )
 
 func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "_layouts/home.tmpl.html")
+	tmpl := loadTemplates(box, "base.tmpl.html", "home.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
@@ -67,7 +68,49 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 		}
 		// end of custom
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "_layouts/home.tmpl.html")
+			tmpl = loadTemplates(box, "base.tmpl.html", "home.tmpl.html")
+		}
+		data.Duration = time.Since(started)
+		if err := tmpl.ExecuteTemplate(w, "base", &data); err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+	}
+}
+
+func (svc *Service) rssPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+	tmpl := loadTemplates(box, "rss.tmpl.xml")
+	return func(w http.ResponseWriter, r *http.Request) {
+		started := time.Now()
+		data, err := svc.newTemplateData(r)
+		if err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		// custom
+		w.Header().Add("Content-Type", "application/xml")
+		// last tracks
+		{
+			if err := svc.db.
+				Model(&sgtmpb.Post{}).
+				Preload("Author").
+				Where(sgtmpb.Post{
+					Kind:       sgtmpb.Post_TrackKind,
+					Visibility: sgtmpb.Visibility_Public,
+				}).
+				Order("sort_date desc").
+				Limit(50). // FIXME: pagination
+				Find(&data.RSS.LastTracks).
+				Error; err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			}
+			for _, track := range data.Home.LastTracks {
+				track.ApplyDefaults()
+			}
+		}
+		// end of custom
+		if svc.opts.DevMode {
+			tmpl = loadTemplates(box, "rss.tmpl.xml")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.ExecuteTemplate(w, "base", &data); err != nil {
@@ -78,7 +121,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 }
 
 func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "_layouts/settings.tmpl.html")
+	tmpl := loadTemplates(box, "base.tmpl.html", "settings.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
@@ -117,7 +160,7 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 		}
 		// end of custom
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "_layouts/settings.tmpl.html")
+			tmpl = loadTemplates(box, "base.tmpl.html", "settings.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.Execute(w, &data); err != nil {
@@ -128,7 +171,7 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 }
 
 func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "_layouts/open.tmpl.html")
+	tmpl := loadTemplates(box, "base.tmpl.html", "open.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
@@ -165,7 +208,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		}
 		// end of custom
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "_layouts/open.tmpl.html")
+			tmpl = loadTemplates(box, "base.tmpl.html", "open.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.Execute(w, &data); err != nil {
@@ -176,7 +219,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 }
 
 func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "_layouts/new.tmpl.html")
+	tmpl := loadTemplates(box, "base.tmpl.html", "new.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
@@ -248,8 +291,6 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						return nil
 					}
 
-					fmt.Println(godev.PrettyJSON(track))
-
 					post.ProviderMetadata = godev.JSON(track)
 					post.Title = track.Title
 					createdAt, err := time.Parse("2006/01/02 15:04:05 +0000", track.CreatedAt)
@@ -297,7 +338,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 		}
 		// end of custom
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "_layouts/new.tmpl.html")
+			tmpl = loadTemplates(box, "base.tmpl.html", "new.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.Execute(w, &data); err != nil {
@@ -308,7 +349,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 }
 
 func (svc *Service) error404Page(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "_layouts/error404.tmpl.html")
+	tmpl := loadTemplates(box, "base.tmpl.html", "error404.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 
@@ -321,7 +362,7 @@ func (svc *Service) error404Page(box *packr.Box) func(w http.ResponseWriter, r *
 		// custom
 		// end of custom
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "_layouts/error404.tmpl.html")
+			tmpl = loadTemplates(box, "base.tmpl.html", "error404.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.Execute(w, &data); err != nil {
@@ -332,7 +373,7 @@ func (svc *Service) error404Page(box *packr.Box) func(w http.ResponseWriter, r *
 }
 
 func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "_layouts/profile.tmpl.html")
+	tmpl := loadTemplates(box, "base.tmpl.html", "profile.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
@@ -383,7 +424,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 		}
 		// end of custom
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "_layouts/profile.tmpl.html")
+			tmpl = loadTemplates(box, "base.tmpl.html", "profile.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.Execute(w, &data); err != nil {
@@ -394,7 +435,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 }
 
 func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
-	tmpl := loadTemplate(box, "_layouts/post.tmpl.html")
+	tmpl := loadTemplates(box, "base.tmpl.html", "post.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
@@ -421,7 +462,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// end of custom
 		if svc.opts.DevMode {
-			tmpl = loadTemplate(box, "_layouts/post.tmpl.html")
+			tmpl = loadTemplates(box, "base.tmpl.html", "post.tmpl.html")
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.Execute(w, &data); err != nil {
@@ -461,19 +502,16 @@ func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 	return &data, nil
 }
 
-func loadTemplate(box *packr.Box, filepath string) *template.Template {
-	src, err := box.FindString(filepath)
-	if err != nil {
-		panic(err)
+func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
+	allInOne := ""
+	for _, filename := range filenames {
+		src, err := box.FindString("_layouts/" + filename)
+		if err != nil {
+			panic(err)
+		}
+		allInOne += strings.TrimSpace(src) + "\n"
 	}
-	base, err := box.FindString("_layouts/base.tmpl.html")
-	if err != nil {
-		panic(err)
-	}
-	allInOne := strings.Join([]string{
-		strings.TrimSpace(src),
-		strings.TrimSpace(base),
-	}, "\n")
+	allInOne = strings.TrimSpace(allInOne)
 	funcmap := sprig.FuncMap()
 	funcmap["fromUnixNano"] = func(input int64) time.Time {
 		return time.Unix(0, input)
@@ -495,6 +533,13 @@ func loadTemplate(box *packr.Box, filepath string) *template.Template {
 	funcmap["prettyDate"] = func(input time.Time) string {
 		return input.Format("2006-01-02 15:04")
 	}
+	funcmap["noescape"] = func(str string) template.HTML {
+		return template.HTML(str)
+	}
+	funcmap["escape"] = func(str string) template.HTML {
+		return template.HTML(str)
+	}
+	funcmap["stripTags"] = striptags.StripTags
 	tmpl, err := template.New("tmpl").Funcs(funcmap).Parse(allInOne)
 	if err != nil {
 		panic(err)
@@ -519,6 +564,9 @@ type templateData struct {
 
 	// specific
 
+	RSS struct {
+		LastTracks []*sgtmpb.Post
+	}
 	Home struct {
 		LastTracks []*sgtmpb.Post
 		LastUsers  []*sgtmpb.User

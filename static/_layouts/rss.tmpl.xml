@@ -1,0 +1,22 @@
+{{define "base"}}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Sounds good to me (SGTM)</title>
+        <link>https://sgtm.club/</link>
+        <description>Recent content on SGTM.club</description>
+        <generator>homemade</generator>
+        <language>{{.Lang}}</language>
+        <copyright>Manfred Touron 2020</copyright>
+        <atom:link href="https://sgtm.club/rss.xml" rel="self" type="application/rss+xml"/>
+        {{range .RSS.LastTracks}}
+        <item>
+            <title>{{stripTags .Title}} by {{.Author.DisplayName}}</title>
+            <link>https://sgtm.club{{.CanonicalURL}}</link>
+            <pubDate>{{ dateInZone "02 Jan 06 15:04:05 MST" (.SortDate | fromUnixNano) "UTC"}}</pubDate>
+            <guid>https://sgtm.club{{.CanonicalURL}}</guid>
+            <!--<description></description>-->
+        </item>
+        {{end}}
+    </channel>
+</rss>
+{{end}}
