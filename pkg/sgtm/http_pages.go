@@ -540,6 +540,7 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 		return template.HTML(str)
 	}
 	funcmap["stripTags"] = striptags.StripTags
+	funcmap["urlencode"] = url.PathEscape
 	tmpl, err := template.New("tmpl").Funcs(funcmap).Parse(allInOne)
 	if err != nil {
 		panic(err)

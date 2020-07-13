@@ -1,9 +1,22 @@
 {{ template "base" . }}
 
+{{define "head"}}
+<link rel="canonical" href="https://sgtm.club{{.Post.Post.CanonicalURL}}" />
+<meta property="og:url" content="https://sgtm.club{{.Post.Post.CanonicalURL}}" />
+<meta property="og:type" content="website">
+<!--<meta property="fb:app_id" content="your facebook app Id">-->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:domain" content="sgtm.club">
+<!--<meta name="twitter:app:country" content="FR">-->
+<meta name="twitter:image:src" property="og:image" itemprop="image primaryImageOfPage" content="https://sgtm.club/_assets/img/logo-1x.png" />
+<meta name="twitter:title" property="og:title" itemprop="title name" content="{{.Post.Post.Title}} - SGTM" />
+<meta name="twitter:description" property="og:description" itemprop="description" content="Check out {{.Post.Post.Title}} by {{.Post.Post.Author.DisplayName}} on SGTM" />
+{{end}}
+
 {{define "content"}}
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-8">
       <h1>{{.Post.Post.Title}}</h1>
       <p>by <a href="{{.Post.Post.Author.CanonicalURL}}"><img height="30" src="{{.Post.Post.Author.Avatar}}" />@{{.Post.Post.Author.Slug}}</a></p>
       <iframe width=100% height=166 scrolling=no frameborder=no allow=autoplay
@@ -13,6 +26,12 @@
       {{if .Post.Post.Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.GoDuration}}">{{.Post.Post.GoDuration | prettyDuration}}</span></div>{{end}}
       <!--{{with .Post.Post.DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}-->
       <div>📆 Added <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.SortDate | fromUnixNano | prettyDate}}">{{.Post.Post.SortDate | fromUnixNano | prettyAgo}}</span></div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-2">
+        <h6>Actions</h6>
+        <a href="https://twitter.com/intent/tweet?url=https://sgtm.club{{.Post.Post.CanonicalURL}}&text={{.Post.Post.Title}}+by+{{.Post.Post.Author.DisplayName}}" target="_blank" title="Share on Twitter">Share on Twitter</a>
+      </div>
     </div>
   </div>
 </div>
