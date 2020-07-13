@@ -2,7 +2,7 @@
 <!-- FIXME: news carousel -->
 <div class="container">
   <div class="row">
-    <div class="col-sm-8">
+    <div class="col-12 col-md-8">
       <h2>🎶 Last Tracks</h2>
       {{range .Home.LastTracks}}
       <div class="card my-2 p-1">
@@ -32,7 +32,7 @@
       </div>
       {{end}}
     </div>
-    <div class="col-sm-4">
+    <div class="col-12 col-md-4">
       <h2>Last Users</h2>
       {{range .Home.LastUsers}}
       <a href="{{.CanonicalURL}}">
