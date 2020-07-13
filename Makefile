@@ -31,29 +31,38 @@ packr:
 	(cd static; git clean -fxd)
 	cd pkg/sgtm && packr2
 
-.PHONY: deploy
-deploy: docker.push
-	ssh zrwf.m.42.am make -C infra/projects/sgtm.club re
-
-.PHONY: deploy.logs
-deploy.logs:
-	ssh zrwf.m.42.am make -C infra/projects/sgtm.club logs
+.PHONY: flushdb
+flushdb:
+	rm -f /tmp/sgtm.db
 
 .PHONY: docker.push
 docker.push: tidy generate docker.build
 	docker push $(DOCKER_IMAGE)
 
-.PHONY: flushdb
-flushdb:
-	rm -f /tmp/sgtm.db
+# prod
 
-.PHONY: deploy.fast
-deploy.fast: generate packr
+PROD_HOST = zrwf.m.42.am
+PROD_PATH = infra/projects/sgtm.club
+
+.PHONY: prod.deploy.full
+prod.deploy.full: docker.push
+	ssh $(PROD_HOST) make -C $(PROD_PATH) re
+
+.PHONY: prod.logs
+prod.logs:
+	ssh $(PROD_HOST) make -C $(PROD_PATH) logs
+
+.PHONY: prod.deploy
+prod.deploy: generate packr
 	GOOS=linux GOARCH=amd64 $(GO) build -ldflags "-linkmode external -extldflags -static" -o sgtm-linux-static ./cmd/sgtm
 	rm -rf ./pkg/sgtm/packrd ./pkg/sgtm/sgtm-packr.go
 	docker build -f Dockerfile.fast -t $(DOCKER_IMAGE) .
 	docker push $(DOCKER_IMAGE)
-	ssh zrwf.m.42.am make -C infra/projects/sgtm.club re
+	ssh $(PROD_HOST) make -C $(PROD_PATH) re
+
+.PHONY: prod.syncdb
+prod.syncdb:
+	rsync -avze ssh $(PROD_HOST):$(PROD_PATH)/sgtm.db /tmp/sgtm.db
 
 PROTOS_SRC := $(wildcard ./api/*.proto)
 GEN_DEPS := $(PROTOS_SRC) Makefile
