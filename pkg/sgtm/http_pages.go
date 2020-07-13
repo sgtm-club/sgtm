@@ -482,7 +482,15 @@ func loadTemplate(box *packr.Box, filepath string) *template.Template {
 		return humanize.RelTime(input, time.Now(), "ago", "in the future(!?)")
 	}
 	funcmap["prettyDuration"] = func(input time.Duration) string {
-		return durafmt.Parse(input).LimitFirstN(2).String()
+		input = input.Round(time.Second)
+		str := durafmt.Parse(input).LimitFirstN(2).String()
+		str = strings.Replace(str, " minutes ", "m", -1)
+		str = strings.Replace(str, " minute ", "m", -1)
+		str = strings.Replace(str, " hours ", "h", -1)
+		str = strings.Replace(str, " hour ", "h", -1)
+		str = strings.Replace(str, " seconds", "s", -1)
+		str = strings.Replace(str, " second", "s", -1)
+		return str
 	}
 	funcmap["prettyDate"] = func(input time.Time) string {
 		return input.Format("2006-01-02 15:04")
