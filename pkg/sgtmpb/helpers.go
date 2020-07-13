@@ -3,6 +3,7 @@ package sgtmpb
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"ultre.me/calcbiz/pkg/soundcloud"
@@ -42,6 +43,9 @@ func (u *User) CanonicalURL() string {
 }
 
 func (u *User) DisplayName() string {
-	// FIXME: firstname, lastname
+	if u.Firstname != "" || u.Lastname != "" {
+		fullname := fmt.Sprintf("%s %s", u.Firstname, u.Lastname)
+		return strings.TrimSpace(fullname)
+	}
 	return fmt.Sprintf("@%s", u.Slug)
 }

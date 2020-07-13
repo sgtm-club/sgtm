@@ -4,7 +4,53 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-      Coming soon.
+      <h1>Settings</h1>
+      <h3>Profile</h3>
+      <form method="post">
+        <div class="form-group row">
+          <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
+          <div class="col-sm-10">
+            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{.User.Email}}" data-toggle="tooltip" data-placement="left" title="via Discord">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputFirstname" class="col-sm-2 col-form-label">First name</label>
+          <div class="col-sm-10">
+            <input name="firstname" type="text" class="form-control" id="inputFirstname" value="{{.User.Firstname}}" placeholder="Thomas" tooltip>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputLastname" class="col-sm-2 col-form-label">Last name</label>
+          <div class="col-sm-10">
+            <input name="lastname" type="text" class="form-control" id="inputLastname" value="{{.User.Lastname}}" placeholder="Bangalter">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputLastname" class="col-sm-2 col-form-label">Avatar</label>
+          <div class="col-sm-10">
+            <input type="file" name="upload" class="form-control" id="uploadField" disabled data-toggle="tooltip" title="Coming soon" data-placement="left">
+          </div>
+        </div>
+        <!-- timezone -->
+        <!-- location -->
+        <!-- twitter -->
+        <!-- nomadlist -->
+        <!-- spotify -->
+        <!-- soundcloud -->
+        <!-- lastfm -->
+        <!-- bio -->
+        <!-- password -->
+
+        <div class="text-right">
+          <!--<button name="submit" type="submit" value="published" class="invisible"></button>
+               <button name="submit" type="submit" value="draft" class="btn btn-light text-muted mb-2 my-3" disabled>Save draft</button>-->
+          <button name="submit" type="submit" value="published" class="btn btn-primary mb-2 my-3">🤟 Update</button>
+        </div>
+
+      </form>
+      <!--<h3>Streaks</h3>-->
+      <!--<h3>Notifications</h3>-->
+      <!--<h3>Billing</h3>-->
     </div>
   </div>
 </div>
