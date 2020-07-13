@@ -16,7 +16,7 @@
       {{ range .Profile.LastTracks }}
       <div class="card my-2">
         <div class="media">
-          <a href="{{.CanonicalURL}}"><img src="{{ .ArtworkURL }}" class="p-1 mr-3" alt="Artwork" /></a>
+          <a href="{{.CanonicalURL}}"><img src="{{ .ArtworkURL }}" class="p-1 mr-3" width="100" alt="Artwork" /></a>
           <div class="media-body">
             <a href="{{.CanonicalURL}}"><h5 class="mt-0 d-inline-block">{{.Title}}</h5></a>
             <a href="{{.CanonicalURL}}"><small class="text-muted">{{.SortDate | fromUnixNano | prettyAgo}}</small></a>
@@ -32,7 +32,7 @@
       {{ end }}
     </div>
     <div class="col-md-4">
-      <div><img src="{{.Profile.User.Avatar}}" class="mb-3" /></div>
+      <div><img src="{{.Profile.User.Avatar}}" width="128" class="mb-3" /></div>
       <div>{{.Profile.User.DisplayName}}</div>
       <div>📆 Joined <span data-toggle="tooltip" data-placement="top" title="{{.Profile.User.CreatedAt | fromUnixNano | prettyDate}}">{{.Profile.User.CreatedAt | fromUnixNano | prettyAgo}}</span></div>
       <div>🎶 {{.Profile.Stats.Tracks}} tracks</div>
