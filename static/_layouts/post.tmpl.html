@@ -11,7 +11,7 @@
       {{with .Post.Post.Body}}<p>{{.}}</p>{{end}}
       {{with .Post.Post.Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
       {{if .Post.Post.Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.GoDuration}}">{{.Post.Post.GoDuration | prettyDuration}}</span></div>{{end}}
-      {{with .Post.Post.DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}
+      <!--{{with .Post.Post.DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}-->
       <div>📆 Added <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.SortDate | fromUnixNano | prettyDate}}">{{.Post.Post.SortDate | fromUnixNano | prettyAgo}}</span></div>
     </div>
   </div>
