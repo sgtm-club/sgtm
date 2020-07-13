@@ -100,7 +100,10 @@ gen.clean:
 	rm -f gen.sum $(wildcard */*/*.pb.go */*/*.pb.gw.go */*/*/*_grpc.pb.go)
 
 .PHONY: clean
-clean: generate.clean
+clean: gen.clean packr.clean
+
+.PHONY: packr.clean
+packr.clean:
 	rm -rf ./pkg/sgtm/packrd ./pkg/sgtm/sgtm-packr.go
 
 .PHONY: regenerate

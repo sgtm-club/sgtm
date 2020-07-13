@@ -588,6 +588,7 @@ func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 			svc.logger.Warn("load user from DB", zap.Error(err))
 		}
 		data.User = &user
+		data.UserID = user.ID
 		data.IsAdmin = user.ID == 1280639244955553792
 	}
 
@@ -652,6 +653,7 @@ type templateData struct {
 	Lang     string
 	IsAdmin  bool
 	User     *sgtmpb.User
+	UserID   int64
 	Error    string
 	Service  *Service      `json:"-"`
 	Request  *http.Request `json:"-"`
