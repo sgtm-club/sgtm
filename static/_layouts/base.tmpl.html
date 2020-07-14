@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8">
     <title>{{.Title}}</title>
-    <meta name="description" content="An ongoing-song sharing platform for musicians.">
     <meta name="author" content="Manfred Touron">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -39,7 +38,7 @@
     <meta name="theme-color" content="#ffffff">
     {{ end }}
 
-    <!-- analytics -->
+     <!-- analytics -->
     {{if not .Opts.DevMode}}
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133664781-7"></script>
     <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-133664781-7');</script>
@@ -51,8 +50,13 @@
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha512-G3jAqT2eM4MMkLMyQR5YBhvN5/Da3IG6kqgYqU9zlIH4+2a+GuMdLb5Kpxy6ItMdCfgaKlo2XFhI0dHtMJjoRw==" crossorigin="anonymous" defer></script>-->
     <script src="/_assets/js/script.js?t={{.Service.StartedAt | unixEpoch}}" defer></script>
 
+    <!-- social -->
+    <meta name="twitter:domain" content="sgtm.club">
+    <meta property="fb:app_id" content="321520379020437">
+    <!--<meta name="twitter:app:country" content="FR">-->
+
     <!-- per page -->
-    {{template "head" .}}
+    {{ template "head" .}}
 
   </head>
   <body>

@@ -375,7 +375,6 @@ func (svc *Service) error404Page(box *packr.Box) func(w http.ResponseWriter, r *
 func (svc *Service) errorPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request, err error, status int) {
 	tmpl := loadTemplates(box, "base.tmpl.html", "error.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request, userError error, status int) {
-
 		started := time.Now()
 		data, err := svc.newTemplateData(r)
 		if err != nil {
@@ -624,12 +623,14 @@ func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 
 func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 	allInOne := ""
+	templateName := ""
 	for _, filename := range filenames {
 		src, err := box.FindString("_layouts/" + filename)
 		if err != nil {
 			panic(err)
 		}
 		allInOne += strings.TrimSpace(src) + "\n"
+		templateName += filename
 	}
 	allInOne = strings.TrimSpace(allInOne)
 	funcmap := sprig.FuncMap()
@@ -661,7 +662,7 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 	}
 	funcmap["stripTags"] = striptags.StripTags
 	funcmap["urlencode"] = url.PathEscape
-	tmpl, err := template.New("tmpl").Funcs(funcmap).Parse(allInOne)
+	tmpl, err := template.New(templateName).Funcs(funcmap).Parse(allInOne)
 	if err != nil {
 		panic(err)
 	}

@@ -1,13 +1,23 @@
 {{ template "base" . }}
 
-{{define "head"}}{{end}}
+{{define "head"}}
+<link rel="canonical" href="https://sgtm.club/" />
+<meta property="og:url" content="https://sgtm.club/" />
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:src" property="og:image" itemprop="image primaryImageOfPage" content="https://sgtm.club/_assets/img/logo-1x.png" />
+<meta property="og:image:width" content="2901" />
+<meta property="og:image:height" content="2859" />
+<meta name="twitter:title" property="og:title" itemprop="title name" content="Sounds good to me - SGTM" />
+<meta name="twitter:description" property="og:description" itemprop="description" content="An ongoing-song sharing platform for musicians." />
+{{end}}
 
 {{ define "content" }}
 <!-- FIXME: news carousel -->
 <div class="container">
   <div class="row">
     <div class="col-12 col-md-8">
-      <h2>🎶 Last Tracks</h2>
+      <h3><span class="fa fa-music"></span> Recent Tracks</h3>
       {{range .Home.LastTracks}}
       <div class="card my-2 p-1">
         <div class="media">
@@ -37,7 +47,7 @@
       {{end}}
     </div>
     <div class="col-12 col-md-4">
-      <h2>Last Users</h2>
+      <h2><span class="fa fa-users"></span> Recent Users</h2>
       {{range .Home.LastUsers}}
       <a href="{{.CanonicalURL}}">
         <div class="container btn btn-light py-0 px-2">

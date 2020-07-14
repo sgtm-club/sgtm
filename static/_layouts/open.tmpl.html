@@ -1,6 +1,16 @@
 {{ template "base" . }}
 
-{{define "head"}}{{end}}
+{{define "head"}}
+<link rel="canonical" href="https://sgtm.club/open" />
+<meta property="og:url" content="https://sgtm.club/open" />
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image:src" property="og:image" itemprop="image primaryImageOfPage" content="https://sgtm.club/_assets/img/logo-1x.png" />
+<meta property="og:image:width" content="2901" />
+<meta property="og:image:height" content="2859" />
+<meta name="twitter:title" property="og:title" itemprop="title name" content="Open startup - SGTM" />
+<meta name="twitter:description" property="og:description" itemprop="description" content="Sounds good to me (SGTM) is an open-startup." />
+{{end}}
 
 {{ define "content" }}
 <div class="container">
