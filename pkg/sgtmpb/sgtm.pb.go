@@ -410,18 +410,19 @@ type User struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ID              int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" gorm:"primary_key"`
-	CreatedAt       int64  `protobuf:"varint,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" gorm:"autocreatetime:nano"`
-	UpdatedAt       int64  `protobuf:"varint,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty" gorm:"autoupdatetime:nano"`
-	DeletedAt       int64  `protobuf:"varint,4,opt,name=deleted_at,json=deletedAt,proto3" json:"deleted_at,omitempty"`
-	Email           string `protobuf:"bytes,10,opt,name=email,proto3" json:"email,omitempty" gorm:"size:255;not null;index:,unique"`
-	Slug            string `protobuf:"bytes,11,opt,name=slug,proto3" json:"slug,omitempty" gorm:"size:32;not null;default:''"`
-	Firstname       string `protobuf:"bytes,12,opt,name=firstname,proto3" json:"firstname,omitempty" gorm:"size:255;not null;default:''"`
-	Lastname        string `protobuf:"bytes,13,opt,name=lastname,proto3" json:"lastname,omitempty" gorm:"size:255;not null;default:''"`
-	Locale          string `protobuf:"bytes,14,opt,name=locale,proto3" json:"locale,omitempty" gorm:"size:32;not null;default:''"`
-	Avatar          string `protobuf:"bytes,15,opt,name=avatar,proto3" json:"avatar,omitempty" gorm:"size:255;not null;default:''"`
-	DiscordID       string `protobuf:"bytes,16,opt,name=discord_id,json=discordId,proto3" json:"discord_id,omitempty" gorm:"size:255;not null;default:''"`
-	DiscordUsername string `protobuf:"bytes,17,opt,name=discord_username,json=discordUsername,proto3" json:"discord_username,omitempty" gorm:"size:255;not null;default:''"`
+	ID              int64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" gorm:"primary_key"`
+	CreatedAt       int64   `protobuf:"varint,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" gorm:"autocreatetime:nano"`
+	UpdatedAt       int64   `protobuf:"varint,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty" gorm:"autoupdatetime:nano"`
+	DeletedAt       int64   `protobuf:"varint,4,opt,name=deleted_at,json=deletedAt,proto3" json:"deleted_at,omitempty"`
+	Email           string  `protobuf:"bytes,10,opt,name=email,proto3" json:"email,omitempty" gorm:"size:255;not null;index:,unique"`
+	Slug            string  `protobuf:"bytes,11,opt,name=slug,proto3" json:"slug,omitempty" gorm:"size:32;not null;default:''"`
+	Firstname       string  `protobuf:"bytes,12,opt,name=firstname,proto3" json:"firstname,omitempty" gorm:"size:255;not null;default:''"`
+	Lastname        string  `protobuf:"bytes,13,opt,name=lastname,proto3" json:"lastname,omitempty" gorm:"size:255;not null;default:''"`
+	Locale          string  `protobuf:"bytes,14,opt,name=locale,proto3" json:"locale,omitempty" gorm:"size:32;not null;default:''"`
+	Avatar          string  `protobuf:"bytes,15,opt,name=avatar,proto3" json:"avatar,omitempty" gorm:"size:255;not null;default:''"`
+	DiscordID       string  `protobuf:"bytes,16,opt,name=discord_id,json=discordId,proto3" json:"discord_id,omitempty" gorm:"size:255;not null;default:''"`
+	DiscordUsername string  `protobuf:"bytes,17,opt,name=discord_username,json=discordUsername,proto3" json:"discord_username,omitempty" gorm:"size:255;not null;default:''"`
+	RecentPosts     []*Post `protobuf:"bytes,18,rep,name=recent_posts,json=recentPosts,proto3" json:"recent_posts,omitempty" gorm:"foreignkey:AuthorID;PRELOAD:false"`
 }
 
 func (x *User) Reset() {
@@ -538,6 +539,13 @@ func (x *User) GetDiscordUsername() string {
 		return x.DiscordUsername
 	}
 	return ""
+}
+
+func (x *User) GetRecentPosts() []*Post {
+	if x != nil {
+		return x.RecentPosts
+	}
+	return nil
 }
 
 type Post struct {
@@ -1349,7 +1357,7 @@ var file_sgtm_proto_rawDesc = []byte{
 	0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x70,
 	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x20, 0x0a, 0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20,
 	0x03, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x52,
-	0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x22, 0xa2, 0x06, 0x0a, 0x04, 0x55, 0x73, 0x65, 0x72, 0x12,
+	0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x22, 0x82, 0x07, 0x0a, 0x04, 0x55, 0x73, 0x65, 0x72, 0x12,
 	0x2d, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x42, 0x1d, 0xca, 0xb5, 0x03,
 	0x19, 0x0a, 0x02, 0x49, 0x44, 0xa2, 0x01, 0x12, 0x67, 0x6f, 0x72, 0x6d, 0x3a, 0x22, 0x70, 0x72,
 	0x69, 0x6d, 0x61, 0x72, 0x79, 0x5f, 0x6b, 0x65, 0x79, 0x22, 0x52, 0x02, 0x69, 0x64, 0x12, 0x40,
@@ -1399,7 +1407,13 @@ var file_sgtm_proto_rawDesc = []byte{
 	0xca, 0xb5, 0x03, 0x26, 0xa2, 0x01, 0x23, 0x67, 0x6f, 0x72, 0x6d, 0x3a, 0x22, 0x73, 0x69, 0x7a,
 	0x65, 0x3a, 0x32, 0x35, 0x35, 0x3b, 0x6e, 0x6f, 0x74, 0x20, 0x6e, 0x75, 0x6c, 0x6c, 0x3b, 0x64,
 	0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x3a, 0x27, 0x27, 0x22, 0x52, 0x0f, 0x64, 0x69, 0x73, 0x63,
-	0x6f, 0x72, 0x64, 0x55, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0xc4, 0x0a, 0x0a, 0x04,
+	0x6f, 0x72, 0x64, 0x55, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x5e, 0x0a, 0x0c, 0x72,
+	0x65, 0x63, 0x65, 0x6e, 0x74, 0x5f, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x18, 0x12, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x0a, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x42, 0x2f, 0xca,
+	0xb5, 0x03, 0x2b, 0xa2, 0x01, 0x28, 0x67, 0x6f, 0x72, 0x6d, 0x3a, 0x22, 0x66, 0x6f, 0x72, 0x65,
+	0x69, 0x67, 0x6e, 0x6b, 0x65, 0x79, 0x3a, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x49, 0x44, 0x3b,
+	0x50, 0x52, 0x45, 0x4c, 0x4f, 0x41, 0x44, 0x3a, 0x66, 0x61, 0x6c, 0x73, 0x65, 0x22, 0x52, 0x0b,
+	0x72, 0x65, 0x63, 0x65, 0x6e, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x22, 0xc4, 0x0a, 0x0a, 0x04,
 	0x50, 0x6f, 0x73, 0x74, 0x12, 0x2d, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03,
 	0x42, 0x1d, 0xca, 0xb5, 0x03, 0x19, 0x0a, 0x02, 0x49, 0x44, 0xa2, 0x01, 0x12, 0x67, 0x6f, 0x72,
 	0x6d, 0x3a, 0x22, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x5f, 0x6b, 0x65, 0x79, 0x22, 0x52,
@@ -1567,29 +1581,30 @@ var file_sgtm_proto_goTypes = []interface{}{
 	(*PostList_Response)(nil), // 21: sgtm.PostList.Response
 }
 var file_sgtm_proto_depIdxs = []int32{
-	9,  // 0: sgtm.Post.author:type_name -> sgtm.User
-	3,  // 1: sgtm.Post.kind:type_name -> sgtm.Post.Kind
-	0,  // 2: sgtm.Post.visibility:type_name -> sgtm.Visibility
-	1,  // 3: sgtm.Post.provider:type_name -> sgtm.Provider
-	2,  // 4: sgtm.Post.soundcloud_kind:type_name -> sgtm.Post.SoundCloudKind
-	9,  // 5: sgtm.Register.Response.user:type_name -> sgtm.User
-	9,  // 6: sgtm.UserList.Response.users:type_name -> sgtm.User
-	10, // 7: sgtm.PostList.Response.posts:type_name -> sgtm.Post
-	16, // 8: sgtm.WebAPI.Register:input_type -> sgtm.Register.Request
-	18, // 9: sgtm.WebAPI.UserList:input_type -> sgtm.UserList.Request
-	20, // 10: sgtm.WebAPI.PostList:input_type -> sgtm.PostList.Request
-	12, // 11: sgtm.WebAPI.Ping:input_type -> sgtm.Ping.Request
-	14, // 12: sgtm.WebAPI.Status:input_type -> sgtm.Status.Request
-	17, // 13: sgtm.WebAPI.Register:output_type -> sgtm.Register.Response
-	19, // 14: sgtm.WebAPI.UserList:output_type -> sgtm.UserList.Response
-	21, // 15: sgtm.WebAPI.PostList:output_type -> sgtm.PostList.Response
-	13, // 16: sgtm.WebAPI.Ping:output_type -> sgtm.Ping.Response
-	15, // 17: sgtm.WebAPI.Status:output_type -> sgtm.Status.Response
-	13, // [13:18] is the sub-list for method output_type
-	8,  // [8:13] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	10, // 0: sgtm.User.recent_posts:type_name -> sgtm.Post
+	9,  // 1: sgtm.Post.author:type_name -> sgtm.User
+	3,  // 2: sgtm.Post.kind:type_name -> sgtm.Post.Kind
+	0,  // 3: sgtm.Post.visibility:type_name -> sgtm.Visibility
+	1,  // 4: sgtm.Post.provider:type_name -> sgtm.Provider
+	2,  // 5: sgtm.Post.soundcloud_kind:type_name -> sgtm.Post.SoundCloudKind
+	9,  // 6: sgtm.Register.Response.user:type_name -> sgtm.User
+	9,  // 7: sgtm.UserList.Response.users:type_name -> sgtm.User
+	10, // 8: sgtm.PostList.Response.posts:type_name -> sgtm.Post
+	16, // 9: sgtm.WebAPI.Register:input_type -> sgtm.Register.Request
+	18, // 10: sgtm.WebAPI.UserList:input_type -> sgtm.UserList.Request
+	20, // 11: sgtm.WebAPI.PostList:input_type -> sgtm.PostList.Request
+	12, // 12: sgtm.WebAPI.Ping:input_type -> sgtm.Ping.Request
+	14, // 13: sgtm.WebAPI.Status:input_type -> sgtm.Status.Request
+	17, // 14: sgtm.WebAPI.Register:output_type -> sgtm.Register.Response
+	19, // 15: sgtm.WebAPI.UserList:output_type -> sgtm.UserList.Response
+	21, // 16: sgtm.WebAPI.PostList:output_type -> sgtm.PostList.Response
+	13, // 17: sgtm.WebAPI.Ping:output_type -> sgtm.Ping.Response
+	15, // 18: sgtm.WebAPI.Status:output_type -> sgtm.Status.Response
+	14, // [14:19] is the sub-list for method output_type
+	9,  // [9:14] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_sgtm_proto_init() }

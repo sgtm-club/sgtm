@@ -83,6 +83,8 @@ message User {
   string avatar = 15 [(go.field) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
   string discord_id = 16 [(go.field) = {name: "DiscordID", tags: 'gorm:"size:255;not null;default:\'\'"'}];
   string discord_username = 17 [(go.field) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+
+  repeated Post recent_posts = 18 [(go.field) = {tags: 'gorm:"foreignkey:AuthorID;PRELOAD:false"'}];
   // bio
   // timezone
   // location

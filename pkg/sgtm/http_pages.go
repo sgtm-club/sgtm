@@ -19,6 +19,7 @@ import (
 	"github.com/hako/durafmt"
 	"github.com/yanatan16/golang-soundcloud/soundcloud"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"moul.io/godev"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
@@ -610,7 +611,12 @@ func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 			return nil, fmt.Errorf("parse jwt token: %w", err)
 		}
 		var user sgtmpb.User
-		if err := svc.db.First(&user, data.Claims.Session.UserID).Error; err != nil {
+		if err := svc.db.
+			Preload("RecentPosts", func(db *gorm.DB) *gorm.DB {
+				return db.Order("created_at desc").Limit(3)
+			}).
+			First(&user, data.Claims.Session.UserID).
+			Error; err != nil {
 			svc.logger.Warn("load user from DB", zap.Error(err))
 		}
 		data.User = &user

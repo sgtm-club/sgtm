@@ -103,8 +103,9 @@ func runCmd(ctx context.Context, _ []string) error {
 		zg.LogLevel = gormlogger.Info
 		zg.SetAsDefault()
 		config := &gorm.Config{
-			Logger:         zg,
-			NamingStrategy: schema.NamingStrategy{TablePrefix: "sgtm_", SingularTable: true},
+			Logger:                                   zg,
+			NamingStrategy:                           schema.NamingStrategy{TablePrefix: "sgtm_", SingularTable: true},
+			DisableForeignKeyConstraintWhenMigrating: true,
 		}
 		db, err = gorm.Open(sqlite.Open(svcOpts.DBPath), config)
 		if err != nil {
