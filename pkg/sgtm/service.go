@@ -3,6 +3,7 @@ package sgtm
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
@@ -12,12 +13,13 @@ import (
 )
 
 type Service struct {
-	db        *gorm.DB
-	logger    *zap.Logger
-	opts      Opts
-	ctx       context.Context
-	cancel    func()
-	StartedAt time.Time
+	db            *gorm.DB
+	logger        *zap.Logger
+	opts          Opts
+	ctx           context.Context
+	cancel        func()
+	StartedAt     time.Time
+	errRenderHTML func(w http.ResponseWriter, r *http.Request, err error, status int)
 
 	/// drivers
 

@@ -121,10 +121,12 @@
     </header>
 
     {{if .Error}}
-    <section>
+    <section class="my-3">
       <div class="container">
         <div class="row alert alert-danger" role="alert">
-          {{.Error}}
+          <div class="col-md-12">
+            <span class="fa fa-exclamation-circle"></span> {{.Error}}
+          </div>
         </div>
       </div>
     </section>

@@ -76,7 +76,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 		got := r.URL.Query().Get("state")
 		expected := svc.authGenerateState(r)
 		if expected != got {
-			svc.errRender(w, r, fmt.Errorf("invalid oauth2 state"), http.StatusBadRequest)
+			svc.errRenderHTML(w, r, fmt.Errorf("invalid oauth2 state"), http.StatusBadRequest)
 			return
 		}
 	}
@@ -88,7 +88,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 		var err error
 		token, err = conf.Exchange(context.Background(), code)
 		if err != nil {
-			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
 		}
 	}
@@ -98,25 +98,25 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 	{
 		res, err := conf.Client(context.Background(), token).Get("https://discordapp.com/api/v6/users/@me")
 		if err != nil {
-			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
 		}
 		defer res.Body.Close()
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
-			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
 		}
 		if err := json.Unmarshal(body, &discordUser); err != nil {
-			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
 		}
 		if !discordUser.Verified {
-			svc.errRender(w, r, fmt.Errorf("email not verified"), http.StatusForbidden)
+			svc.errRenderHTML(w, r, fmt.Errorf("email not verified"), http.StatusForbidden)
 			return
 		}
 		if discordUser.Bot {
-			svc.errRender(w, r, fmt.Errorf("access denied for bots"), http.StatusForbidden)
+			svc.errRenderHTML(w, r, fmt.Errorf("access denied for bots"), http.StatusForbidden)
 			return
 		}
 		svc.logger.Debug("get user settings", zap.Any("user", discordUser))
@@ -149,7 +149,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 
 		default:
 			// unexpected error
-			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
 		}
 	}
@@ -178,7 +178,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 		var err error
 		tokenString, err = jwtToken.SignedString([]byte(svc.opts.JWTSigningKey))
 		if err != nil {
-			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
 		}
 		svc.logger.Debug("token string", zap.String("token", tokenString))

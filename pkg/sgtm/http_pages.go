@@ -372,6 +372,33 @@ func (svc *Service) error404Page(box *packr.Box) func(w http.ResponseWriter, r *
 	}
 }
 
+func (svc *Service) errorPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request, err error, status int) {
+	tmpl := loadTemplates(box, "base.tmpl.html", "error.tmpl.html")
+	return func(w http.ResponseWriter, r *http.Request, userError error, status int) {
+
+		started := time.Now()
+		data, err := svc.newTemplateData(r)
+		if err != nil {
+			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		// custom
+		w.WriteHeader(status)
+		if userError != nil {
+			data.Error = userError.Error()
+		}
+		// end of custom
+		if svc.opts.DevMode {
+			tmpl = loadTemplates(box, "base.tmpl.html", "error.tmpl.html")
+		}
+		data.Duration = time.Since(started)
+		if err := tmpl.Execute(w, &data); err != nil {
+			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+	}
+}
+
 func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	tmpl := loadTemplates(box, "base.tmpl.html", "profile.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
