@@ -668,6 +668,9 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 	}
 	funcmap["stripTags"] = striptags.StripTags
 	funcmap["urlencode"] = url.PathEscape
+	funcmap["plus1"] = func(x int) int {
+		return x + 1
+	}
 	tmpl, err := template.New(templateName).Funcs(funcmap).Parse(allInOne)
 	if err != nil {
 		panic(err)

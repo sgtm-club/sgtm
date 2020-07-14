@@ -14,18 +14,41 @@
 
 {{ define "content" }}
 {{ $root := . }}
+
+
 <!-- FIXME: news carousel -->
 <div class="container">
   <div class="row">
     <div class="col-12 col-md-8">
       <h5 class="mb-2"><span class="fa fa-music"></span> Recent Tracks</h5>
-      <div class="card my-2 border-light">
-        <!--<h6 class="card-header">Blah</h6>-->
+
+      {{$previous_date := ""}}
+      {{range $i, $track := .Home.LastTracks}}
+
+      {{$new_date := (.SortDate | fromUnixNano | date "2006-01-02")}}
+      {{if not (eq $new_date $previous_date)}}
+      {{if not (eq $i 0)}}
+      </ul></div>
+      {{end}}
+
+      <div class="card my-3 border-light2">
+        <h6 class="card-header">
+          {{if eq $new_date (now | date "2006-01-02")}}
+          <b>Today</b>
+          {{else}}
+          {{if eq $new_date (now | dateModify "-24h" | date "2006-01-02")}}
+          <b>Yesterday</b>
+          {{else}}
+          <b>{{.SortDate | fromUnixNano | date "Monday"}}</b>
+          {{end}}
+          {{end}}
+          {{.SortDate | fromUnixNano | date "January 02"}}
+        </h6>
         <ul class="list-group list-group-flush">
-          {{range .Home.LastTracks}}
+          {{end}}
 
 
-          <li class="list-group-item p-1 list-group-item-action{{if eq $root.UserID .Author.ID}} list-group-item-secondary{{end}}">
+          <li class="list-group-item p-1 list-group-item-action{{if eq $root.UserID .Author.ID}} list-group-item-info{{end}}">
             <div class="media">
               <a href="{{.Author.CanonicalURL}}"><img src="{{ .Author.Avatar }}" class="mr-2 rounded-circle" width="60" height="60" /></a>
               <div class="media-body">
@@ -46,9 +69,15 @@
           </li>
 
 
-          {{end}}
+          {{if eq (plus1 $i) (len $root.Home.LastTracks)}}
         </ul>
       </div>
+
+      {{end}}
+
+      {{$previous_date = $new_date}}
+      {{end}}
+
     </div>
     <div class="col-12 col-md-4">
       <h5 class="mb-2"><span class="fa fa-users"></span> Recent Users</h4>
