@@ -24,7 +24,8 @@
       <ul>
         <li>Users: {{.Open.Users}}</li>
         <li>Tracks: {{.Open.Tracks}}</li>
-        <li>Track drafts: {{.Open.TrackDrafts}}</li>
+        <li>Duration: {{.Open.TotalDuration | prettyDuration}}</li>
+        <!--<li>Track drafts: {{.Open.TrackDrafts}}</li>-->
         <li>Uptime: <span data-toggle="tooltip" data-placement="right" title="{{.Service.StartedAt | prettyDate}}">{{.Service.StartedAt | prettyAgo | trimSuffix " ago"}}</span></li>
       </ul>
     </div>

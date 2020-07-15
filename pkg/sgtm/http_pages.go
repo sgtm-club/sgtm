@@ -191,6 +191,24 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			Error; err != nil {
 			data.Error = "Cannot fetch last tracks: " + err.Error()
 		}
+		// tracks' duration
+		{
+			var result struct {
+				TotalDuration int64
+			}
+			if err := svc.db.
+				Model(&sgtmpb.Post{}).
+				Select("sum(duration) as total_duration").
+				Where(sgtmpb.Post{
+					Kind:       sgtmpb.Post_TrackKind,
+					Visibility: sgtmpb.Visibility_Public,
+				}).
+				First(&result).
+				Error; err != nil {
+				data.Error = "Cannot fetch last track durations: " + err.Error()
+			}
+			data.Open.TotalDuration = time.Duration(result.TotalDuration) * time.Millisecond
+		}
 		if err := svc.db.
 			Model(&sgtmpb.Post{}).
 			Where(sgtmpb.Post{
@@ -649,12 +667,14 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 	funcmap["prettyDuration"] = func(input time.Duration) string {
 		input = input.Round(time.Second)
 		str := durafmt.Parse(input).LimitFirstN(2).String()
-		str = strings.Replace(str, " minutes ", "m", -1)
-		str = strings.Replace(str, " minute ", "m", -1)
-		str = strings.Replace(str, " hours ", "h", -1)
-		str = strings.Replace(str, " hour ", "h", -1)
-		str = strings.Replace(str, " seconds", "s", -1)
-		str = strings.Replace(str, " second", "s", -1)
+		str = strings.Replace(str, " ", "", -1)
+		str = strings.Replace(str, "minutes", "m", -1)
+		str = strings.Replace(str, "minute", "m", -1)
+		str = strings.Replace(str, "hours", "h", -1)
+		str = strings.Replace(str, "hour", "h", -1)
+		str = strings.Replace(str, "seconds", "s", -1)
+		str = strings.Replace(str, "second", "s", -1)
+
 		return str
 	}
 	funcmap["prettyDate"] = func(input time.Time) string {
@@ -715,9 +735,10 @@ type templateData struct {
 		}
 	} `json:"Profile,omitempty"`
 	Open struct {
-		Users       int64
-		Tracks      int64
-		TrackDrafts int64
+		Users         int64
+		Tracks        int64
+		TrackDrafts   int64
+		TotalDuration time.Duration
 	} `json:"Open,omitempty"`
 	New struct {
 		URLValue      string
