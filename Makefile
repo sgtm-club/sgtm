@@ -64,6 +64,14 @@ prod.deploy: generate packr
 prod.syncdb:
 	rsync -avze ssh $(PROD_HOST):$(PROD_PATH)/sgtm.db /tmp/sgtm.db
 
+.PHONY: prod.dbdump
+prod.dbdump:
+	ssh $(PROD_HOST) sqlite3 $(PROD_PATH)/sgtm.db .dump
+
+.PHONY: prod.dbshell
+prod.dbshell:
+	ssh -t $(PROD_HOST) sudo sqlite3 $(PROD_PATH)/sgtm.db
+
 PROTOS_SRC := $(wildcard ./api/*.proto)
 GEN_DEPS := $(PROTOS_SRC) Makefile
 .PHONY: generate
