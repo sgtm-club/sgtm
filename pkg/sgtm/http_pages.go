@@ -181,22 +181,26 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			return
 		}
 		// custom
-		if err := svc.db.
-			Model(&sgtmpb.Post{}).
-			Where(sgtmpb.Post{
-				Kind:       sgtmpb.Post_TrackKind,
-				Visibility: sgtmpb.Visibility_Public,
-			}).
-			Count(&data.Open.Tracks).
-			Error; err != nil {
-			data.Error = "Cannot fetch last tracks: " + err.Error()
+		// public tracks
+		{
+			err := svc.db.
+				Model(&sgtmpb.Post{}).
+				Where(sgtmpb.Post{
+					Kind:       sgtmpb.Post_TrackKind,
+					Visibility: sgtmpb.Visibility_Public,
+				}).
+				Count(&data.Open.Tracks).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch last tracks: " + err.Error()
+			}
 		}
 		// tracks' duration
 		{
 			var result struct {
 				TotalDuration int64
 			}
-			if err := svc.db.
+			err := svc.db.
 				Model(&sgtmpb.Post{}).
 				Select("sum(duration) as total_duration").
 				Where(sgtmpb.Post{
@@ -204,26 +208,54 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 					Visibility: sgtmpb.Visibility_Public,
 				}).
 				First(&result).
-				Error; err != nil {
+				Error
+			if err != nil {
 				data.Error = "Cannot fetch last track durations: " + err.Error()
 			}
 			data.Open.TotalDuration = time.Duration(result.TotalDuration) * time.Millisecond
 		}
-		if err := svc.db.
-			Model(&sgtmpb.Post{}).
-			Where(sgtmpb.Post{
-				Kind:       sgtmpb.Post_TrackKind,
-				Visibility: sgtmpb.Visibility_Draft,
-			}).
-			Count(&data.Open.TrackDrafts).
-			Error; err != nil {
-			data.Error = "Cannot fetch last track drafts: " + err.Error()
+		// uploads by weekday
+		{
+			type result struct {
+				Weekday  int64
+				Quantity int64
+			}
+			var results []result
+			err := svc.db.Model(&sgtmpb.Post{}).
+				Select(`strftime("%w", sort_date/1000000000, "unixepoch") as weekday , count(*) as quantity`).
+				Group("weekday").Find(&results).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch uploads by weekday: " + err.Error()
+			}
+			data.Open.UploadsByWeekday = make([]int64, 7)
+			for _, result := range results {
+				data.Open.UploadsByWeekday[result.Weekday] = result.Quantity
+			}
 		}
-		if err := svc.db.
-			Model(&sgtmpb.User{}).
-			Count(&data.Open.Users).
-			Error; err != nil {
-			data.Error = "Cannot fetch last users: " + err.Error()
+		// track drafts
+		{
+			err := svc.db.
+				Model(&sgtmpb.Post{}).
+				Where(sgtmpb.Post{
+					Kind:       sgtmpb.Post_TrackKind,
+					Visibility: sgtmpb.Visibility_Draft,
+				}).
+				Count(&data.Open.TrackDrafts).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch last track drafts: " + err.Error()
+			}
+		}
+		// users
+		{
+			err := svc.db.
+				Model(&sgtmpb.User{}).
+				Count(&data.Open.Users).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch last users: " + err.Error()
+			}
 		}
 		// end of custom
 		if svc.opts.DevMode {
@@ -735,10 +767,11 @@ type templateData struct {
 		}
 	} `json:"Profile,omitempty"`
 	Open struct {
-		Users         int64
-		Tracks        int64
-		TrackDrafts   int64
-		TotalDuration time.Duration
+		Users            int64
+		Tracks           int64
+		TrackDrafts      int64
+		TotalDuration    time.Duration
+		UploadsByWeekday []int64
 	} `json:"Open,omitempty"`
 	New struct {
 		URLValue      string
