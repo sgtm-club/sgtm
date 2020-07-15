@@ -45,8 +45,9 @@ func (svc *Service) Ping(context.Context, *sgtmpb.Ping_Request) (*sgtmpb.Ping_Re
 func (svc *Service) Status(context.Context, *sgtmpb.Status_Request) (*sgtmpb.Status_Response, error) {
 	hostname, _ := os.Hostname()
 	return &sgtmpb.Status_Response{
-		Uptime:   int32(time.Since(svc.StartedAt).Seconds()),
-		Hostname: hostname,
+		Uptime:         int32(time.Since(svc.StartedAt).Seconds()),
+		Hostname:       hostname,
+		EverythingIsOk: true,
 	}, nil
 }
 

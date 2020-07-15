@@ -25,6 +25,7 @@ message Status {
   message Response {
     int32 uptime = 1;
     string hostname = 2;
+    bool everything_is_ok = 3;
   }
 }
 
