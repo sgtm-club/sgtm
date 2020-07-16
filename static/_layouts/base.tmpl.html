@@ -59,6 +59,10 @@
     <!-- per page -->
     {{ template "head" .}}
 
+    {{if .Opts.DevMode}}
+    <meta name="robots" content="noindex, nofollow" />
+    {{end}}
+
   </head>
   <body>
 
