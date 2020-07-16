@@ -22,3 +22,5 @@ main {
   width: 2.1rem;
   height: 2.1rem;
 }
+
+#cal-heatmap .cal-heatmap-container { margin: auto; }
