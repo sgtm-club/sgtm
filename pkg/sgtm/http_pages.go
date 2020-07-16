@@ -499,6 +499,28 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 				track.ApplyDefaults()
 			}
 		}
+
+		// calendar heatmap
+		if data.Profile.Stats.Tracks > 0 {
+			timestamps := []int64{}
+			err := svc.db.Model(&sgtmpb.Post{}).
+				Select(`sort_date/1000000000 as timestamp`).
+				Where(sgtmpb.Post{
+					AuthorID:   data.Profile.User.ID,
+					Kind:       sgtmpb.Post_TrackKind,
+					Visibility: sgtmpb.Visibility_Public,
+				}).
+				Pluck("timestamp", &timestamps).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch post timestamps: " + err.Error()
+			}
+			data.Profile.CalendarHeatmap = map[int64]int64{}
+			for _, timestamp := range timestamps {
+				data.Profile.CalendarHeatmap[timestamp] = 1
+			}
+		}
+
 		// end of custom
 		if svc.opts.DevMode {
 			tmpl = loadTemplates(box, "base.tmpl.html", "profile.tmpl.html")
@@ -765,6 +787,7 @@ type templateData struct {
 			Tracks int64
 			// Drafts int64
 		}
+		CalendarHeatmap map[int64]int64
 	} `json:"Profile,omitempty"`
 	Open struct {
 		Users            int64

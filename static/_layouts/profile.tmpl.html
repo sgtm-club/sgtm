@@ -11,21 +11,26 @@
 <meta name="twitter:title" property="og:title" itemprop="title name" content="{{.Profile.User.DisplayName}} - SGTM" />
 <meta name="twitter:description" property="og:description" itemprop="description" content="{{.Profile.User.DisplayName}} on Sounds good to me - SGTM" />
 <meta name="description" content="{{.Profile.User.DisplayName}} on Sounds good to me - SGTM" />
+
+<script defer src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script defer src="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css" />
 {{end}}
 
 {{define "content"}}
 <div class="container">
-  <!--<div class="row">
+  <div class="row">
     <div class="col-md-12">
+      <div id="cal-heatmap"></div>
     </div>
-  </div>-->
+  </div>
   <div class="row">
     <div class="col-md-8">
       <h2>🎶 Tracks by {{.Profile.User.DisplayName}}</h2>
       {{ if .Profile.LastTracks | empty }}
       <p>No track found.</p>
       <p><small class="text-muted">This musician is just getting started.</small></p>
-      {{end}}
+      {{else}}
       {{ range .Profile.LastTracks }}
       <div class="card my-2">
         <div class="media">
@@ -43,6 +48,7 @@
         </div>
       </div>
       {{ end }}
+      {{end}}
     </div>
     <div class="col-md-4">
       <div class="mb-3">
@@ -71,4 +77,20 @@
     </div>
   </div>
 </div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+	  var cal = new CalHeatMap();
+	  cal.init({
+	    itemSelector: "#cal-heatmap",
+	    domain: "year",
+	    subDomain: "day",
+      domainGutter: 15,
+	    cellSize: 10,
+	    range: 1,
+      legend: [1,2,3,4],
+      data: {{.Profile.CalendarHeatmap}}
+    });
+  });
+</script>
 {{end}}
