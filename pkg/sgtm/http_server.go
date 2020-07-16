@@ -23,6 +23,7 @@ import (
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/ikeikeikeike/go-sitemap-generator/v2/stm"
 	"github.com/oklog/run"
 	"github.com/rs/cors"
 	"github.com/soheilhy/cmux"
@@ -195,6 +196,14 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		r.Get("/rss.xml", svc.rssPage(box))
 	}
 
+	// special pages
+	{
+		sm := svc.generateSitemap()
+		r.Get("/sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write(sm.XMLContent())
+		})
+	}
+
 	// auth
 	{
 		r.Get("/login", svc.httpAuthLogin)
@@ -236,6 +245,57 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		Addr:    "osef",
 		Handler: r,
 	}, nil
+}
+
+func (svc *Service) generateSitemap() *stm.Sitemap {
+	sm := stm.NewSitemap(1)
+	sm.SetDefaultHost("https://sgtm.club")
+	sm.SetVerbose(true)
+	sm.Create()
+	// special pages
+	sm.Add(stm.URL{
+		{"loc", "/"},
+		{"changefreq", "daily"},
+		{"priority", 1},
+	})
+	sm.Add(stm.URL{
+		{"loc", "/open"},
+		{"changefreq", "daily"},
+	})
+	// users
+	{
+		var users []*sgtmpb.User
+		err := svc.db.Find(&users).Error
+		if err != nil {
+			svc.logger.Error("query users for sitemap", zap.Error(err))
+		} else {
+			for _, user := range users {
+				sm.Add(stm.URL{
+					{"loc", user.CanonicalURL()},
+					{"changefreq", "weekly"},
+				})
+			}
+		}
+	}
+	// posts
+	{
+		var posts []*sgtmpb.Post
+		err := svc.db.Where(sgtmpb.Post{
+			Visibility: sgtmpb.Visibility_Public,
+			Kind:       sgtmpb.Post_TrackKind,
+		}).Find(&posts).Error
+		if err != nil {
+			svc.logger.Error("query posts for sitemap", zap.Error(err))
+		} else {
+			for _, post := range posts {
+				sm.Add(stm.URL{
+					{"loc", post.CanonicalURL()},
+					{"changefreq", "weekly"},
+				})
+			}
+		}
+	}
+	return sm
 }
 
 func (svc *Service) AuthFuncOverride(ctx context.Context, path string) (context.Context, error) {
