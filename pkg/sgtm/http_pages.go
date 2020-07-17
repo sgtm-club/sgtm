@@ -222,6 +222,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			}
 			var results []result
 			err := svc.db.Model(&sgtmpb.Post{}).
+				Where(&sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
 				Select(`strftime("%w", sort_date/1000000000, "unixepoch") as weekday , count(*) as quantity`).
 				Group("weekday").Find(&results).
 				Error
@@ -547,9 +548,9 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		query := svc.db.Preload("Author")
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
-			query = query.Where(sgtmpb.Post{ID: id})
+			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
 		} else {
-			query = query.Where(sgtmpb.Post{Slug: postSlug})
+			query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
 		}
 		var post sgtmpb.Post
 		if err := query.First(&post).Error; err != nil {
@@ -589,9 +590,9 @@ func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *
 		query := svc.db.Preload("Author")
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
-			query = query.Where(sgtmpb.Post{ID: id})
+			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
 		} else {
-			query = query.Where(sgtmpb.Post{Slug: postSlug})
+			query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
 		}
 		var post sgtmpb.Post
 		if err := query.First(&post).Error; err != nil {
@@ -636,9 +637,9 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 		query := svc.db.Preload("Author")
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
-			query = query.Where(sgtmpb.Post{ID: id})
+			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
 		} else {
-			query = query.Where(sgtmpb.Post{Slug: postSlug})
+			query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
 		}
 		var post sgtmpb.Post
 		if err := query.First(&post).Error; err != nil {

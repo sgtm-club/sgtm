@@ -141,11 +141,40 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 				// Lastname
 			}
 			// FIXME: check if slug already exists, if yes, append something
-			svc.db.Create(&dbUser)
+			err = svc.db.Transaction(func(tx *gorm.DB) error {
+				if err := svc.db.Create(&dbUser).Error; err != nil {
+					return err
+				}
+
+				registerEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_RegisterKind}
+				if err := svc.db.Create(&registerEvent).Error; err != nil {
+					return err
+				}
+				svc.logger.Debug("new register", zap.Any("event", &registerEvent))
+
+				linkDiscordEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LinkDiscordAccountKind}
+				if err := svc.db.Create(&linkDiscordEvent).Error; err != nil {
+					return err
+				}
+				svc.logger.Debug("new link discord event", zap.Any("event", &registerEvent))
+
+				return nil
+			})
+			if err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
 
 		case err == nil:
 			// user exists
 			// FIXME: update user in DB if needed
+
+			loginEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LoginKind}
+			if err := svc.db.Create(&loginEvent).Error; err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
+			svc.logger.Debug("new login", zap.Any("event", &loginEvent))
 
 		default:
 			// unexpected error

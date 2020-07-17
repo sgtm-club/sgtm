@@ -147,7 +147,13 @@ message Post {
   enum Kind {
     UnknownKind = 0;
     TrackKind = 1;
-    //CommentKind = 2;
+    LoginKind = 2;
+    RegisterKind = 3;
+    LinkDiscordAccountKind = 4;
+    //CommentKind;
+    //ReactionKind;
+    //ForkKind;
+    //FeatKind;
   }
 }
 
