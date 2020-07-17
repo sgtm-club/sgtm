@@ -270,6 +270,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 					sgtmpb.Post_ViewHomeKind,
 					sgtmpb.Post_ViewOpenKind,
 				}).
+				Where("author_id != 0").
 				Where("kind NOT IN (?)", []sgtmpb.Post_Kind{
 					sgtmpb.Post_LinkDiscordAccountKind,
 					//sgtmpb.Post_LoginKind,
