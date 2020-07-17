@@ -1,193 +1,201 @@
 {{define "base"}}<!doctype html>
-<html lang="{{.Lang}}">
-  <head>
-    <meta charset="utf-8">
-    <title>{{.Title}}</title>
-    <meta name="author" content="Manfred Touron">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="alternate" type="application/rss+xml" title="Recent content on SGTM.club" href="/rss.xml" />
+  <html lang="{{.Lang}}">
+    <head>
+      <meta charset="utf-8">
+      <title>{{.Title}}</title>
+      <meta name="author" content="Manfred Touron">
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <link rel="alternate" type="application/rss+xml" title="Recent content on SGTM.club" href="/rss.xml" />
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
-    <link rel="stylesheet" href="/_assets/css/style.css?t={{.Service.StartedAt | unixEpoch}}" />
+      <!-- CSS -->
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+      <link rel="stylesheet" href="/_assets/css/style.css?t={{.Service.StartedAt | unixEpoch}}" />
 
-    <!-- favicons -->
-    {{ if not .Opts.DevMode }}
-    <!-- made with: https://realfavicongenerator.net/favicon_result?file_id=p1ed44mlnh1k50ce5mna1pke1ui86 -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/_assets/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/_assets/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/_assets/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/_assets/favicon/site.webmanifest">
-    <link rel="mask-icon" href="/_assets/favicon/safari-pinned-tab.svg" color="#5bbad5">
-    <link rel="shortcut icon" href="/_assets/favicon/favicon.ico">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-config" content="/_assets/favicon/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
-    {{ else }}
-    <!-- made with https://realfavicongenerator.net/favicon_result?file_id=p1ed43llt911ggtlkhin67216cq6 -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/_assets/favicon-blue/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/_assets/favicon-blue/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/_assets/favicon-blue/favicon-16x16.png">
-    <link rel="manifest" href="/_assets/favicon-blue/site.webmanifest">
-    <link rel="mask-icon" href="/_assets/favicon-blue/safari-pinned-tab.svg" color="#5bbad5">
-    <link rel="shortcut icon" href="/_assets/favicon-blue/favicon.ico">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="msapplication-config" content="/_assets/favicon-blue/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
-    {{ end }}
+      <!-- favicons -->
+      {{ if not .Opts.DevMode }}
+        <!-- made with: https://realfavicongenerator.net/favicon_result?file_id=p1ed44mlnh1k50ce5mna1pke1ui86 -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/_assets/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/_assets/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/_assets/favicon/favicon-16x16.png">
+        <link rel="manifest" href="/_assets/favicon/site.webmanifest">
+        <link rel="mask-icon" href="/_assets/favicon/safari-pinned-tab.svg" color="#5bbad5">
+        <link rel="shortcut icon" href="/_assets/favicon/favicon.ico">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-config" content="/_assets/favicon/browserconfig.xml">
+        <meta name="theme-color" content="#ffffff">
+      {{ else }}
+        <!-- made with https://realfavicongenerator.net/favicon_result?file_id=p1ed43llt911ggtlkhin67216cq6 -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/_assets/favicon-blue/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/_assets/favicon-blue/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/_assets/favicon-blue/favicon-16x16.png">
+        <link rel="manifest" href="/_assets/favicon-blue/site.webmanifest">
+        <link rel="mask-icon" href="/_assets/favicon-blue/safari-pinned-tab.svg" color="#5bbad5">
+        <link rel="shortcut icon" href="/_assets/favicon-blue/favicon.ico">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="msapplication-config" content="/_assets/favicon-blue/browserconfig.xml">
+        <meta name="theme-color" content="#ffffff">
+      {{ end }}
 
-     <!-- analytics -->
-    {{if not .Opts.DevMode}}
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133664781-7"></script>
-    <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-133664781-7');</script>
-    {{end}}
-
-    <!-- JS -->
-    <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous" defer></script>-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js" integrity="sha512-/DXTXr6nQodMUiq+IUJYCt2PPOUjrHJ9wFrqpJ3XkgPNOZVfMok7cRw6CSxyCQxXn6ozlESsSh1/sMCTF1rL/g==" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js" integrity="sha384-1CmrxMRARb6aLqgBO7yyAxTOQE2AKb9GfXnEo760AUcUmFx3ibVJJAzGytlQcNXd" crossorigin="anonymous" defer></script>
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha512-G3jAqT2eM4MMkLMyQR5YBhvN5/Da3IG6kqgYqU9zlIH4+2a+GuMdLb5Kpxy6ItMdCfgaKlo2XFhI0dHtMJjoRw==" crossorigin="anonymous" defer></script>-->
-    <script src="/_assets/js/script.js?t={{.Service.StartedAt | unixEpoch}}" defer></script>
-
-    <!-- social -->
-    <meta name="twitter:domain" content="sgtm.club">
-    <meta property="fb:app_id" content="321520379020437">
-    <!--<meta name="twitter:app:country" content="FR">-->
-
-    <!-- per page -->
-    {{ template "head" .}}
-
-    {{if .Opts.DevMode}}
-    <meta name="robots" content="noindex, nofollow" />
-    {{end}}
-
-  </head>
-  <body>
-
-    <header>
-      <!-- FIXME: add search form -->
-      {{if .JWTToken}}
-      <div class="collapse bg-dark" id="navbarHeader">
-        <div class="container">
-          <div class="row">
-            <div class="col-sm-8 col-md-7 py-4">
-              <h4 class="text-white">Recent activities</h4>
-              {{if .User.RecentPosts | empty}}
-              <p class="text-muted">You are just getting started.</p>
-              {{else}}
-              {{range .User.RecentPosts}}
-              <div>
-                <a href="{{.CanonicalURL}}" class="text-light">
-                  {{ if eq .Kind 1}}<span class="fa fa-music"></span>{{end}}
-                  {{.Title}}
-                </a>
-                <small class="text-muted">{{.CreatedAt | fromUnixNano | prettyAgo}}</small>
-              </div>
-              {{end}}
-              {{end}}
-            </div>
-            <div class="col-sm-4 offset-md-1 py-4">
-              <h4 class="text-white">@{{.User.Slug}}</h4>
-              <ul class="list-unstyled">
-                <li><a href="/@{{.User.Slug}}" class="text-white">Profile</a></li>
-                <li><a href="/settings" class="text-white">Settings</a></li>
-                <li><a href="/logout" class="text-muted">Sign out</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- analytics -->
+      {{if not .Opts.DevMode}}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133664781-7"></script>
+        <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-133664781-7');</script>
       {{end}}
-      <div class="navbar navbar-light bg-light shadow-sm">
-        <div class="container d-flex justify-content-between">
-          <a href="/" class="navbar-brand d-flex align-items-center">
-            {{ if .Opts.DevMode }}
-            <svg width="2901" height="2901" viewBox="0 0 2901 2901" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="105" y="287" width="2687" height="2356" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M326 0C145.955 0 0 145.955 0 326V2575C0 2755.04 145.955 2901 326 2901H2575C2755.04 2901 2901 2755.04 2901 2575V326C2901 145.955 2755.04 0 2575 0H326ZM883.294 1049.39L1897.56 2063.62C1922.99 2089.01 1956.3 2101.74 1989.59 2101.74C2022.89 2101.74 2056.19 2089.01 2081.62 2063.62C2132.4 2012.76 2132.4 1930.34 2081.62 1879.56L829.477 627.455L645.488 811.511L779.817 945.828L883.294 1049.39ZM1629.88 2271.54L598.64 1240.33L782.701 1056.28L1099.4 1372.97L1813.85 2087.49C1864.72 2138.27 1864.72 2220.68 1813.85 2271.54C1788.47 2296.93 1755.17 2309.67 1721.87 2309.67C1688.57 2309.67 1655.27 2296.93 1629.88 2271.54ZM1319.03 2436.38L551.783 1669.16L735.844 1485.1L1503.09 2252.32C1553.95 2303.18 1553.95 2385.52 1503.09 2436.38C1477.7 2461.76 1444.39 2474.5 1411.09 2474.5C1377.78 2474.5 1344.45 2461.76 1319.03 2436.38ZM2032.52 1722.9L1133.84 824.246L1317.9 640.19L1529.04 851.318L2216.58 1538.84C2267.37 1589.7 2267.37 1672.12 2216.58 1722.9C2191.15 1748.29 2157.85 1761.02 2124.55 1761.02C2091.25 1761.02 2057.95 1748.29 2032.52 1722.9ZM2127.04 696.256L2011.62 811.591C1954.35 868.866 1879.3 897.5 1804.25 897.5C1729.21 897.5 1654.17 868.876 1596.91 811.62L1988.31 1203.01L2311.1 880.312C2361.88 829.452 2361.88 747.036 2311.1 696.256C2260.24 645.396 2177.9 645.396 2127.04 696.256Z" fill="#0500FF"/></svg>
-            {{ else }}
-            <svg width="2901" height="2901" viewBox="0 0 2901 2901" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 1450.5C0 2251.6 649.421 2901 1450.46 2901C2251.58 2901 2901 2251.6 2901 1450.5C2901 649.401 2251.58 0 1450.46 0C649.421 0 0 649.401 0 1450.5ZM1897.56 2063.62L883.294 1049.39L779.818 945.828L645.488 811.511L829.477 627.455L2081.62 1879.56C2132.4 1930.34 2132.4 2012.76 2081.62 2063.62C2056.19 2089.01 2022.89 2101.74 1989.59 2101.74C1956.3 2101.74 1922.99 2089.01 1897.56 2063.62ZM2032.52 1722.9L1133.84 824.246L1317.9 640.19L1529.04 851.318L2216.59 1538.84C2267.37 1589.7 2267.37 1672.12 2216.59 1722.9C2191.15 1748.29 2157.85 1761.02 2124.55 1761.02C2091.25 1761.02 2057.95 1748.29 2032.52 1722.9ZM2011.62 811.591L2127.04 696.256C2177.9 645.396 2260.24 645.396 2311.1 696.256C2361.88 747.036 2361.88 829.452 2311.1 880.312L1988.31 1203.01L1596.88 811.591C1654.15 868.866 1729.2 897.5 1804.25 897.5C1879.3 897.5 1954.35 868.866 2011.62 811.591ZM1629.88 2271.54L598.64 1240.33L782.701 1056.28L1099.4 1372.97L1813.85 2087.49C1864.72 2138.27 1864.72 2220.68 1813.85 2271.54C1788.47 2296.93 1755.17 2309.67 1721.87 2309.67C1688.57 2309.67 1655.27 2296.93 1629.88 2271.54ZM1319.03 2436.38L551.784 1669.16L735.845 1485.1L1503.09 2252.32C1553.95 2303.18 1553.95 2385.52 1503.09 2436.38C1477.7 2461.76 1444.39 2474.5 1411.09 2474.5C1377.78 2474.5 1344.45 2461.76 1319.03 2436.38Z" fill="#C83128"/></svg>
-            {{end}}
-            <strong>SGTM</strong> {{if .Opts.DevMode}}<span class="badge badge-danger ml-1"><small>dev</small></span>{{else}}<span class="badge badge-warning ml-2"><small>beta</small></span>{{end}}
-            <!-- FIXME: how it works link (when non-logged) -->
-          </a>
-          {{if .JWTToken}}
-          <div>
-            <!--<a href="/new" class="btn btn-light">➕</a>-->
-            {{if eq .Request.URL.String "/new"}}
-            <a href="/new" class="btn btn-primary disabled">New</a>
-            {{else}}
-            <a href="/new" class="btn btn-primary">New</a>
-            {{end}}
-            <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-              <img class="avatar" src="{{.User.Avatar}}" />
-              <!--<span class="navbar-toggler-icon"></span>-->
-            </button>
-          </div>
-          {{else}}
-          <!-- FIXME: fake link to New -->
-          <ul class="navbar-nav flex-row ml-md-auth d-md-flex">
-            <!-- FIXME: always available search form (icon -> click == expand) -->
-            <li class="nav-item">
-              <!-- FIXME: open login or popup (https://hackernoon.com/how-we-use-a-popup-for-google-and-outlook-oauth-5d8c03652171) -->
-              <a class="btn btn-primary" href="/login">Sign in / Sign up</a>
-            </li>
-            <!--<li class="nav-item ml-2">
-              <a class="btn btn-primary" href="/login">Sign up</a>
-            </li>-->
-          </ul>
-          {{end}}
-        </div>
-      </div>
-    </header>
 
-    {{if .Error}}
-    <section class="my-3">
-      <div class="container">
-        <div class="row alert alert-danger" role="alert">
-          <div class="col-md-12">
-            <span class="fa fa-exclamation-circle"></span> {{.Error}}
-          </div>
-        </div>
-      </div>
-    </section>
-    {{end}}
+      <!-- JS -->
+      <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous" defer></script>-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js" integrity="sha512-/DXTXr6nQodMUiq+IUJYCt2PPOUjrHJ9wFrqpJ3XkgPNOZVfMok7cRw6CSxyCQxXn6ozlESsSh1/sMCTF1rL/g==" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js" integrity="sha384-1CmrxMRARb6aLqgBO7yyAxTOQE2AKb9GfXnEo760AUcUmFx3ibVJJAzGytlQcNXd" crossorigin="anonymous" defer></script>
+      <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha512-G3jAqT2eM4MMkLMyQR5YBhvN5/Da3IG6kqgYqU9zlIH4+2a+GuMdLb5Kpxy6ItMdCfgaKlo2XFhI0dHtMJjoRw==" crossorigin="anonymous" defer></script>-->
+      <script src="/_assets/js/script.js?t={{.Service.StartedAt | unixEpoch}}" defer></script>
 
-    <main role="main">
-      {{template "content" .}}
-    </main>
+      <!-- social -->
+      <meta name="twitter:domain" content="sgtm.club">
+      <meta property="fb:app_id" content="321520379020437">
+      <!--<meta name="twitter:app:country" content="FR">-->
 
-    <footer class="page-footer text-muted bg-light py-3">
-      <div class="container">
-        <p class="float-right">
-          <a href="#">🔝 Back to top</a>
-          <!-- FIXME: use scroll -->
-        </p>
-        <p><a href="/open">📊 Open</a></p>
-        <!-- https://wip.chat/products/sgtm -->
-        <!-- feedback -->
-        <!-- terms -->
-        <!--<p>Lorem Ipsum</p>-->
-        <!--<p>Lorem Ipsum</p>-->
-        {{ if .Opts.DevMode }}
-        <!-- FIXME: switch to button opening a modal -->
-        <div>
-          <p>
-            <button class="btn btn-danger stn-sm" data-toggle="collapse" data-target="#devtools" aria-expanded="false" aria-controls="devtools">🛠 DevMode</button>
-          </p>
-          <div class="row">
-            <div class="col">
-              <div class="collapse" id="devtools">
-                <div class="card card-body">
-                  <div>All: <pre><code>{{. | toPrettyJson}}</code></pre></div>
+      <!-- per page -->
+      {{ template "head" .}}
+
+      {{if .Opts.DevMode}}
+        <meta name="robots" content="noindex, nofollow" />
+      {{end}}
+
+    </head>
+    <body>
+
+      <header>
+        <!-- FIXME: add search form -->
+        {{if .JWTToken}}
+          <div class="collapse bg-dark" id="navbarHeader">
+            <div class="container">
+              <div class="row">
+                <div class="col-sm-8 col-md-7 py-4">
+                  <h4 class="text-white">Recent activities</h4>
+                  {{if .User.RecentPosts | empty}}
+                    <p class="text-muted">You are just getting started.</p>
+                  {{else}}
+                    {{range .User.RecentPosts}}
+                      <div>
+                        <a href="{{.CanonicalURL}}" class="text-light">
+                          {{ if eq .Kind 1}}<span class="fa fa-music"></span>{{end}}
+                          {{.Title}}
+                        </a>
+                        <small class="text-muted">{{.CreatedAt | fromUnixNano | prettyAgo}}</small>
+                      </div>
+                    {{end}}
+                  {{end}}
+                </div>
+                <div class="col-sm-4 offset-md-1 py-4">
+                  <h4 class="text-white">@{{.User.Slug}}</h4>
+                  <ul class="list-unstyled">
+                    <li><a href="/@{{.User.Slug}}" class="text-white">Profile</a></li>
+                    <li><a href="/settings" class="text-white">Settings</a></li>
+                    <li><a href="/logout" class="text-muted">Sign out</a></li>
+                  </ul>
                 </div>
               </div>
             </div>
           </div>
+        {{end}}
+        <div class="navbar navbar-light bg-light shadow-sm">
+          <div class="container d-flex justify-content-between">
+            <a href="/" class="navbar-brand d-flex align-items-center">
+              {{ if .Opts.DevMode }}
+                <svg width="2901" height="2901" viewBox="0 0 2901 2901" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="105" y="287" width="2687" height="2356" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M326 0C145.955 0 0 145.955 0 326V2575C0 2755.04 145.955 2901 326 2901H2575C2755.04 2901 2901 2755.04 2901 2575V326C2901 145.955 2755.04 0 2575 0H326ZM883.294 1049.39L1897.56 2063.62C1922.99 2089.01 1956.3 2101.74 1989.59 2101.74C2022.89 2101.74 2056.19 2089.01 2081.62 2063.62C2132.4 2012.76 2132.4 1930.34 2081.62 1879.56L829.477 627.455L645.488 811.511L779.817 945.828L883.294 1049.39ZM1629.88 2271.54L598.64 1240.33L782.701 1056.28L1099.4 1372.97L1813.85 2087.49C1864.72 2138.27 1864.72 2220.68 1813.85 2271.54C1788.47 2296.93 1755.17 2309.67 1721.87 2309.67C1688.57 2309.67 1655.27 2296.93 1629.88 2271.54ZM1319.03 2436.38L551.783 1669.16L735.844 1485.1L1503.09 2252.32C1553.95 2303.18 1553.95 2385.52 1503.09 2436.38C1477.7 2461.76 1444.39 2474.5 1411.09 2474.5C1377.78 2474.5 1344.45 2461.76 1319.03 2436.38ZM2032.52 1722.9L1133.84 824.246L1317.9 640.19L1529.04 851.318L2216.58 1538.84C2267.37 1589.7 2267.37 1672.12 2216.58 1722.9C2191.15 1748.29 2157.85 1761.02 2124.55 1761.02C2091.25 1761.02 2057.95 1748.29 2032.52 1722.9ZM2127.04 696.256L2011.62 811.591C1954.35 868.866 1879.3 897.5 1804.25 897.5C1729.21 897.5 1654.17 868.876 1596.91 811.62L1988.31 1203.01L2311.1 880.312C2361.88 829.452 2361.88 747.036 2311.1 696.256C2260.24 645.396 2177.9 645.396 2127.04 696.256Z" fill="#0500FF"/></svg>
+              {{ else }}
+                <svg width="2901" height="2901" viewBox="0 0 2901 2901" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 1450.5C0 2251.6 649.421 2901 1450.46 2901C2251.58 2901 2901 2251.6 2901 1450.5C2901 649.401 2251.58 0 1450.46 0C649.421 0 0 649.401 0 1450.5ZM1897.56 2063.62L883.294 1049.39L779.818 945.828L645.488 811.511L829.477 627.455L2081.62 1879.56C2132.4 1930.34 2132.4 2012.76 2081.62 2063.62C2056.19 2089.01 2022.89 2101.74 1989.59 2101.74C1956.3 2101.74 1922.99 2089.01 1897.56 2063.62ZM2032.52 1722.9L1133.84 824.246L1317.9 640.19L1529.04 851.318L2216.59 1538.84C2267.37 1589.7 2267.37 1672.12 2216.59 1722.9C2191.15 1748.29 2157.85 1761.02 2124.55 1761.02C2091.25 1761.02 2057.95 1748.29 2032.52 1722.9ZM2011.62 811.591L2127.04 696.256C2177.9 645.396 2260.24 645.396 2311.1 696.256C2361.88 747.036 2361.88 829.452 2311.1 880.312L1988.31 1203.01L1596.88 811.591C1654.15 868.866 1729.2 897.5 1804.25 897.5C1879.3 897.5 1954.35 868.866 2011.62 811.591ZM1629.88 2271.54L598.64 1240.33L782.701 1056.28L1099.4 1372.97L1813.85 2087.49C1864.72 2138.27 1864.72 2220.68 1813.85 2271.54C1788.47 2296.93 1755.17 2309.67 1721.87 2309.67C1688.57 2309.67 1655.27 2296.93 1629.88 2271.54ZM1319.03 2436.38L551.784 1669.16L735.845 1485.1L1503.09 2252.32C1553.95 2303.18 1553.95 2385.52 1503.09 2436.38C1477.7 2461.76 1444.39 2474.5 1411.09 2474.5C1377.78 2474.5 1344.45 2461.76 1319.03 2436.38Z" fill="#C83128"/></svg>
+              {{end}}
+              <strong>SGTM</strong> {{if .Opts.DevMode}}<span class="badge badge-danger ml-1"><small>dev</small></span>{{else}}<span class="badge badge-warning ml-2"><small>beta</small></span>{{end}}
+              <!-- FIXME: how it works link (when non-logged) -->
+            </a>
+            {{if .JWTToken}}
+              <div>
+                <!--<a href="/new" class="btn btn-light">➕</a>-->
+                {{if eq .Request.URL.String "/new"}}
+                  <a href="/new" class="btn btn-primary disabled">New</a>
+                {{else}}
+                  <a href="/new" class="btn btn-primary">New</a>
+                {{end}}
+                <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                  <img class="avatar" src="{{.User.Avatar}}" />
+                  <!--<span class="navbar-toggler-icon"></span>-->
+                </button>
+              </div>
+            {{else}}
+              <!-- FIXME: fake link to New -->
+              <ul class="navbar-nav flex-row ml-md-auth d-md-flex">
+                <!-- FIXME: always available search form (icon -> click == expand) -->
+                <li class="nav-item">
+                  <!-- FIXME: open login or popup (https://hackernoon.com/how-we-use-a-popup-for-google-and-outlook-oauth-5d8c03652171) -->
+                  <a class="btn btn-primary" href="/login">Sign in / Sign up</a>
+                </li>
+                <!--<li class="nav-item ml-2">
+                     <a class="btn btn-primary" href="/login">Sign up</a>
+                     </li>-->
+              </ul>
+            {{end}}
+          </div>
         </div>
-        {{ end }}
-      </div>
-    </footer>
-  </body>
-</html>
+      </header>
+
+      {{if .Error}}
+        <section class="my-3">
+          <div class="container">
+            <div class="row alert alert-danger" role="alert">
+              <div class="col-md-12">
+                <span class="fa fa-exclamation-circle"></span> {{.Error}}
+              </div>
+            </div>
+          </div>
+        </section>
+      {{end}}
+
+      <main role="main">
+        {{template "content" .}}
+      </main>
+
+      <footer class="page-footer text-muted bg-light py-3">
+        <div class="container">
+          <p class="float-right">
+            <a href="#">🔝 Back to top</a>
+            <!-- FIXME: use scroll -->
+          </p>
+          <p><a href="/open">📊 Open</a></p>
+          <!-- https://wip.chat/products/sgtm -->
+          <!-- feedback -->
+          <!-- terms -->
+          <!--<p>Lorem Ipsum</p>-->
+          <!--<p>Lorem Ipsum</p>-->
+          {{ if .Opts.DevMode }}
+            <!-- FIXME: switch to button opening a modal -->
+            <div>
+              <p>
+                <button class="btn btn-danger stn-sm" data-toggle="collapse" data-target="#devtools" aria-expanded="false" aria-controls="devtools">🛠 DevMode</button>
+              </p>
+              <div class="row">
+                <div class="col">
+                  <div class="collapse" id="devtools">
+                    <div class="card card-body">
+                      <div>All: <pre><code>{{. | toPrettyJson}}</code></pre></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {{ end }}
+        </div>
+      </footer>
+    </body>
+  </html>
+{{end}}
+
+{{define "user_pict_link_or_anon"}}
+  {{if .}}
+    <a href="{{.CanonicalURL}}"><img src="{{.Avatar}}" width="20" height="20" /></a>
+  {{else}}
+    <b>AN</b>
+  {{end}}
 {{end}}

@@ -34,6 +34,17 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 			return
 		}
 		// custom
+
+		// tracking
+		{
+			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewHomeKind}
+			if err := svc.db.Create(&viewEvent).Error; err != nil {
+				data.Error = "Cannot write activity: " + err.Error()
+			} else {
+				svc.logger.Debug("new view home", zap.Any("event", &viewEvent))
+			}
+		}
+
 		// last tracks
 		{
 			if err := svc.db.
@@ -181,6 +192,17 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			return
 		}
 		// custom
+
+		// tracking
+		{
+			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewOpenKind}
+			if err := svc.db.Create(&viewEvent).Error; err != nil {
+				data.Error = "Cannot write activity: " + err.Error()
+			} else {
+				svc.logger.Debug("new view open", zap.Any("event", &viewEvent))
+			}
+		}
+
 		// public tracks
 		{
 			err := svc.db.
@@ -195,6 +217,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 				data.Error = "Cannot fetch last tracks: " + err.Error()
 			}
 		}
+
 		// tracks' duration
 		{
 			var result struct {
@@ -214,6 +237,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			}
 			data.Open.TotalDuration = time.Duration(result.TotalDuration) * time.Millisecond
 		}
+
 		// uploads by weekday
 		{
 			type result struct {
@@ -234,6 +258,30 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 				data.Open.UploadsByWeekday[result.Weekday] = result.Quantity
 			}
 		}
+
+		// last activities
+		{
+			err := svc.db.
+				Preload("Author").
+				Preload("TargetPost").
+				Preload("TargetUser").
+				Order("created_at desc").
+				Where("NOT (author_id == ? AND kind IN (?))", moulID, []sgtmpb.Post_Kind{
+					sgtmpb.Post_ViewHomeKind,
+					sgtmpb.Post_ViewOpenKind,
+				}).
+				Where("kind NOT IN (?)", []sgtmpb.Post_Kind{
+					sgtmpb.Post_LinkDiscordAccountKind,
+					//sgtmpb.Post_LoginKind,
+				}).
+				Limit(50).
+				Find(&data.Open.LastActivities).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch last activities: " + err.Error()
+			}
+		}
+
 		// track drafts
 		{
 			err := svc.db.
@@ -475,6 +523,16 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 			data.Profile.User = &user
 		}
 
+		// tracking
+		{
+			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewProfileKind, TargetUserID: data.Profile.User.ID}
+			if err := svc.db.Create(&viewEvent).Error; err != nil {
+				data.Error = "Cannot write activity: " + err.Error()
+			} else {
+				svc.logger.Debug("new view profile", zap.Any("event", &viewEvent))
+			}
+		}
+
 		// tracks
 		{
 			query := svc.db.
@@ -559,6 +617,16 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		}
 		data.Post.Post = &post
 		data.Post.Post.ApplyDefaults()
+
+		// tracking
+		{
+			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewPostKind, TargetPostID: data.Post.Post.ID}
+			if err := svc.db.Create(&viewEvent).Error; err != nil {
+				data.Error = "Cannot write activity: " + err.Error()
+			} else {
+				svc.logger.Debug("new view post", zap.Any("event", &viewEvent))
+			}
+		}
 
 		// end of custom
 		if svc.opts.DevMode {
@@ -796,6 +864,7 @@ type templateData struct {
 		TrackDrafts      int64
 		TotalDuration    time.Duration
 		UploadsByWeekday []int64
+		LastActivities   []*sgtmpb.Post
 	} `json:"Open,omitempty"`
 	New struct {
 		URLValue      string

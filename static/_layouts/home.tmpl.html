@@ -1,50 +1,50 @@
 {{ template "base" . }}
 
 {{define "head"}}
-<link rel="canonical" href="https://sgtm.club/" />
-<meta property="og:url" content="https://sgtm.club/" />
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image:src" property="og:image" itemprop="image primaryImageOfPage" content="https://sgtm.club/_assets/img/logo-1x.png" />
-<meta property="og:image:width" content="2901" />
-<meta property="og:image:height" content="2859" />
-<meta name="twitter:title" property="og:title" itemprop="title name" content="Sounds good to me - SGTM" />
-<meta name="twitter:description" property="og:description" itemprop="description" content="An ongoing-song sharing platform for musicians." />
+  <link rel="canonical" href="https://sgtm.club/" />
+  <meta property="og:url" content="https://sgtm.club/" />
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image:src" property="og:image" itemprop="image primaryImageOfPage" content="https://sgtm.club/_assets/img/logo-1x.png" />
+  <meta property="og:image:width" content="2901" />
+  <meta property="og:image:height" content="2859" />
+  <meta name="twitter:title" property="og:title" itemprop="title name" content="Sounds good to me - SGTM" />
+  <meta name="twitter:description" property="og:description" itemprop="description" content="An ongoing-song sharing platform for musicians." />
 {{end}}
 
 {{ define "content" }}
-{{ $root := . }}
+  {{ $root := . }}
 
 
-<!-- FIXME: news carousel -->
-<div class="container">
-  <div class="row">
-    <div class="col-12 col-md-8">
-      <h5 class="mb-2"><span class="fa fa-music"></span> Recent Tracks</h5>
+  <!-- FIXME: news carousel -->
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-md-8">
+        <h5 class="mb-2"><span class="fa fa-music"></span> Recent Tracks</h5>
 
-      {{$previous_date := ""}}
-      {{range $i, $track := .Home.LastTracks}}
+        {{$previous_date := ""}}
+        {{range $i, $track := .Home.LastTracks}}
 
-      {{$new_date := (.SortDate | fromUnixNano | date "2006-01-02")}}
-      {{if not (eq $new_date $previous_date)}}
-      {{if not (eq $i 0)}}
+          {{$new_date := (.SortDate | fromUnixNano | date "2006-01-02")}}
+          {{if not (eq $new_date $previous_date)}}
+            {{if not (eq $i 0)}}
       </ul></div>
-      {{end}}
+            {{end}}
 
-      <div class="card my-3 border-light2">
-        <h6 class="card-header">
-          {{if eq $new_date (now | date "2006-01-02")}}
-          <b>Today</b>
-          {{else}}
-          {{if eq $new_date (now | dateModify "-24h" | date "2006-01-02")}}
-          <b>Yesterday</b>
-          {{else}}
-          <b>{{.SortDate | fromUnixNano | date "Monday"}}</b>
-          {{end}}
-          {{end}}
-          {{.SortDate | fromUnixNano | date "January 02"}}
-        </h6>
-        <ul class="list-group list-group-flush">
+            <div class="card my-3 border-light2">
+              <h6 class="card-header">
+                {{if eq $new_date (now | date "2006-01-02")}}
+                  <b>Today</b>
+                {{else}}
+                  {{if eq $new_date (now | dateModify "-24h" | date "2006-01-02")}}
+                    <b>Yesterday</b>
+                  {{else}}
+                    <b>{{.SortDate | fromUnixNano | date "Monday"}}</b>
+                  {{end}}
+                {{end}}
+                {{.SortDate | fromUnixNano | date "January 02"}}
+              </h6>
+              <ul class="list-group list-group-flush">
           {{end}}
 
 
@@ -70,33 +70,33 @@
 
 
           {{if eq (plus1 $i) (len $root.Home.LastTracks)}}
-        </ul>
-      </div>
+              </ul>
+            </div>
 
-      {{end}}
+          {{end}}
 
-      {{$previous_date = $new_date}}
-      {{end}}
+          {{$previous_date = $new_date}}
+        {{end}}
 
     </div>
     <div class="col-12 col-md-4">
       <h5 class="mb-2"><span class="fa fa-users"></span> Recent Users</h4>
-      {{range .Home.LastUsers}}
-      <a href="{{.CanonicalURL}}">
-        <div class="container btn btn-light py-0 px-2">
-          <div class="row">
-            <div class="col-xs-2 pl-1 pr-1">
-              <!-- FIXME: use css rem -->
-              <img src="{{.Avatar}}" class="ml-1 mr-1 rounded-circle" height="50" width="50" />
+        {{range .Home.LastUsers}}
+          <a href="{{.CanonicalURL}}">
+            <div class="container btn btn-light py-0 px-2">
+              <div class="row">
+                <div class="col-xs-2 pl-1 pr-1">
+                  <!-- FIXME: use css rem -->
+                  <img src="{{.Avatar}}" class="ml-1 mr-1 rounded-circle" height="50" width="50" />
+                </div>
+                <div class="col-xs-10" style="line-height: 50px">
+                  {{.DisplayName}}
+                </div>
+              </div>
             </div>
-            <div class="col-xs-10" style="line-height: 50px">
-                {{.DisplayName}}
-            </div>
-          </div>
-        </div>
-      </a>
-      {{end}}
+          </a>
+        {{end}}
     </div>
   </div>
-</div>
+  </div>
 {{end}}

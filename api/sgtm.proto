@@ -138,6 +138,13 @@ message Post {
   uint64 soundcloud_id = 81 [(go.field) = {name: 'SoundCloudID'}];
   SoundCloudKind soundcloud_kind = 83 [(go.field) = {name: 'SoundCloudKind'}];
 
+  /// tracking activities
+  int64 target_user_id = 101 [(go.field) = {name: 'TargetUserID'}];
+  User target_user = 102;
+  int64 target_post_id = 103 [(go.field) = {name: 'TargetPostID'}];
+  Post target_post = 104;
+  string target_metadata = 105;
+
   enum SoundCloudKind {
     UnknownSoundCloudKind = 0;
     SoundCloudTrack = 1;
@@ -150,10 +157,18 @@ message Post {
     LoginKind = 2;
     RegisterKind = 3;
     LinkDiscordAccountKind = 4;
-    //CommentKind;
-    //ReactionKind;
-    //ForkKind;
-    //FeatKind;
+    ViewProfileKind = 5;
+    ViewPostKind = 6;
+    ViewOpenKind = 7;
+    ViewHomeKind = 8;
+    //ViewOwnProfileKind
+    //ViewOwnTrackKind
+    //EditTrackKind
+    //EditProfileKind
+    //CommentKind
+    //ReactionKind
+    //ForkKind
+    //FeatKind
   }
 }
 

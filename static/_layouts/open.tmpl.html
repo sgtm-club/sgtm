@@ -1,102 +1,133 @@
 {{ template "base" . }}
 
 {{define "head"}}
-<link rel="canonical" href="https://sgtm.club/open" />
-<meta property="og:url" content="https://sgtm.club/open" />
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image:src" property="og:image" itemprop="image primaryImageOfPage" content="https://sgtm.club/_assets/img/logo-1x.png" />
-<meta property="og:image:width" content="2901" />
-<meta property="og:image:height" content="2859" />
-<meta name="twitter:title" property="og:title" itemprop="title name" content="Open startup - SGTM" />
-<meta name="twitter:description" property="og:description" itemprop="description" content="Sounds good to me (SGTM) is an open-startup." />
+  <link rel="canonical" href="https://sgtm.club/open" />
+  <meta property="og:url" content="https://sgtm.club/open" />
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:image:src" property="og:image" itemprop="image primaryImageOfPage" content="https://sgtm.club/_assets/img/logo-1x.png" />
+  <meta property="og:image:width" content="2901" />
+  <meta property="og:image:height" content="2859" />
+  <meta name="twitter:title" property="og:title" itemprop="title name" content="Open startup - SGTM" />
+  <meta name="twitter:description" property="og:description" itemprop="description" content="Sounds good to me (SGTM) is an open-startup." />
 
-<script async src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 {{end}}
 
-{{ define "content" }}
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>📊 Open</h1>
-      <p>
-        View the timeline of changes on <a href="https://wip.chat/products/sgtm?ref=sgtm">WIP.chat</a>.
-      </p>
-      <h4>Statistics</h4>
-      <ul>
-        <li>Users: {{.Open.Users}}</li>
-        <li>Tracks: {{.Open.Tracks}}</li>
-        <li>Duration: {{.Open.TotalDuration | prettyDuration}}</li>
-        <!--<li>Track drafts: {{.Open.TrackDrafts}}</li>-->
-        <li>Uptime: <span data-toggle="tooltip" data-placement="right" title="{{.Service.StartedAt | prettyDate}}">{{.Service.StartedAt | prettyAgo | trimSuffix " ago"}}</span></li>
-      </ul>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h4>Graphs</h4>
-      <canvas id="myChart" width="800" height="400"></canvas>
-    </div>
-  </div>
-  {{if.Opts.DevMode}}
-  <div class="row">
-    <div class="col-md-12">
-      <h4>Uptime</h4>
-      <iframe src="https://stats.uptimerobot.com/4YQZpsJ9PN" style="max-width:100%;width:calc(100% - 14px);height:600px;" scrolling="true" noresize="noresize" frameborder="0"></iframe>
-    </div>
-  </div>
-  {{end}}
-</div>
 
-<script>
-  $(document).ready(function () {
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-        datasets: [{
-          label: 'Uploads by day of week',
-          data: [
-            {{index .Open.UploadsByWeekday 1}},
-            {{index .Open.UploadsByWeekday 2}},
-            {{index .Open.UploadsByWeekday 3}},
-            {{index .Open.UploadsByWeekday 4}},
-            {{index .Open.UploadsByWeekday 5}},
-            {{index .Open.UploadsByWeekday 6}},
-            {{index .Open.UploadsByWeekday 0}},
-          ],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)',
-            'rgba(159, 255, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)',
-            'rgba(159, 255, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true
-            }
+{{ define "content" }}
+  {{$root := .}}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>📊 Open</h1>
+        <p>
+          View the timeline of changes on <a href="https://wip.chat/products/sgtm?ref=sgtm">WIP.chat</a>.
+        </p>
+        <h4>Statistics</h4>
+        <ul>
+          <li>Users: {{.Open.Users}}</li>
+          <li>Tracks: {{.Open.Tracks}}</li>
+          <li>Duration: {{.Open.TotalDuration | prettyDuration}}</li>
+          <!--<li>Track drafts: {{.Open.TrackDrafts}}</li>-->
+          <li>Uptime: <span data-toggle="tooltip" data-placement="right" title="{{.Service.StartedAt | prettyDate}}">{{.Service.StartedAt | prettyAgo | trimSuffix " ago"}}</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h4>Graphs</h4>
+        <canvas id="myChart" width="800" height="400"></canvas>
+      </div>
+    </div>
+    {{if .Opts.DevMode}}
+      <div class="row">
+        <div class="col-md-12">
+          <h4>Uptime</h4>
+          <iframe src="https://stats.uptimerobot.com/4YQZpsJ9PN" style="max-width:100%;width:calc(100% - 14px);height:600px;" scrolling="true" noresize="noresize" frameborder="0"></iframe>
+        </div>
+      </div>
+    {{end}}
+    {{if true}}
+      <div class="row">
+        <div class="col-md-12">
+          <h4 id="activities">Activities</h4>
+        </div>
+      </div>
+      <div class="row">
+          {{range $post := .Open.LastActivities}}
+            <div class="col-lg-4 col-md-6 text-truncate">
+              <small>
+                {{if $root.IsAdmin}}{{template "user_pict_link_or_anon" .Author}}{{end}}
+                {{$kind := .Kind.String}}
+                {{with eq $kind "ViewOpenKind"}}🚪 View this page{{end}}
+                {{with eq $kind "LoginKind"}}👌 Login{{end}}
+                {{with eq $kind "RegisterKind"}}👋 Register{{end}}
+                {{with eq $kind "TrackKind"}}🎶 Post <a href="{{$post.CanonicalURL}}">{{$post.Title}}</a>{{end}}
+                {{with eq $kind "ViewProfileKind"}}👤 View <a href="{{$post.TargetUser.CanonicalURL}}">{{$post.TargetUser.DisplayName}}</a> profile{{end}}
+                {{with eq $kind "ViewPostKind"}}
+                  <!-- FIXME: switch case on .TargetPost.Kind -->
+                  🎶 View <a href="{{$post.TargetPost.CanonicalURL}}">{{$post.TargetPost.Title}}</a>
+                {{end}}
+
+                <span class="text-muted">{{$post.CreatedAt | fromUnixNano | prettyAgo}}</span>
+              </small>
+            </div>
+          {{end}}
+        </div>
+      </div>
+    {{end}}
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      var ctx = document.getElementById('myChart').getContext('2d');
+      var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          datasets: [{
+            label: 'Uploads by day of week',
+            data: [
+              {{index .Open.UploadsByWeekday 1}},
+              {{index .Open.UploadsByWeekday 2}},
+              {{index .Open.UploadsByWeekday 3}},
+              {{index .Open.UploadsByWeekday 4}},
+              {{index .Open.UploadsByWeekday 5}},
+              {{index .Open.UploadsByWeekday 6}},
+              {{index .Open.UploadsByWeekday 0}},
+            ],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(159, 255, 64, 0.2)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)',
+              'rgba(159, 255, 64, 1)'
+            ],
+            borderWidth: 1
           }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
         }
-      }
-    });
+      });
 });
 </script>
 {{end}}

@@ -9,13 +9,13 @@
         <copyright>Manfred Touron 2020</copyright>
         <atom:link href="https://sgtm.club/rss.xml" rel="self" type="application/rss+xml"/>
         {{range .RSS.LastTracks}}
-        <item>
-            <title>{{stripTags .Title}} by @{{.Author.Slug}}</title>
-            <link>https://sgtm.club{{.CanonicalURL}}</link>
-            <pubDate>{{ dateInZone "02 Jan 06 15:04:05 MST" (.SortDate | fromUnixNano) "UTC"}}</pubDate>
-            <guid>https://sgtm.club{{.CanonicalURL}}</guid>
-            <description>{{.URL}}</description>
-        </item>
+            <item>
+                <title>{{stripTags .Title}} by @{{.Author.Slug}}</title>
+                <link>https://sgtm.club{{.CanonicalURL}}</link>
+                <pubDate>{{ dateInZone "02 Jan 06 15:04:05 MST" (.SortDate | fromUnixNano) "UTC"}}</pubDate>
+                <guid>https://sgtm.club{{.CanonicalURL}}</guid>
+                <description>{{.URL}}</description>
+            </item>
         {{end}}
     </channel>
 </rss>
