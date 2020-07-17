@@ -1,0 +1,147 @@
+package sgtm
+
+import (
+	"net/http"
+	"time"
+
+	packr "github.com/gobuffalo/packr/v2"
+	"go.uber.org/zap"
+	"moul.io/sgtm/pkg/sgtmpb"
+)
+
+func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+	tmpl := loadTemplates(box, "base.tmpl.html", "open.tmpl.html")
+	return func(w http.ResponseWriter, r *http.Request) {
+		started := time.Now()
+		data, err := svc.newTemplateData(r)
+		if err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		// custom
+
+		// tracking
+		{
+			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewOpenKind}
+			if err := svc.db.Create(&viewEvent).Error; err != nil {
+				data.Error = "Cannot write activity: " + err.Error()
+			} else {
+				svc.logger.Debug("new view open", zap.Any("event", &viewEvent))
+			}
+		}
+
+		// public tracks
+		{
+			err := svc.db.
+				Model(&sgtmpb.Post{}).
+				Where(sgtmpb.Post{
+					Kind:       sgtmpb.Post_TrackKind,
+					Visibility: sgtmpb.Visibility_Public,
+				}).
+				Count(&data.Open.Tracks).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch last tracks: " + err.Error()
+			}
+		}
+
+		// tracks' duration
+		{
+			var result struct {
+				TotalDuration int64
+			}
+			err := svc.db.
+				Model(&sgtmpb.Post{}).
+				Select("sum(duration) as total_duration").
+				Where(sgtmpb.Post{
+					Kind:       sgtmpb.Post_TrackKind,
+					Visibility: sgtmpb.Visibility_Public,
+				}).
+				First(&result).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch last track durations: " + err.Error()
+			}
+			data.Open.TotalDuration = time.Duration(result.TotalDuration) * time.Millisecond
+		}
+
+		// uploads by weekday
+		{
+			type result struct {
+				Weekday  int64
+				Quantity int64
+			}
+			var results []result
+			err := svc.db.Model(&sgtmpb.Post{}).
+				Where(&sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
+				Select(`strftime("%w", sort_date/1000000000, "unixepoch") as weekday , count(*) as quantity`).
+				Group("weekday").Find(&results).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch uploads by weekday: " + err.Error()
+			}
+			data.Open.UploadsByWeekday = make([]int64, 7)
+			for _, result := range results {
+				data.Open.UploadsByWeekday[result.Weekday] = result.Quantity
+			}
+		}
+
+		// last activities
+		{
+			err := svc.db.
+				Preload("Author").
+				Preload("TargetPost").
+				Preload("TargetUser").
+				Order("created_at desc").
+				Where("NOT (author_id == ? AND kind IN (?))", moulID, []sgtmpb.Post_Kind{
+					sgtmpb.Post_ViewHomeKind,
+					sgtmpb.Post_ViewOpenKind,
+				}).
+				Where("author_id != 0").
+				Where("kind NOT IN (?)", []sgtmpb.Post_Kind{
+					sgtmpb.Post_LinkDiscordAccountKind,
+					//sgtmpb.Post_LoginKind,
+				}).
+				Limit(50).
+				Find(&data.Open.LastActivities).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch last activities: " + err.Error()
+			}
+		}
+
+		// track drafts
+		{
+			err := svc.db.
+				Model(&sgtmpb.Post{}).
+				Where(sgtmpb.Post{
+					Kind:       sgtmpb.Post_TrackKind,
+					Visibility: sgtmpb.Visibility_Draft,
+				}).
+				Count(&data.Open.TrackDrafts).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch last track drafts: " + err.Error()
+			}
+		}
+		// users
+		{
+			err := svc.db.
+				Model(&sgtmpb.User{}).
+				Count(&data.Open.Users).
+				Error
+			if err != nil {
+				data.Error = "Cannot fetch last users: " + err.Error()
+			}
+		}
+		// end of custom
+		if svc.opts.DevMode {
+			tmpl = loadTemplates(box, "base.tmpl.html", "open.tmpl.html")
+		}
+		data.Duration = time.Since(started)
+		if err := tmpl.Execute(w, &data); err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+	}
+}
