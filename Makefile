@@ -72,6 +72,10 @@ prod.dbdump:
 prod.dbshell:
 	ssh -t $(PROD_HOST) sudo sqlite3 $(PROD_PATH)/sgtm.db
 
+.PHONY: dbshell
+dbshell:
+	sqlite3 /tmp/sgtm.db
+
 PROTOS_SRC := $(wildcard ./api/*.proto)
 GEN_DEPS := $(PROTOS_SRC) Makefile
 .PHONY: generate
