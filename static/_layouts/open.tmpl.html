@@ -61,6 +61,7 @@
                 {{if $root.IsAdmin}}{{template "user_pict_link_or_anon" .Author}}{{end}}
                 {{$kind := .Kind.String}}
                 {{with eq $kind "ViewOpenKind"}}🚪 View this page{{end}}
+                {{with eq $kind "ViewHomeKind"}}🏠 View home page{{end}}
                 {{with eq $kind "LoginKind"}}👌 Login{{end}}
                 {{with eq $kind "RegisterKind"}}👋 Register{{end}}
                 {{with eq $kind "TrackKind"}}🎶 Post <a href="{{$post.CanonicalURL}}">{{$post.Title}}</a>{{end}}
