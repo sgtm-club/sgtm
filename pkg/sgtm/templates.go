@@ -41,7 +41,10 @@ func (svc *Service) newTemplateData(w http.ResponseWriter, r *http.Request) (*te
 		var user sgtmpb.User
 		if err := svc.db.
 			Preload("RecentPosts", func(db *gorm.DB) *gorm.DB {
-				return db.Order("created_at desc").Limit(3)
+				return db.
+					Where("kind IN (?)", []sgtmpb.Post_Kind{sgtmpb.Post_TrackKind}).
+					Order("created_at desc").
+					Limit(3)
 			}).
 			First(&user, data.Claims.Session.UserID).
 			Error; err != nil {
