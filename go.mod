@@ -19,7 +19,6 @@ require (
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gogo/gateway v1.1.0
 	github.com/golang/protobuf v1.4.2
-	github.com/gomarkdown/markdown v0.0.0-20200609195525-3f9352745725
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/gosimple/slug v1.9.0
 	github.com/grokify/html-strip-tags-go v0.0.0-20200322061010-ea0c1cf2f119
@@ -31,9 +30,11 @@ require (
 	github.com/imdario/mergo v0.3.9 // indirect
 	github.com/karrick/godirwalk v1.15.6 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
+	github.com/microcosm-cc/bluemonday v1.0.3
 	github.com/oklog/run v1.1.1-0.20200508094559-c7096881717e
 	github.com/peterbourgon/ff/v3 v3.0.0
 	github.com/rs/cors v1.7.0
+	github.com/russross/blackfriday/v2 v2.0.1
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/soheilhy/cmux v0.1.4
 	github.com/stretchr/testify v1.6.1

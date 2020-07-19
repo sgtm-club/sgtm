@@ -11,10 +11,10 @@ import (
 	sprig "github.com/Masterminds/sprig/v3"
 	humanize "github.com/dustin/go-humanize"
 	packr "github.com/gobuffalo/packr/v2"
-	"github.com/gomarkdown/markdown"
-	"github.com/gomarkdown/markdown/parser"
 	striptags "github.com/grokify/html-strip-tags-go"
 	"github.com/hako/durafmt"
+	"github.com/microcosm-cc/bluemonday"
+	blackfriday "github.com/russross/blackfriday/v2"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"moul.io/sgtm/pkg/sgtmpb"
@@ -78,10 +78,11 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 	allInOne = strings.TrimSpace(allInOne)
 	funcmap := sprig.FuncMap()
 	funcmap["markdownify"] = func(input string) template.HTML {
-		extensions := parser.CommonExtensions | parser.AutoHeadingIDs
-		parser := parser.NewWithExtensions(extensions)
-		md := markdown.ToHTML([]byte(input), parser, nil)
-		return template.HTML(fmt.Sprintf(`<div class="markdownify">%s</div>`, string(md)))
+		extensions := blackfriday.CommonExtensions | blackfriday.NoEmptyLineBeforeBlock
+		unsafe := blackfriday.Run([]byte(input), blackfriday.WithExtensions(extensions))
+		mdHTML := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+		html := fmt.Sprintf(`<div class="markdownify">%s</div>`, string(mdHTML))
+		return template.HTML(html)
 	}
 	funcmap["fromUnixNano"] = func(input int64) time.Time {
 		return time.Unix(0, input)
