@@ -59,7 +59,7 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 	allInOne := ""
 	templateName := ""
 	for _, filename := range filenames {
-		src, err := box.FindString("_layouts/" + filename)
+		src, err := box.FindString("page_" + filename)
 		if err != nil {
 			panic(err)
 		}
@@ -91,9 +91,6 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 		return input.Format("2006-01-02 15:04")
 	}
 	funcmap["noescape"] = func(str string) template.HTML {
-		return template.HTML(str)
-	}
-	funcmap["escape"] = func(str string) template.HTML {
 		return template.HTML(str)
 	}
 	funcmap["stripTags"] = striptags.StripTags

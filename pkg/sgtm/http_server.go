@@ -175,25 +175,29 @@ func (svc *Service) httpServer() (*http.Server, error) {
 	})
 
 	// fs
-	box := packr.New("static", "../../static")
+	staticBox := packr.New("static", "../../static")
+	srcBox := packr.New("src", ".")
+	if !strings.HasSuffix(srcBox.ResolutionDir, "pkg/sgtm") { // strange bug -> no problem for production, but issue in dev if this line doesn't exist
+		srcBox.ResolutionDir += "/pkg/sgtm"
+	}
 
 	// dynamic pages
-	error404Page := svc.error404Page(box)
+	error404Page := svc.error404Page(srcBox)
 	{
-		svc.errRenderHTML = svc.errorPage(box)
-		r.Get("/", svc.homePage(box))
-		r.Get("/settings", svc.settingsPage(box))
-		r.Post("/settings", svc.settingsPage(box))
-		r.Get("/@{user_slug}", svc.profilePage(box))
-		r.Get("/open", svc.openPage(box))
-		r.Get("/new", svc.newPage(box))
-		r.Post("/new", svc.newPage(box))
-		r.Get("/post/{post_slug}", svc.postPage(box))
-		r.Get("/post/{post_slug}/edit", svc.postEditPage(box))
-		r.Get("/post/{post_slug}/sync", svc.postSyncPage(box))
+		svc.errRenderHTML = svc.errorPage(srcBox)
+		r.Get("/", svc.homePage(srcBox))
+		r.Get("/settings", svc.settingsPage(srcBox))
+		r.Post("/settings", svc.settingsPage(srcBox))
+		r.Get("/@{user_slug}", svc.profilePage(srcBox))
+		r.Get("/open", svc.openPage(srcBox))
+		r.Get("/new", svc.newPage(srcBox))
+		r.Post("/new", svc.newPage(srcBox))
+		r.Get("/post/{post_slug}", svc.postPage(srcBox))
+		r.Get("/post/{post_slug}/edit", svc.postEditPage(srcBox))
+		r.Get("/post/{post_slug}/sync", svc.postSyncPage(srcBox))
 		// FIXME: r.Use(ModeratorOnly) + r.Get("/moderator")
 		// FIXME: r.Use(AdminOnly) + r.Get("/admin")
-		r.Get("/rss.xml", svc.rssPage(box))
+		r.Get("/rss.xml", svc.rssPage(srcBox))
 	}
 
 	// special pages
@@ -213,14 +217,14 @@ func (svc *Service) httpServer() (*http.Server, error) {
 
 	// static files & 404
 	{
-		fs := http.FileServer(box)
+		fs := http.FileServer(staticBox)
 		r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasSuffix(r.URL.Path, ".tmpl.html") { // hide sensitive files
 				error404Page(w, r)
 				return
 			}
 			if r.URL.Path != "/" {
-				_, err := box.FindString(r.URL.Path)
+				_, err := staticBox.FindString(r.URL.Path)
 				if err != nil {
 					error404Page(w, r)
 					return
