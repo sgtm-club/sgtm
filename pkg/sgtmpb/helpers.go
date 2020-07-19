@@ -49,10 +49,29 @@ func (u *User) CanonicalURL() string {
 	return fmt.Sprintf("/@%s", u.Slug)
 }
 
+func (u *User) Fullname() string {
+	fullname := fmt.Sprintf("%s %s", u.Firstname, u.Lastname)
+	return strings.TrimSpace(fullname)
+}
+
 func (u *User) DisplayName() string {
 	if u.Firstname != "" || u.Lastname != "" {
-		fullname := fmt.Sprintf("%s %s", u.Firstname, u.Lastname)
-		return strings.TrimSpace(fullname)
+		return u.Fullname()
 	}
 	return fmt.Sprintf("@%s", u.Slug)
+}
+
+func (u *User) OtherLinksList() []string {
+	links := strings.Split(strings.TrimSpace(u.OtherLinks), "\n")
+	for idx, link := range links {
+		links[idx] = strings.TrimSpace(link)
+	}
+	return links
+}
+
+func (u *User) HasSomethingAroundTheWeb() bool {
+	return u.TwitterUsername != "" ||
+		u.SoundcloudUsername != "" ||
+		u.OtherLinks != "" ||
+		u.Homepage != ""
 }

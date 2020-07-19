@@ -9,7 +9,7 @@
     <div class="row">
       <div class="col-md-12">
         <h1>Settings</h1>
-        <h3>Profile</h3>
+        <!--<h3>Profile</h3>-->
         <form method="post">
           <div class="form-group row">
             <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
@@ -35,9 +35,75 @@
               <input type="file" name="upload" class="form-control" id="uploadField" disabled data-toggle="tooltip" title="Coming soon" data-placement="left">
             </div>
           </div>
-          <!-- timezone -->
+          <div class="form-group row">
+            <label for="inputHomepage" class="col-sm-2 col-form-label">Website</label>
+            <div class="col-sm-10">
+              <input name="homepage" type="url" pattern="https?://.+" class="form-control" id="inputHomepage" value="{{.User.Homepage}}" placeholder="https://...">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputHeadline" class="col-sm-2 col-form-label">Headline</label>
+            <div class="col-sm-10">
+              <input name="headline" type="text" class="form-control" id="inputHeadline" value="{{.User.Headline}}" placeholder="Drummer of a super cool band">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputBio"  class="col-sm-2 col-form-label">Bio</label>
+            <div class="col-sm-10">
+              <textarea maxlength="500" name="bio" class="form-control" placeholder="I started making music because X years ago.{{newline}}I'm totally obsessed by medieval electronic music.{{newline}}Everybody calls me the new Freddie Mercury." id="inputBio" rows="2">{{.User.Bio}}</textarea>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputInspirations"  class="col-sm-2 col-form-label">Inspirations</label>
+            <div class="col-sm-10">
+              <textarea maxlength="500" name="inspirations" class="form-control" placeholder="Daft Punk, Queen, Hans Zimmer..." id="inputInspirations" rows="2">{{.User.Inspirations}}</textarea>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputGoals"  class="col-sm-2 col-form-label">Goals</label>
+            <div class="col-sm-10">
+              <textarea maxlength="500" name="goals" class="form-control" placeholder="I want to release a new Electronic album.{{newline}}I want to discover a new instrumnet.{{newline}}I want to discover a new style.{{newline}}I want to make covers.{{newline}}I want to make a new band..." id="inputGoals" rows="3">{{.User.Goals}}</textarea>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputGears"  class="col-sm-2 col-form-label">Gears</label>
+            <div class="col-sm-10">
+              <textarea maxlength="500" name="gears" class="form-control" placeholder="Softwares: ... (Logic Pro X, Reason Rack, SoundToys suite){{newline}}Instruments: ... (Moog Keyboard, Fender Stratocaster){{newline}}Headset: ... (Beyerdynamic DT-990 Pro){{newline}}Monitors: ... (Yamaha HS50M)" id="inputGears" rows="3">{{.User.Gears}}</textarea>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputTwitterUsername" class="col-sm-2 col-form-label"><span class="fab fa-twitter"></span> Twitter</label>
+            <div class="col-sm-10">
+              <input name="twitter_username" type="text" class="form-control" id="inputTwitterUsername" value="{{with .User.TwitterUsername}}https://twitter.com/{{.}}{{end}}" placeholder="@sgtmclub">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputSoundcloudUsername" class="col-sm-2 col-form-label"><span class="fab fa-soundcloud"></span> Soundcloud</label>
+            <div class="col-sm-10">
+              <input name="soundcloud_username" type="text" class="form-control" id="inputSoundcloudUsername" value="{{with .User.SoundcloudUsername}}https://soundcloud.com/{{.}}{{end}}" placeholder="@sgtmclub">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputGenres" class="col-sm-2 col-form-label">Genres</label>
+            <div class="col-sm-10">
+              <input name="genres" type="text" class="form-control" id="inputGenres" value="{{.User.Genres}}" placeholder="Medieval Trance, Psychedelic Forktronica, Black MIDI, Vaporwave, Hypnagogic Pop">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputOtherLinks"  class="col-sm-2 col-form-label">Other Links</label>
+            <div class="col-sm-10">
+              <textarea maxlength="500" name="other_links" class="form-control" placeholder="https://soundcloud.com/{username}{{newline}}https://open.spotify.com/user/{username}{{newline}}https://github.com/{username}{{newline}}https://twitch.tv/{username}" id="inputOtherLinks" rows="3">{{.User.OtherLinks}}</textarea>
+            </div>
+          </div>
+
+
+          <!-- FIXME: auto detect timezone from browser -->
+          <!--
+               string location = 22;
+               string other_links = 25;
+          -->
+
           <!-- location -->
-          <!-- twitter -->
           <!-- nomadlist -->
           <!-- spotify -->
           <!-- soundcloud -->

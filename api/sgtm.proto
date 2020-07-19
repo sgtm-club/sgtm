@@ -84,9 +84,19 @@ message User {
   string avatar = 15 [(go.field) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
   string discord_id = 16 [(go.field) = {name: "DiscordID", tags: 'gorm:"size:255;not null;default:\'\'"'}];
   string discord_username = 17 [(go.field) = {tags: 'gorm:"size:255;not null;default:\'\'"'}];
+  string headline = 18;
+  string bio = 19;
+  string inspirations = 20;
+  string gears = 21;
+  string genres = 22;
+  string location = 23;
+  string twitter_username = 24;
+  string homepage = 25;
+  string other_links = 26;
+  string goals = 27;
+  string soundcloud_username = 28;
 
-  repeated Post recent_posts = 18 [(go.field) = {tags: 'gorm:"foreignkey:AuthorID;PRELOAD:false"'}];
-  // bio
+  repeated Post recent_posts = 50 [(go.field) = {tags: 'gorm:"foreignkey:AuthorID;PRELOAD:false"'}];
   // timezone
   // location
 }

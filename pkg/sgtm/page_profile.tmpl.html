@@ -53,26 +53,79 @@
       <div class="col-md-4">
         <div class="mb-3">
           <div><img src="{{.Profile.User.Avatar}}" width="128" class="mb-3" /></div>
-          <div>{{.Profile.User.DisplayName}}</div>
+          {{with .Profile.User.Fullname}}
+            <div><b>{{.}}</b></div>
+          {{end}}
+
+          {{if eq .Profile.User.ID .UserID}}
+            <div class="mb-3">
+              <a href="/settings" class="btn btn-secondary"><span class="fa fa-edit"></span> Edit</a>
+            </div>
+          {{end}}
+
+          <div class="text-muted">@{{.Profile.User.Slug}}</div>
+          {{with .Profile.User.Headline}}
+            <div class="mb-3 mt-3">{{.}}</div>
+          {{end}}
+          {{with .Profile.User.Genres}}
+            <div class="mb-3 mt-3"><span class="fa fa-music"></span> {{.}}</div>
+          {{end}}
           <div>📆 Joined <span data-toggle="tooltip" data-placement="top" title="{{.Profile.User.CreatedAt | fromUnixNano | prettyDate}}">{{.Profile.User.CreatedAt | fromUnixNano | prettyAgo}}</span></div>
           <div>🎶 {{.Profile.Stats.Tracks}} tracks</div>
         </div>
 
-        {{if eq .Profile.User.ID .UserID}}
-          <div class="mb-3">
-            <a href="/settings" class="btn btn-secondary"><span class="fa fa-edit"></span> Edit</a>
+        {{if .Profile.User.HasSomethingAroundTheWeb}}
+        <div class="card mb-3">
+          <div class="card-header"><span class="fa fa-globe"></span> Around the Web</div>
+          <div class="p-2">
+            {{with .Profile.User.Homepage}}
+              <div><a href="{{.}}"><span class="fa fa-house-user"></span> {{.| prettyURL}}</a></div>
+            {{end}}
+            {{with .Profile.User.TwitterUsername}}
+              <div><a href="https://twitter.com/{{.}}"><span class="fab fa-twitter"></span> Twitter</a></div>
+            {{end}}
+            {{with .Profile.User.SoundcloudUsername}}
+              <div><a href="https://soundcloud.com/{{.}}"><span class="fab fa-soundcloud"></span> Soundcloud</a></div>
+            {{end}}
+            {{range $link := .Profile.User.OtherLinksList}}
+              {{with ($link | prettyURL)}}
+                <div>
+                  <a href="{{$link}}"><span class="fa fa-link"></span> {{.}}</a>
+                </div>
+              {{end}}
+            {{end}}
+          </div>
+        </div>
+        {{end}}
+
+        {{with .Profile.User.Bio}}
+          <div class="card mb-3">
+            <div class="card-header"><span class="fa fa-toolbox"></span> Bio</div>
+            <div class="p-2">{{.}}</div>
           </div>
         {{end}}
-        {{if .IsAdmin}}
-          <!--
-          <div class="card mb-3 bg-danger text-white">
-            <div class="card-header"><span class="fa fa-user-lock"></span> Admin</div>
-            <div class="p-2">
-              <div><a href="{{.Profile.User.CanonicalURL}}/" class="text-white"><span class="fa fa-sync"></span> </span></a></div>
-            </div>
+
+        {{with .Profile.User.Goals}}
+          <div class="card mb-3">
+            <div class="card-header"><span class="fa fa-toolbox"></span> Goals</div>
+            <div class="p-2">{{.}}</div>
           </div>
-          -->
         {{end}}
+
+        {{with .Profile.User.Inspirations}}
+          <div class="card mb-3">
+            <div class="card-header"><span class="fa fa-toolbox"></span> Inspirations</div>
+            <div class="p-2">{{.}}</div>
+          </div>
+        {{end}}
+
+        {{with .Profile.User.Gears}}
+          <div class="card mb-3">
+            <div class="card-header"><span class="fa fa-toolbox"></span> Gears</div>
+            <div class="p-2">{{.}}</div>
+          </div>
+        {{end}}
+
       </div>
     </div>
   </div>

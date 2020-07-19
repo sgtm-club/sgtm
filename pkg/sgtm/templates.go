@@ -78,6 +78,22 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 	funcmap["fromUnixNano"] = func(input int64) time.Time {
 		return time.Unix(0, input)
 	}
+	funcmap["prettyURL"] = func(input string) string {
+		u, err := url.Parse(input)
+		if err != nil {
+			return ""
+		}
+		if len(u.Path) > 10 {
+			u.Path = u.Path[0:7] + "..."
+		}
+		shorten := fmt.Sprintf("%s%s", u.Host, u.Path)
+		shorten = strings.TrimRight(shorten, "/")
+		shorten = strings.TrimLeft(shorten, "www.")
+		return shorten
+	}
+	funcmap["newline"] = func() string {
+		return "\n"
+	}
 	funcmap["prettyAgo"] = func(input time.Time) string {
 		return humanize.RelTime(input, time.Now(), "ago", "in the future(!?)")
 	}

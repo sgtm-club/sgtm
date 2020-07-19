@@ -31,13 +31,13 @@
 
       <div class="col-md-4">
         {{if eq .Post.Post.Author.ID .UserID}}
-          <div class="card mb-3 bg-secondary text-white">
-            <div class="card-header"><span class="fa fa-user-cog"></span> Manage (author)</div>
-            <div class="p-2">
-              <div><a href="{{.Post.Post.CanonicalURL}}/edit" class="text-white"><span class="fa fa-edit"></span> Edit</a></div>
-              <div><a href="{{.Post.Post.URL}}" class="text-white"><span class="fab fa-soundcloud"></span> See original</a></div>
-            </div>
+        <div class="card mb-3 bg-secondary text-white">
+          <div class="card-header"><span class="fa fa-user-cog"></span> Manage (author)</div>
+          <div class="p-2">
+            <div><a href="{{.Post.Post.CanonicalURL}}/edit" class="text-white"><span class="fa fa-edit"></span> Edit</a></div>
+            <div><a href="{{.Post.Post.URL}}" class="text-white"><span class="fab fa-soundcloud"></span> See original</a></div>
           </div>
+        </div>
         {{end}}
         <div class="card mb-3 bg-light">
           <div class="card-header"><span class="fa fa-share-alt"></span> Sharing</div>
