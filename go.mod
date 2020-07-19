@@ -7,6 +7,7 @@ require (
 	github.com/alta/protopatch v0.0.0-20200702232458-c2bd0c612764
 	github.com/bwmarrin/discordgo v0.21.1
 	github.com/bwmarrin/snowflake v0.3.0
+	github.com/cespare/hutil v0.1.0
 	github.com/clbanning/mxj v1.8.4 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
@@ -49,6 +50,7 @@ require (
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/grpc/examples v0.0.0-20200626030347-424195440776 // indirect
 	google.golang.org/protobuf v1.25.0
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/driver/sqlite v1.0.8
 	gorm.io/gorm v0.2.21

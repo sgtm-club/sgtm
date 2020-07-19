@@ -15,7 +15,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 	tmpl := loadTemplates(box, "base.tmpl.html", "post.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
-		data, err := svc.newTemplateData(r)
+		data, err := svc.newTemplateData(w, r)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
@@ -63,7 +63,7 @@ func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *
 	tmpl := loadTemplates(box, "base.tmpl.html", "dummy.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
-		data, err := svc.newTemplateData(r)
+		data, err := svc.newTemplateData(w, r)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
@@ -110,7 +110,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 	tmpl := loadTemplates(box, "base.tmpl.html", "post-edit.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
-		data, err := svc.newTemplateData(r)
+		data, err := svc.newTemplateData(w, r)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return

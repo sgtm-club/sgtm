@@ -72,6 +72,12 @@ prod.dbdump:
 prod.dbshell:
 	ssh -t $(PROD_HOST) sudo sqlite3 $(PROD_PATH)/sgtm.db
 
+.PHONY: prod.accesslog
+prod.accesslog:
+	#ssh $(PROD_HOST) sudo apt install grc
+	#ssh $(PROD_HOST) grc tail -n 1000 -f $(PROD_PATH)/logs/access.log
+	ssh $(PROD_HOST) tail -n 1000 -f $(PROD_PATH)/logs/access.log
+
 .PHONY: dbshell
 dbshell:
 	sqlite3 /tmp/sgtm.db

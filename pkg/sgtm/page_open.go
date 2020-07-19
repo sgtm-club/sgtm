@@ -13,7 +13,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 	tmpl := loadTemplates(box, "base.tmpl.html", "open.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
-		data, err := svc.newTemplateData(r)
+		data, err := svc.newTemplateData(w, r)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return

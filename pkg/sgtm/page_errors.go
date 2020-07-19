@@ -13,7 +13,7 @@ func (svc *Service) error404Page(box *packr.Box) func(w http.ResponseWriter, r *
 		w.WriteHeader(http.StatusNotFound)
 
 		started := time.Now()
-		data, err := svc.newTemplateData(r)
+		data, err := svc.newTemplateData(w, r)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
@@ -35,7 +35,7 @@ func (svc *Service) errorPage(box *packr.Box) func(w http.ResponseWriter, r *htt
 	tmpl := loadTemplates(box, "base.tmpl.html", "error.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request, userError error, status int) {
 		started := time.Now()
-		data, err := svc.newTemplateData(r)
+		data, err := svc.newTemplateData(w, r)
 		if err != nil {
 			svc.errRender(w, r, err, http.StatusUnprocessableEntity)
 			return

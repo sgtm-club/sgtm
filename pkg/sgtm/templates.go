@@ -18,7 +18,7 @@ import (
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
-func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
+func (svc *Service) newTemplateData(w http.ResponseWriter, r *http.Request) (*templateData, error) {
 	data := templateData{
 		Title:   "SGTM",
 		Date:    time.Now(),
@@ -50,6 +50,10 @@ func (svc *Service) newTemplateData(r *http.Request) (*templateData, error) {
 		data.User = &user
 		data.UserID = user.ID
 		data.IsAdmin = user.ID == 1280639244955553792
+		//w.Header().Set("SGTM-User-ID", fmt.Sprintf("%d", user.ID))
+		w.Header().Set("SGTM-User-Slug", user.Slug)
+	} else {
+		w.Header().Set("SGTM-User-Slug", "-")
 	}
 
 	return &data, nil

@@ -14,7 +14,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 	tmpl := loadTemplates(box, "base.tmpl.html", "profile.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
-		data, err := svc.newTemplateData(r)
+		data, err := svc.newTemplateData(w, r)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return

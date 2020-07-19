@@ -12,6 +12,7 @@ import (
 	"runtime/debug"
 	"strings"
 
+	"github.com/cespare/hutil/apachelog"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jsonp"
@@ -32,6 +33,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"moul.io/banner"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
@@ -245,9 +247,21 @@ func (svc *Service) httpServer() (*http.Server, error) {
 
 	// configure server
 	http.DefaultServeMux = http.NewServeMux() // disables default handlers registered by importing net/http/pprof for security reasons
+
+	//apacheLogFormat := `%h - %u %{02/Jan/2006 15:04:05 -0700}t "%m %U%q %H" %s %b %D`
+	apacheLogFormat := `%h - %{Sgtm-User-Slug}o %t "%r" %s %b "%{Referer}i" "%{User-Agent}i"`
+	ljack := lumberjack.Logger{
+		Filename:   "./logs/access.log",
+		MaxSize:    500, // megabytes
+		MaxBackups: 10,
+		MaxAge:     365,
+		Compress:   true,
+	}
+	loggedHandler := apachelog.NewHandler(apacheLogFormat, r, &ljack)
+
 	return &http.Server{
 		Addr:    "osef",
-		Handler: r,
+		Handler: loggedHandler,
 	}, nil
 }
 

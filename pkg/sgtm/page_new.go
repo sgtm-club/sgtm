@@ -20,7 +20,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 	tmpl := loadTemplates(box, "base.tmpl.html", "new.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
-		data, err := svc.newTemplateData(r)
+		data, err := svc.newTemplateData(w, r)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
@@ -81,7 +81,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					// check if track already exists
 					{
 						var alreadyExists sgtmpb.Post
-						err := svc.db.Model(post).Where(sgtmpb.Post{SoundCloudID: post.SoundCloudID}).First(&alreadyExists).Error
+						err := svc.db.Model(&post).Where(sgtmpb.Post{SoundCloudID: post.SoundCloudID}).First(&alreadyExists).Error
 						if err == nil && alreadyExists.ID != 0 {
 							data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="%s">%s</a>.`, alreadyExists.CanonicalURL(), alreadyExists.Title)
 							return nil

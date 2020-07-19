@@ -13,7 +13,7 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 	tmpl := loadTemplates(box, "base.tmpl.html", "settings.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
-		data, err := svc.newTemplateData(r)
+		data, err := svc.newTemplateData(w, r)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return

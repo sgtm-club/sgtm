@@ -1,4 +1,5 @@
 sgtm-linux-static
+logs/
 packrd/
 *-packr.go
 config.txt
