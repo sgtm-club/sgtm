@@ -31,3 +31,7 @@ down:
 
 .PHONY: re
 re: pull up
+
+.PHONY: backup
+backup:
+	sqlite3 sgtm.db -cmd '.timeout 20000' ".backup backups/`date +%Y-%m-%d_%H:%M:%S`.sqlite3"

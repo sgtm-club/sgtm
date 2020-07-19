@@ -6,6 +6,7 @@ services:
     restart: on-failure
     volumes:
       - .:/app
+      - "/etc/localtime:/etc/localtime:ro"
     working_dir: /app
     labels:
       com.centurylinklabs.watchtower.enable: "true"
