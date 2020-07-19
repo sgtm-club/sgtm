@@ -19,6 +19,7 @@ require (
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gogo/gateway v1.1.0
 	github.com/golang/protobuf v1.4.2
+	github.com/gomarkdown/markdown v0.0.0-20200609195525-3f9352745725
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/gosimple/slug v1.9.0
 	github.com/grokify/html-strip-tags-go v0.0.0-20200322061010-ea0c1cf2f119
