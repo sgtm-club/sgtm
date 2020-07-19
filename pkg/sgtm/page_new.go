@@ -78,6 +78,16 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						return nil
 					}
 
+					// check if track already exists
+					{
+						var alreadyExists sgtmpb.Post
+						err := svc.db.Model(post).Where(sgtmpb.Post{SoundCloudID: post.SoundCloudID}).First(&alreadyExists).Error
+						if err == nil && alreadyExists.ID != 0 {
+							data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="%s">%s</a>.`, alreadyExists.CanonicalURL(), alreadyExists.Title)
+							return nil
+						}
+					}
+
 					post.SoundCloudSecretToken = u.Query().Get("secret_token")
 					params := url.Values{}
 					if post.SoundCloudSecretToken != "" {
