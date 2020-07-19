@@ -113,7 +113,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					post.BPM = track.Bpm
 					post.KeySignature = track.KeySignature
 					post.ProviderDescription = track.Description
-					post.Body = track.Description
+					//post.Body = track.Description
 					/*post.Tags = track.TagList
 					post.WaveformURL = track.WaveformURL
 					post.License = track.License

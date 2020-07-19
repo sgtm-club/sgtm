@@ -3,6 +3,7 @@ package sgtm
 import (
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -93,7 +94,12 @@ func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *
 
 		// FIXME: do the sync here
 
-		http.Redirect(w, r, post.CanonicalURL(), http.StatusFound)
+		switch r.URL.Query().Get("return") {
+		case "edit":
+			http.Redirect(w, r, post.CanonicalURL()+"/edit", http.StatusFound)
+		default:
+			http.Redirect(w, r, post.CanonicalURL(), http.StatusFound)
+		}
 		// end of custom
 		if svc.opts.DevMode {
 			tmpl = loadTemplates(box, "base.tmpl.html", "dummy.tmpl.html")
@@ -116,28 +122,65 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 			return
 		}
 		// custom
-		if data.User == nil {
-			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-			return
+
+		// no anonymous users
+		{
+			if data.User == nil {
+				http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+				return
+			}
 		}
-		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.db.Preload("Author")
-		id, err := strconv.ParseInt(postSlug, 10, 64)
-		if err == nil {
-			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
-		} else {
-			query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
+
+		// fetch post from db
+		{
+			postSlug := chi.URLParam(r, "post_slug")
+			query := svc.db.Preload("Author")
+			id, err := strconv.ParseInt(postSlug, 10, 64)
+			if err == nil {
+				query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
+			} else {
+				query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
+			}
+			var post sgtmpb.Post
+			if err := query.First(&post).Error; err != nil {
+				svc.error404Page(box)(w, r)
+				return
+			}
+			data.PostEdit.Post = &post
 		}
-		var post sgtmpb.Post
-		if err := query.First(&post).Error; err != nil {
-			svc.error404Page(box)(w, r)
-			return
+
+		// only author or admin
+		{
+			if !data.IsAdmin && data.User.ID != data.PostEdit.Post.Author.ID {
+				svc.error404Page(box)(w, r)
+				return
+			}
 		}
-		data.PostEdit.Post = &post
-		if !data.IsAdmin && data.User.ID != post.Author.ID {
-			svc.error404Page(box)(w, r)
-			return
+
+		// if POST
+		if r.Method == "POST" {
+			validate := func() map[string]interface{} {
+				if err := r.ParseForm(); err != nil {
+					data.Error = err.Error()
+					return nil
+				}
+				// FIXME: blacklist, etc
+				fields := map[string]interface{}{}
+				fields["body"] = strings.TrimSpace(r.Form.Get("body"))
+				return fields
+			}
+			fields := validate()
+			if fields != nil {
+				if err := svc.db.Model(data.PostEdit.Post).Omit("Author").Updates(fields).Error; err != nil {
+					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+					return
+				}
+				svc.logger.Debug("post updated", zap.Any("fields", fields))
+				http.Redirect(w, r, data.PostEdit.Post.CanonicalURL(), http.StatusFound)
+				return
+			}
 		}
+
 		// end of custom
 		if svc.opts.DevMode {
 			tmpl = loadTemplates(box, "base.tmpl.html", "post-edit.tmpl.html")

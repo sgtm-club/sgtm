@@ -32,6 +32,13 @@ func (p *Post) GoDuration() time.Duration {
 	return time.Millisecond * time.Duration(p.Duration)
 }
 
+func (p *Post) SafeDescription() string {
+	if p.Body != "" {
+		return p.Body
+	}
+	return p.ProviderDescription
+}
+
 // User
 
 func (u *User) ApplyDefaults() {

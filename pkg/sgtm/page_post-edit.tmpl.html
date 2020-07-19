@@ -7,12 +7,43 @@
 {{define "content"}}
   <div class="container">
     <div class="row">
-      <div class="col-md-12">
-        Coming soon
+      <div class="col-md-8">
+        <h1><a href="{{.PostEdit.Post.CanonicalURL}}">{{.PostEdit.Post.Title}}</a> &gt; Edit</h1>
+        <form method="post">
+          <div class="form-group row">
+            <label for="staticDescription" class="col-sm-2 col-form-label">Description</label>
+            <div class="col-sm-10">
+              <textarea name="body" class="form-control" placeholder="{{.PostEdit.Post.ProviderDescription}}" id="staticDescription" rows="3">{{.PostEdit.Post.Body}}</textarea>
+            </div>
+          </div>
+          <div class="text-right">
+            <!--<button name="submit" type="submit" value="published" class="invisible"></button>
+                 <button name="submit" type="submit" value="draft" class="btn btn-light text-muted mb-2 my-3" disabled>Save draft</button>-->
+            <button name="submit" type="submit" value="published" class="btn btn-primary mb-2 my-3">🤟 Update</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-4">
+        <div class="card mb-3 bg-light">
+          <div class="card-header"><span class="fab fa-soundcloud"></span> From SoundCloud <small><a href="{{.PostEdit.Post.CanonicalURL}}/sync?return=edit">(resync)</a></small></div>
+          <div class="p-2">
+            <div class="form-group">
+              <label for="soundcloudTitle">Title</label>
+              <input type="text" readonly class="form-control-plaintext border" id="soundcloudTitle" value="{{.PostEdit.Post.Title}}">
+            </div>
+            <div class="form-group">
+              <label for="soundcloudArtwork">Artwork</label>
+              <div>
+                <img id="soundcloudArtwork" src="{{.PostEdit.Post.ArtworkURL}}" width="80" height="80" class="rounded" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="soundcloudDescription">Description</label>
+              <textarea class="form-control-plaintext border" id="soundcloudDescription" rows="3" readonly>{{.PostEdit.Post.ProviderDescription}}</textarea>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
-  <!-- FIXME: use columns to make a nice display -->
-  <!-- FIXME: set up artwork for twitter, facebook sharing etc -->
 {{end}}

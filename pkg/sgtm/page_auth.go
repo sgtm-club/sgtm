@@ -13,6 +13,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/gosimple/slug"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"gorm.io/gorm"
@@ -133,14 +134,14 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 			dbUser = sgtmpb.User{
 				Email:           discordUser.Email,
 				Avatar:          fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", discordUser.ID, discordUser.Avatar),
-				Slug:            discordUser.Username,
+				Slug:            slug.Make(discordUser.Username),
 				Locale:          discordUser.Locale,
 				DiscordID:       discordUser.ID,
 				DiscordUsername: fmt.Sprintf("%s#%s", discordUser.Username, discordUser.Discriminator),
 				// Firstname
 				// Lastname
 			}
-			// FIXME: check if slug already exists, if yes, append something
+			// FIXME: check if slug already exists, if yes, append something to the slug
 			err = svc.db.Transaction(func(tx *gorm.DB) error {
 				if err := svc.db.Create(&dbUser).Error; err != nil {
 					return err
