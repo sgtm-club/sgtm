@@ -93,8 +93,26 @@ func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *
 		}
 
 		// FIXME: do the sync here
+		dl, err := DownloadPost(post, false)
+		if err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		svc.logger.Debug("file downloaded", zap.String("path", dl.Path))
+		bpm, err := ExtractBPM(dl.Path)
+		if err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		svc.logger.Debug("BPM extracted", zap.Float64("bpm", bpm))
+		if err := svc.db.Model(&post).Omit("Author").Update("bpm", bpm).Error; err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
 
 		switch r.URL.Query().Get("return") {
+		case "no":
+			return
 		case "edit":
 			http.Redirect(w, r, post.CanonicalURL()+"/edit", http.StatusFound)
 		default:
