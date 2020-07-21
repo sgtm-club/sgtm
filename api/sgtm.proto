@@ -8,9 +8,10 @@ import "google/api/annotations.proto";
 import "patch/go.proto";
 
 service WebAPI {
-  rpc Register(Register.Request) returns (Register.Response) { option (google.api.http) = {post: "/api/v1/Register", body: "*"}; }
+  //rpc Register(Register.Request) returns (Register.Response) { option (google.api.http) = {post: "/api/v1/Register", body: "*"}; }
   rpc UserList(UserList.Request) returns (UserList.Response) { option (google.api.http) = {get: "/api/v1/UserList"}; }
   rpc PostList(PostList.Request) returns (PostList.Response) { option (google.api.http) = {get: "/api/v1/PostList"}; }
+  rpc Me(Me.Request) returns (Me.Response) { option (google.api.http) = {get: "/api/v1/Me"}; }
   rpc Ping(Ping.Request) returns (Ping.Response) { option (google.api.http) = {get: "/api/v1/Ping"}; }
   rpc Status(Status.Request) returns (Status.Response) { option (google.api.http) = {get: "/api/v1/Status"}; }
 }
@@ -52,6 +53,14 @@ message PostList {
   message Request {}
   message Response {
     repeated Post posts = 1;
+  }
+}
+
+message Me {
+  message Request {}
+  message Response {
+    User user = 1;
+    repeated Post RecentTracks = 2;
   }
 }
 

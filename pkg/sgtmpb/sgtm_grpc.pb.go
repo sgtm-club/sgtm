@@ -18,9 +18,10 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WebAPIClient interface {
-	Register(ctx context.Context, in *Register_Request, opts ...grpc.CallOption) (*Register_Response, error)
+	//rpc Register(Register.Request) returns (Register.Response) { option (google.api.http) = {post: "/api/v1/Register", body: "*"}; }
 	UserList(ctx context.Context, in *UserList_Request, opts ...grpc.CallOption) (*UserList_Response, error)
 	PostList(ctx context.Context, in *PostList_Request, opts ...grpc.CallOption) (*PostList_Response, error)
+	Me(ctx context.Context, in *Me_Request, opts ...grpc.CallOption) (*Me_Response, error)
 	Ping(ctx context.Context, in *Ping_Request, opts ...grpc.CallOption) (*Ping_Response, error)
 	Status(ctx context.Context, in *Status_Request, opts ...grpc.CallOption) (*Status_Response, error)
 }
@@ -31,15 +32,6 @@ type webAPIClient struct {
 
 func NewWebAPIClient(cc grpc.ClientConnInterface) WebAPIClient {
 	return &webAPIClient{cc}
-}
-
-func (c *webAPIClient) Register(ctx context.Context, in *Register_Request, opts ...grpc.CallOption) (*Register_Response, error) {
-	out := new(Register_Response)
-	err := c.cc.Invoke(ctx, "/sgtm.WebAPI/Register", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *webAPIClient) UserList(ctx context.Context, in *UserList_Request, opts ...grpc.CallOption) (*UserList_Response, error) {
@@ -54,6 +46,15 @@ func (c *webAPIClient) UserList(ctx context.Context, in *UserList_Request, opts 
 func (c *webAPIClient) PostList(ctx context.Context, in *PostList_Request, opts ...grpc.CallOption) (*PostList_Response, error) {
 	out := new(PostList_Response)
 	err := c.cc.Invoke(ctx, "/sgtm.WebAPI/PostList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *webAPIClient) Me(ctx context.Context, in *Me_Request, opts ...grpc.CallOption) (*Me_Response, error) {
+	out := new(Me_Response)
+	err := c.cc.Invoke(ctx, "/sgtm.WebAPI/Me", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,9 +83,10 @@ func (c *webAPIClient) Status(ctx context.Context, in *Status_Request, opts ...g
 // All implementations should embed UnimplementedWebAPIServer
 // for forward compatibility
 type WebAPIServer interface {
-	Register(context.Context, *Register_Request) (*Register_Response, error)
+	//rpc Register(Register.Request) returns (Register.Response) { option (google.api.http) = {post: "/api/v1/Register", body: "*"}; }
 	UserList(context.Context, *UserList_Request) (*UserList_Response, error)
 	PostList(context.Context, *PostList_Request) (*PostList_Response, error)
+	Me(context.Context, *Me_Request) (*Me_Response, error)
 	Ping(context.Context, *Ping_Request) (*Ping_Response, error)
 	Status(context.Context, *Status_Request) (*Status_Response, error)
 }
@@ -93,14 +95,14 @@ type WebAPIServer interface {
 type UnimplementedWebAPIServer struct {
 }
 
-func (*UnimplementedWebAPIServer) Register(context.Context, *Register_Request) (*Register_Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
-}
 func (*UnimplementedWebAPIServer) UserList(context.Context, *UserList_Request) (*UserList_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserList not implemented")
 }
 func (*UnimplementedWebAPIServer) PostList(context.Context, *PostList_Request) (*PostList_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PostList not implemented")
+}
+func (*UnimplementedWebAPIServer) Me(context.Context, *Me_Request) (*Me_Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Me not implemented")
 }
 func (*UnimplementedWebAPIServer) Ping(context.Context, *Ping_Request) (*Ping_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
@@ -111,24 +113,6 @@ func (*UnimplementedWebAPIServer) Status(context.Context, *Status_Request) (*Sta
 
 func RegisterWebAPIServer(s *grpc.Server, srv WebAPIServer) {
 	s.RegisterService(&_WebAPI_serviceDesc, srv)
-}
-
-func _WebAPI_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Register_Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WebAPIServer).Register(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sgtm.WebAPI/Register",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WebAPIServer).Register(ctx, req.(*Register_Request))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _WebAPI_UserList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -163,6 +147,24 @@ func _WebAPI_PostList_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WebAPIServer).PostList(ctx, req.(*PostList_Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WebAPI_Me_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Me_Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WebAPIServer).Me(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sgtm.WebAPI/Me",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WebAPIServer).Me(ctx, req.(*Me_Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -208,16 +210,16 @@ var _WebAPI_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*WebAPIServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Register",
-			Handler:    _WebAPI_Register_Handler,
-		},
-		{
 			MethodName: "UserList",
 			Handler:    _WebAPI_UserList_Handler,
 		},
 		{
 			MethodName: "PostList",
 			Handler:    _WebAPI_PostList_Handler,
+		},
+		{
+			MethodName: "Me",
+			Handler:    _WebAPI_Me_Handler,
 		},
 		{
 			MethodName: "Ping",

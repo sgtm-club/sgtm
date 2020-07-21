@@ -39,6 +39,11 @@ func (p *Post) SafeDescription() string {
 	return p.ProviderDescription
 }
 
+func (p *Post) Filter() {
+	p.ProviderMetadata = ""
+	p.DownloadURL = ""
+}
+
 // User
 
 func (u *User) ApplyDefaults() {
@@ -74,4 +79,10 @@ func (u *User) HasSomethingAroundTheWeb() bool {
 		u.SoundcloudUsername != "" ||
 		u.OtherLinks != "" ||
 		u.Homepage != ""
+}
+
+func (u *User) Filter() {
+	u.Email = ""
+	u.DiscordUsername = ""
+	u.DiscordID = ""
 }

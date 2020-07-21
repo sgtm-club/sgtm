@@ -2,40 +2,14 @@ package sgtm
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"time"
 
-	"moul.io/godev"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
-func (svc *Service) Register(ctx context.Context, input *sgtmpb.Register_Request) (*sgtmpb.Register_Response, error) {
-	fmt.Println(godev.PrettyJSON(input))
-	if input == nil || input.Email == "" || input.Slug == "" {
-		return nil, fmt.Errorf("missing required fields")
-	}
-
-	// FIXME: generate slug if empty
-	// FIXME: captcha
-	// FIXME: validate valid email
-	// FIXME: activity -> register (in a transaction)
-	user := sgtmpb.User{
-		Slug:      input.Slug,
-		Email:     input.Email,
-		Firstname: input.Firstname,
-		Lastname:  input.Lastname,
-	}
-	err := svc.db.Create(&user).Error
-	if err != nil {
-		return nil, fmt.Errorf("db.Create: %w", err)
-	}
-
-	ret := sgtmpb.Register_Response{
-		User: &user,
-	}
-	// FIXME: send an email
-	return &ret, nil
+func (svc *Service) Me(ctx context.Context, req *sgtmpb.Me_Request) (*sgtmpb.Me_Response, error) {
+	return &sgtmpb.Me_Response{}, nil
 }
 
 func (svc *Service) Ping(context.Context, *sgtmpb.Ping_Request) (*sgtmpb.Ping_Response, error) {
@@ -53,10 +27,38 @@ func (svc *Service) Status(context.Context, *sgtmpb.Status_Request) (*sgtmpb.Sta
 
 func (svc *Service) UserList(context.Context, *sgtmpb.UserList_Request) (*sgtmpb.UserList_Response, error) {
 	ret := &sgtmpb.UserList_Response{}
-	return ret, svc.db.Find(&ret.Users).Error
+	err := svc.db.
+		Order("created_at desc").
+		Find(&ret.Users).
+		Error
+	if err != nil {
+		return nil, err
+	}
+
+	for _, user := range ret.Users {
+		user.Filter()
+	}
+	return ret, nil
 }
 
 func (svc *Service) PostList(context.Context, *sgtmpb.PostList_Request) (*sgtmpb.PostList_Response, error) {
 	ret := &sgtmpb.PostList_Response{}
-	return ret, svc.db.Find(&ret.Posts).Error
+	err := svc.db.
+		Order("sort_date desc").
+		Where(sgtmpb.Post{
+			Visibility: sgtmpb.Visibility_Public,
+		}).
+		Where("kind in (?)", sgtmpb.Post_TrackKind).
+		Limit(100).
+		Find(&ret.Posts).
+		Error
+	if err != nil {
+		return nil, err
+	}
+
+	for _, post := range ret.Posts {
+		post.Filter()
+	}
+
+	return ret, nil
 }
