@@ -22,6 +22,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			return
 		}
 		// custom
+		data.PageKind = "post"
 		postSlug := chi.URLParam(r, "post_slug")
 		query := svc.db.Preload("Author")
 		id, err := strconv.ParseInt(postSlug, 10, 64)
@@ -140,6 +141,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 			return
 		}
 		// custom
+		data.PageKind = "post-edit"
 
 		// no anonymous users
 		{

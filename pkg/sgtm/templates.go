@@ -22,12 +22,13 @@ import (
 
 func (svc *Service) newTemplateData(w http.ResponseWriter, r *http.Request) (*templateData, error) {
 	data := templateData{
-		Title:   "SGTM",
-		Date:    time.Now(),
-		Opts:    svc.opts.Filtered(),
-		Lang:    "en", // FIXME: dynamic
-		Request: r,
-		Service: svc,
+		Title:    "SGTM",
+		Date:     time.Now(),
+		Opts:     svc.opts.Filtered(),
+		Lang:     "en", // FIXME: dynamic
+		Request:  r,
+		Service:  svc,
+		PageKind: "other",
 	}
 	if svc.opts.DevMode {
 		data.Title += " (dev)"
@@ -140,6 +141,7 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 type templateData struct {
 	// common
 
+	PageKind string
 	Title    string
 	Date     time.Time
 	JWTToken string

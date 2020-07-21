@@ -19,6 +19,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			return
 		}
 		// custom
+		data.PageKind = "open"
 
 		// tracking
 		{

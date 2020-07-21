@@ -19,6 +19,7 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 			return
 		}
 		// custom
+		data.PageKind = "settings"
 		if data.User == nil {
 			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 			return

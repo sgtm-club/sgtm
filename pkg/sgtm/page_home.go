@@ -19,6 +19,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 			return
 		}
 		// custom
+		data.PageKind = "home"
 
 		// tracking
 		{
@@ -32,6 +33,10 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// last tracks
 		{
+			limit := 50
+			if data.UserID == 0 {
+				limit = 10
+			}
 			if err := svc.db.
 				Model(&sgtmpb.Post{}).
 				Preload("Author").
@@ -40,7 +45,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 					Visibility: sgtmpb.Visibility_Public,
 				}).
 				Order("sort_date desc").
-				Limit(50). // FIXME: pagination
+				Limit(limit). // FIXME: pagination
 				Find(&data.Home.LastTracks).
 				Error; err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()

@@ -20,6 +20,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 			return
 		}
 		// custom
+		data.PageKind = "profile"
 
 		// load profile
 		{

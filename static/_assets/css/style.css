@@ -24,3 +24,17 @@ main {
 }
 
 #cal-heatmap .cal-heatmap-container { margin: auto; }
+
+body.page-home.noauth header {
+  background: url(/_assets/img/imgs/home-bg-1.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+body.page-home.noauth header a {
+  color: white;
+}
+
+body.page-home.noauth .jumbotron {
+  background-color: rgba(0, 0, 0, 0.5);
+}
