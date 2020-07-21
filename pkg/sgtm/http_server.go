@@ -32,6 +32,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"moul.io/banner"
@@ -151,6 +152,20 @@ func (svc *Service) httpServer() (*http.Server, error) {
 	r.Use(middleware.RequestID)
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
+	gatewayMetadataAnnotator := func(_ context.Context, r *http.Request) metadata.MD {
+		mdmap := make(map[string]string)
+		cookieToken, err := r.Cookie("oauth-token")
+		if err == nil {
+			mdmap["oauth-token"] = cookieToken.Value
+		}
+		return metadata.New(mdmap)
+	}
+	gatewayCustomMatcher := func(key string) (string, bool) {
+		if key == "Cookie" {
+			return key, true
+		}
+		return runtime.DefaultHeaderMatcher(key)
+	}
 	runtimeMux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &gateway.JSONPb{
 			EmitDefaults: false,
@@ -158,6 +173,8 @@ func (svc *Service) httpServer() (*http.Server, error) {
 			OrigName:     true,
 		}),
 		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
+		runtime.WithMetadata(gatewayMetadataAnnotator),
+		runtime.WithIncomingHeaderMatcher(gatewayCustomMatcher),
 	)
 	var gwmux http.Handler = runtimeMux
 	dialOpts := []grpc.DialOption{grpc.WithInsecure()}

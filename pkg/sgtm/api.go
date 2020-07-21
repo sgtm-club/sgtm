@@ -2,14 +2,45 @@ package sgtm
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
+	"google.golang.org/grpc/metadata"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
+func (svc *Service) claimsFromContext(ctx context.Context) (*jwtClaims, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, fmt.Errorf("cannot get metadata from context")
+	}
+
+	oauthToken, ok := md["oauth-token"]
+	if !ok || len(oauthToken) == 0 {
+		return nil, fmt.Errorf("no such oauth-token")
+	}
+
+	return svc.parseJWTToken(oauthToken[0])
+}
+
 func (svc *Service) Me(ctx context.Context, req *sgtmpb.Me_Request) (*sgtmpb.Me_Response, error) {
-	return &sgtmpb.Me_Response{}, nil
+	claims, err := svc.claimsFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var user sgtmpb.User
+	err = svc.db.
+		Where("id = ?", claims.Session.UserID).
+		First(&user).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	ret := sgtmpb.Me_Response{User: &user}
+
+	return &ret, nil
 }
 
 func (svc *Service) Ping(context.Context, *sgtmpb.Ping_Request) (*sgtmpb.Ping_Response, error) {

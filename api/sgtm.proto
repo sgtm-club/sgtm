@@ -60,7 +60,6 @@ message Me {
   message Request {}
   message Response {
     User user = 1;
-    repeated Post RecentTracks = 2;
   }
 }
 
