@@ -93,7 +93,7 @@ func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *
 		}
 
 		// FIXME: do the sync here
-		dl, err := DownloadPost(post, false)
+		dl, err := DownloadPost(&post, false)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return

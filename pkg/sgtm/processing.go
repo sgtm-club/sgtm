@@ -24,12 +24,11 @@ type Download struct {
 	YoutubeDL     YoutubeDLOutput
 }
 
-func DownloadPost(post sgtmpb.Post, force bool) (*Download, error) {
+func DownloadPost(post *sgtmpb.Post, force bool) (*Download, error) {
 	download := Download{
 		YoutubeDLFile: fmt.Sprintf("dl/%d.info.json", post.ID),
 	}
-	switch post.Provider {
-	case sgtmpb.Provider_SoundCloud:
+	if post.Provider == sgtmpb.Provider_SoundCloud {
 		download.URL = post.URL
 	}
 	if download.URL == "" {
