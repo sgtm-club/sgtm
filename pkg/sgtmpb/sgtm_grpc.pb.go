@@ -21,6 +21,7 @@ type WebAPIClient interface {
 	//rpc Register(Register.Request) returns (Register.Response) { option (google.api.http) = {post: "/api/v1/Register", body: "*"}; }
 	UserList(ctx context.Context, in *UserList_Request, opts ...grpc.CallOption) (*UserList_Response, error)
 	PostList(ctx context.Context, in *PostList_Request, opts ...grpc.CallOption) (*PostList_Response, error)
+	// rpc PostSync(PostSync.Request) returns (PostSync.Response) { option (google.api.http) = {get: "/api/v1/PostSync"}; }
 	Me(ctx context.Context, in *Me_Request, opts ...grpc.CallOption) (*Me_Response, error)
 	Ping(ctx context.Context, in *Ping_Request, opts ...grpc.CallOption) (*Ping_Response, error)
 	Status(ctx context.Context, in *Status_Request, opts ...grpc.CallOption) (*Status_Response, error)
@@ -86,6 +87,7 @@ type WebAPIServer interface {
 	//rpc Register(Register.Request) returns (Register.Response) { option (google.api.http) = {post: "/api/v1/Register", body: "*"}; }
 	UserList(context.Context, *UserList_Request) (*UserList_Response, error)
 	PostList(context.Context, *PostList_Request) (*PostList_Response, error)
+	// rpc PostSync(PostSync.Request) returns (PostSync.Response) { option (google.api.http) = {get: "/api/v1/PostSync"}; }
 	Me(context.Context, *Me_Request) (*Me_Response, error)
 	Ping(context.Context, *Ping_Request) (*Ping_Response, error)
 	Status(context.Context, *Status_Request) (*Status_Response, error)

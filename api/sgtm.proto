@@ -11,6 +11,7 @@ service WebAPI {
   //rpc Register(Register.Request) returns (Register.Response) { option (google.api.http) = {post: "/api/v1/Register", body: "*"}; }
   rpc UserList(UserList.Request) returns (UserList.Response) { option (google.api.http) = {get: "/api/v1/UserList"}; }
   rpc PostList(PostList.Request) returns (PostList.Response) { option (google.api.http) = {get: "/api/v1/PostList"}; }
+  // rpc PostSync(PostSync.Request) returns (PostSync.Response) { option (google.api.http) = {get: "/api/v1/PostSync"}; }
   rpc Me(Me.Request) returns (Me.Response) { option (google.api.http) = {get: "/api/v1/Me"}; }
   rpc Ping(Ping.Request) returns (Ping.Response) { option (google.api.http) = {get: "/api/v1/Ping"}; }
   rpc Status(Status.Request) returns (Status.Response) { option (google.api.http) = {get: "/api/v1/Status"}; }
@@ -54,6 +55,13 @@ message PostList {
   message Response {
     repeated Post posts = 1;
   }
+}
+
+message PostSync {
+  message Request {
+    int64 id = 1 [(go.field) = {name: 'ID'}];
+  }
+  message Response {}
 }
 
 message Me {
