@@ -40,44 +40,38 @@
         <canvas id="myChart" width="800" height="400"></canvas>
       </div>
     </div>
-    {{if .Opts.DevMode}}
-      <div class="row">
-        <div class="col-md-12">
-          <h4>Uptime</h4>
-          <iframe src="https://stats.uptimerobot.com/4YQZpsJ9PN" style="max-width:100%;width:calc(100% - 14px);height:600px;" scrolling="true" noresize="noresize" frameborder="0"></iframe>
-        </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h4>Uptime</h4>
+        <iframe src="https://stats.uptimerobot.com/4YQZpsJ9PN" style="max-width:100%;width:calc(100% - 14px);height:600px;" scrolling="true" noresize="noresize" frameborder="0"></iframe>
       </div>
-    {{end}}
-    {{if true}}
-      <div class="row">
-        <div class="col-md-12">
-          <h4 id="activities">Activities</h4>
-        </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h4 id="activities">Activities</h4>
       </div>
-      <div class="row">
-          {{range $post := .Open.LastActivities}}
-            <div class="col-lg-4 col-md-6 text-truncate">
-              <small>
-                {{if $root.IsAdmin}}{{template "user_pict_link_or_anon" .Author}}{{end}}
-                {{$kind := .Kind.String}}
-                {{with eq $kind "ViewOpenKind"}}🚪 View this page{{end}}
-                {{with eq $kind "ViewHomeKind"}}🏠 View home page{{end}}
-                {{with eq $kind "LoginKind"}}👌 Login{{end}}
-                {{with eq $kind "RegisterKind"}}👋 Register{{end}}
-                {{with eq $kind "TrackKind"}}🎶 Post <a href="{{$post.CanonicalURL}}">{{$post.Title}}</a>{{end}}
-                {{with eq $kind "ViewProfileKind"}}👤 View <a href="{{$post.TargetUser.CanonicalURL}}">{{$post.TargetUser.DisplayName}}</a> profile{{end}}
-                {{with eq $kind "ViewPostKind"}}
-                  <!-- FIXME: switch case on .TargetPost.Kind -->
-                  🎶 View <a href="{{$post.TargetPost.CanonicalURL}}">{{$post.TargetPost.Title}}</a>
-                {{end}}
-
-                <span class="text-muted">{{$post.CreatedAt | fromUnixNano | prettyAgo}}</span>
-              </small>
-            </div>
+    </div>
+    <div class="row">
+      {{range $post := .Open.LastActivities}}
+      <div class="col-lg-4 col-md-6 text-truncate">
+        <small>
+          {{if $root.IsAdmin}}{{template "user_pict_link_or_anon" .Author}}{{end}}
+          {{$kind := .Kind.String}}
+          {{with eq $kind "ViewOpenKind"}}🚪 View this page{{end}}
+          {{with eq $kind "ViewHomeKind"}}🏠 View home page{{end}}
+          {{with eq $kind "LoginKind"}}👌 Login{{end}}
+          {{with eq $kind "RegisterKind"}}👋 Register{{end}}
+          {{with eq $kind "TrackKind"}}🎶 Post <a href="{{$post.CanonicalURL}}">{{$post.Title}}</a>{{end}}
+          {{with eq $kind "ViewProfileKind"}}👤 View <a href="{{$post.TargetUser.CanonicalURL}}">{{$post.TargetUser.DisplayName}}</a> profile{{end}}
+          {{with eq $kind "ViewPostKind"}}
+          <!-- FIXME: switch case on .TargetPost.Kind -->
+          🎶 View <a href="{{$post.TargetPost.CanonicalURL}}">{{$post.TargetPost.Title}}</a>
           {{end}}
-        </div>
+          <span class="text-muted">{{$post.CreatedAt | fromUnixNano | prettyAgo}}</span>
+        </small>
       </div>
-    {{end}}
+      {{end}}
+    </div>
   </div>
 
   <script>
