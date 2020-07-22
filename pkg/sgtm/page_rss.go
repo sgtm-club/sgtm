@@ -21,7 +21,7 @@ func (svc *Service) rssPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 		w.Header().Add("Content-Type", "application/xml")
 		// last tracks
 		{
-			if err := svc.db.
+			if err := svc.rodb.
 				Model(&sgtmpb.Post{}).
 				Preload("Author").
 				Where(sgtmpb.Post{

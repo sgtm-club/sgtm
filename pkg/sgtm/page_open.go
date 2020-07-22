@@ -24,7 +24,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewOpenKind}
-			if err := svc.db.Create(&viewEvent).Error; err != nil {
+			if err := svc.rwdb.Create(&viewEvent).Error; err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view open", zap.Any("event", &viewEvent))
@@ -33,7 +33,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// public tracks
 		{
-			err := svc.db.
+			err := svc.rodb.
 				Model(&sgtmpb.Post{}).
 				Where(sgtmpb.Post{
 					Kind:       sgtmpb.Post_TrackKind,
@@ -51,7 +51,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			var result struct {
 				TotalDuration int64
 			}
-			err := svc.db.
+			err := svc.rodb.
 				Model(&sgtmpb.Post{}).
 				Select("sum(duration) as total_duration").
 				Where(sgtmpb.Post{
@@ -73,7 +73,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 				Quantity int64
 			}
 			var results []result
-			err := svc.db.Model(&sgtmpb.Post{}).
+			err := svc.rodb.Model(&sgtmpb.Post{}).
 				Where(&sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
 				Select(`strftime("%w", sort_date/1000000000, "unixepoch") as weekday , count(*) as quantity`).
 				Group("weekday").Find(&results).
@@ -89,7 +89,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// last activities
 		{
-			err := svc.db.
+			err := svc.rodb.
 				Preload("Author").
 				Preload("TargetPost").
 				Preload("TargetUser").
@@ -113,7 +113,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// track drafts
 		{
-			err := svc.db.
+			err := svc.rodb.
 				Model(&sgtmpb.Post{}).
 				Where(sgtmpb.Post{
 					Kind:       sgtmpb.Post_TrackKind,
@@ -127,7 +127,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		}
 		// users
 		{
-			err := svc.db.
+			err := svc.rodb.
 				Model(&sgtmpb.User{}).
 				Count(&data.Open.Users).
 				Error

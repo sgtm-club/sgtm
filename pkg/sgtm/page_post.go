@@ -24,7 +24,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// custom
 		data.PageKind = "post"
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.db.Preload("Author")
+		query := svc.rodb.Preload("Author")
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
 			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
@@ -42,7 +42,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewPostKind, TargetPostID: data.Post.Post.ID}
-			if err := svc.db.Create(&viewEvent).Error; err != nil {
+			if err := svc.rwdb.Create(&viewEvent).Error; err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view post", zap.Any("event", &viewEvent))
@@ -76,7 +76,7 @@ func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *
 			return
 		}
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.db.Preload("Author")
+		query := svc.rodb.Preload("Author")
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
 			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
@@ -106,7 +106,7 @@ func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *
 			return
 		}
 		svc.logger.Debug("BPM extracted", zap.Float64("bpm", bpm))
-		if err := svc.db.Model(&post).Omit("Author").Update("bpm", bpm).Error; err != nil {
+		if err := svc.rwdb.Model(&post).Update("bpm", bpm).Error; err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
 		}
@@ -154,7 +154,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 		// fetch post from db
 		{
 			postSlug := chi.URLParam(r, "post_slug")
-			query := svc.db.Preload("Author")
+			query := svc.rodb.Preload("Author")
 			id, err := strconv.ParseInt(postSlug, 10, 64)
 			if err == nil {
 				query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
@@ -191,7 +191,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 			}
 			fields := validate()
 			if fields != nil {
-				if err := svc.db.Model(data.PostEdit.Post).Omit("Author").Updates(fields).Error; err != nil {
+				if err := svc.rwdb.Model(data.PostEdit.Post).Updates(fields).Error; err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
 				}

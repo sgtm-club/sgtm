@@ -56,7 +56,7 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 			}
 			fields := validate()
 			if fields != nil {
-				if err := svc.db.Model(data.User).Omit("RecentPosts").Updates(fields).Error; err != nil {
+				if err := svc.rwdb.Model(data.User).Updates(fields).Error; err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
 				}

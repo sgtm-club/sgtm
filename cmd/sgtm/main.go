@@ -117,7 +117,7 @@ func runCmd(ctx context.Context, _ []string) error {
 			return err
 		}
 		svcOpts.Snowflake = sfn
-		err = sgtm.DBInit(db, sfn)
+		db, err = sgtm.DBInit(db, sfn)
 		if err != nil {
 			return err
 		}

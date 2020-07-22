@@ -127,7 +127,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 	var dbUser sgtmpb.User
 	{
 		dbUser.Email = discordUser.Email
-		err := svc.db.Where(&dbUser).First(&dbUser).Error
+		err := svc.rodb.Where(&dbUser).First(&dbUser).Error
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			// user not found, creating it
@@ -142,19 +142,19 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 				// Lastname
 			}
 			// FIXME: check if slug already exists, if yes, append something to the slug
-			err = svc.db.Transaction(func(tx *gorm.DB) error {
-				if err := svc.db.Create(&dbUser).Error; err != nil {
+			err = svc.rwdb.Transaction(func(tx *gorm.DB) error {
+				if err := tx.Create(&dbUser).Error; err != nil {
 					return err
 				}
 
 				registerEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_RegisterKind}
-				if err := svc.db.Create(&registerEvent).Error; err != nil {
+				if err := tx.Create(&registerEvent).Error; err != nil {
 					return err
 				}
 				svc.logger.Debug("new register", zap.Any("event", &registerEvent))
 
 				linkDiscordEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LinkDiscordAccountKind}
-				if err := svc.db.Create(&linkDiscordEvent).Error; err != nil {
+				if err := tx.Create(&linkDiscordEvent).Error; err != nil {
 					return err
 				}
 				svc.logger.Debug("new link discord event", zap.Any("event", &registerEvent))
@@ -171,7 +171,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 			// FIXME: update user in DB if needed
 
 			loginEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LoginKind}
-			if err := svc.db.Create(&loginEvent).Error; err != nil {
+			if err := svc.rwdb.Create(&loginEvent).Error; err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
 			}

@@ -31,7 +31,7 @@ func (svc *Service) Me(ctx context.Context, req *sgtmpb.Me_Request) (*sgtmpb.Me_
 	}
 
 	var user sgtmpb.User
-	err = svc.db.
+	err = svc.rodb.
 		Where("id = ?", claims.Session.UserID).
 		First(&user).
 		Error
@@ -58,7 +58,7 @@ func (svc *Service) Status(context.Context, *sgtmpb.Status_Request) (*sgtmpb.Sta
 
 func (svc *Service) UserList(context.Context, *sgtmpb.UserList_Request) (*sgtmpb.UserList_Response, error) {
 	ret := &sgtmpb.UserList_Response{}
-	err := svc.db.
+	err := svc.rodb.
 		Order("created_at desc").
 		Find(&ret.Users).
 		Error
@@ -74,7 +74,7 @@ func (svc *Service) UserList(context.Context, *sgtmpb.UserList_Request) (*sgtmpb
 
 func (svc *Service) PostList(context.Context, *sgtmpb.PostList_Request) (*sgtmpb.PostList_Response, error) {
 	ret := &sgtmpb.PostList_Response{}
-	err := svc.db.
+	err := svc.rodb.
 		Order("sort_date desc").
 		Where(sgtmpb.Post{
 			Visibility: sgtmpb.Visibility_Public,
