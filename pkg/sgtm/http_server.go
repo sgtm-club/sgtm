@@ -212,6 +212,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		r.Get("/new", svc.newPage(srcBox))
 		r.Post("/new", svc.newPage(srcBox))
 		r.Get("/post/{post_slug}", svc.postPage(srcBox))
+		r.Post("/post/{post_slug}", svc.postPage(srcBox))
 		r.Get("/post/{post_slug}/edit", svc.postEditPage(srcBox))
 		r.Post("/post/{post_slug}/edit", svc.postEditPage(srcBox))
 		r.Get("/post/{post_slug}/sync", svc.postSyncPage(srcBox))

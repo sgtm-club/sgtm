@@ -62,6 +62,7 @@
           {{with eq $kind "LoginKind"}}👌 Login{{end}}
           {{with eq $kind "RegisterKind"}}👋 Register{{end}}
           {{with eq $kind "TrackKind"}}🎶 Post <a href="{{$post.CanonicalURL}}">{{$post.Title}}</a>{{end}}
+          {{with eq $kind "CommentKind"}}✏️  Comment <a href="{{$post.TargetPost.CanonicalURL}}">{{$post.TargetPost.Title}}</a>{{end}}
           {{with eq $kind "ViewProfileKind"}}👤 View <a href="{{$post.TargetUser.CanonicalURL}}">{{$post.TargetUser.DisplayName}}</a> profile{{end}}
           {{with eq $kind "ViewPostKind"}}
           <!-- FIXME: switch case on .TargetPost.Kind -->

@@ -189,7 +189,8 @@ type templateData struct {
 		URLInvalidMsg string
 	} `json:"New,omitempty"`
 	Post struct {
-		Post *sgtmpb.Post
+		Post     *sgtmpb.Post
+		Comments []*sgtmpb.Post
 	} `json:"Post,omitempty"`
 	PostEdit struct {
 		Post *sgtmpb.Post

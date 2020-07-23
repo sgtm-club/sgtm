@@ -14,6 +14,7 @@
 {{end}}
 
 {{define "content"}}
+  {{$root := .}}
   <div class="container">
     <div class="row">
       <div class="col-md-8">
@@ -30,11 +31,45 @@
         <!--{{with .Post.Post.DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}-->
         <div>📆 Added <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.SortDate | fromUnixNano | prettyDate}}">{{.Post.Post.SortDate | fromUnixNano | prettyAgo}}</span></div>
         <!--<div><span class="fa fa-soundcloud"></span> {{.Post.Post.URL}}</div>-->
+
+
+        {{if or (len .Post.Comments) (.User)}}
+          <div class="card mt-3 p-1">
+            {{if len .Post.Comments}}
+              <ul class="list-group list-group-flush">
+                {{range $comment := .Post.Comments}}
+                  <li class="list-group-item p-1 list-group-item-action{{if eq $root.UserID $comment.AuthorID}} list-group-item-info{{end}}" id="comment-{{$comment.ID}}">
+                    <div class="media">
+                      <a href="{{.Author.CanonicalURL}}"><img src="{{ .Author.Avatar }}" class="mr-2 rounded-circle" width="60" height="60" /></a>
+                      <div class="media-body">
+                        <a href="{{.Author.CanonicalURL}}"><h5 class="mt-0 d-inline-block">{{.Author.DisplayName}}</h5></a>
+                        <a href="{{$root.Post.Post.CanonicalURL}}#comment-{{$comment.ID}}"><small class="text-muted">{{.CreatedAt | fromUnixNano | prettyAgo}}</small></a>
+                        <div class="media">
+                          {{$comment.Body}}
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                {{end}}
+              </ul>
+            {{end}}
+            {{if .User}}
+              <form method="post">
+                <div class="mb-1">
+                  <textarea maxlength="500" name="comment" class="form-control" placeholder="Write your comment..." id="commentInput" rows="2"></textarea>
+                </div>
+                <div class="text-right">
+                  <button name="submit" type="submit" value="published" name="post-comment" class="btn btn-primary">Post comment</button>
+                </div>
+              </form>
+            {{end}}
+          </div>
+        {{end}}
       </div>
 
       <div class="col-md-4">
         {{if eq .Post.Post.Author.ID .UserID}}
-        <div class="card mb-3 bg-secondary text-white">
+          <div class="card mb-3 bg-secondary text-white">
           <div class="card-header"><span class="fa fa-user-cog"></span> Manage (author)</div>
           <div class="p-2">
             <div><a href="{{.Post.Post.CanonicalURL}}/edit" class="text-white"><span class="fa fa-edit"></span> Edit</a></div>

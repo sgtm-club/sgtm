@@ -39,6 +39,53 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		data.Post.Post = &post
 		data.Post.Post.ApplyDefaults()
 
+		if r.Method == "POST" && data.UserID != 0 {
+			validate := func() *sgtmpb.Post {
+				if err := r.ParseForm(); err != nil {
+					data.Error = err.Error()
+					return nil
+				}
+				comment := sgtmpb.Post{
+					Kind:         sgtmpb.Post_CommentKind,
+					AuthorID:     data.UserID,
+					Body:         strings.TrimSpace(r.Form.Get("comment")),
+					Visibility:   sgtmpb.Visibility_Public,
+					TargetPostID: data.Post.Post.ID,
+				}
+				if comment.Body == "" {
+					return nil
+				}
+				return &comment
+			}
+			comment := validate()
+			if comment != nil {
+				if err := svc.rwdb.Create(comment).Error; err != nil {
+					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+					return
+				}
+				svc.logger.Debug("comment created", zap.Any("post", comment))
+				http.Redirect(w, r, data.Post.Post.CanonicalURL(), http.StatusFound)
+				return
+			}
+		}
+
+		// load comments
+		{
+			err := svc.rodb.
+				Where(sgtmpb.Post{
+					Kind:         sgtmpb.Post_CommentKind,
+					TargetPostID: data.Post.Post.ID,
+					Visibility:   sgtmpb.Visibility_Public,
+				}).
+				Preload("Author").
+				Find(&data.Post.Comments).
+				Error
+			if err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
+		}
+
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewPostKind, TargetPostID: data.Post.Post.ID}

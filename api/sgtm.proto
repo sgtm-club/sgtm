@@ -187,11 +187,11 @@ message Post {
     ViewPostKind = 6;
     ViewOpenKind = 7;
     ViewHomeKind = 8;
+    CommentKind = 9;
     //ViewOwnProfileKind
     //ViewOwnTrackKind
     //EditTrackKind
     //EditProfileKind
-    //CommentKind
     //ReactionKind
     //ForkKind
     //FeatKind
