@@ -1,17 +1,6 @@
 package sgtm
 
-import (
-	"context"
-	"fmt"
-	"testing"
-
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
-	"moul.io/godev"
-	"moul.io/sgtm/pkg/sgtmpb"
-)
-
-func TestServiceRegister(t *testing.T) {
+/*func TestServiceRegister(t *testing.T) {
 	svc := TestingService(t)
 	logger := TestingLogger(t)
 	ctx := context.Background()
@@ -58,4 +47,4 @@ func TestServiceRegister(t *testing.T) {
 			fmt.Println(godev.PrettyJSON(ret))
 		})
 	}
-}
+}*/

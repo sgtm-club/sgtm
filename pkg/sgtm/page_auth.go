@@ -127,7 +127,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 	var dbUser sgtmpb.User
 	{
 		dbUser.Email = discordUser.Email
-		err := svc.rodb.Where(&dbUser).First(&dbUser).Error
+		err := svc.rodb().Where(&dbUser).First(&dbUser).Error
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			// user not found, creating it
@@ -142,7 +142,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 				// Lastname
 			}
 			// FIXME: check if slug already exists, if yes, append something to the slug
-			err = svc.rwdb.Transaction(func(tx *gorm.DB) error {
+			err = svc.rwdb().Transaction(func(tx *gorm.DB) error {
 				if err := tx.Create(&dbUser).Error; err != nil {
 					return err
 				}
@@ -171,7 +171,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 			// FIXME: update user in DB if needed
 
 			loginEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LoginKind}
-			if err := svc.rwdb.Create(&loginEvent).Error; err != nil {
+			if err := svc.rwdb().Create(&loginEvent).Error; err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
 			}

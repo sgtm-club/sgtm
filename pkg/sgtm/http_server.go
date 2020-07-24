@@ -302,7 +302,7 @@ func (svc *Service) generateSitemap() *stm.Sitemap {
 	// users
 	{
 		var users []*sgtmpb.User
-		err := svc.rodb.
+		err := svc.rodb().
 			Find(&users).
 			Error
 		if err != nil {
@@ -319,7 +319,7 @@ func (svc *Service) generateSitemap() *stm.Sitemap {
 	// posts
 	{
 		var posts []*sgtmpb.Post
-		err := svc.rodb.
+		err := svc.rodb().
 			Where(sgtmpb.Post{
 				Visibility: sgtmpb.Visibility_Public,
 				Kind:       sgtmpb.Post_TrackKind,
@@ -356,6 +356,26 @@ func (svc *Service) grpcServer() *grpc.Server {
 			return status.Errorf(codes.Internal, "recover: %s", p)
 		}))
 	}
+
+	grpcServerStreamInterceptor := func() grpc.StreamServerInterceptor {
+		return func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+			err := handler(srv, stream)
+			if err != nil {
+				log.Printf("%+v", err)
+			}
+			return err
+		}
+	}
+	grpcServerUnaryInterceptor := func() grpc.UnaryServerInterceptor {
+		return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+			ret, err := handler(ctx, req)
+			if err != nil {
+				log.Printf("%+v", err)
+			}
+			return ret, err
+		}
+	}
+
 	serverStreamOpts := []grpc.StreamServerInterceptor{grpc_recovery.StreamServerInterceptor(recoveryOpts...)}
 	serverUnaryOpts := []grpc.UnaryServerInterceptor{grpc_recovery.UnaryServerInterceptor(recoveryOpts...)}
 	serverStreamOpts = append(serverStreamOpts,
@@ -382,24 +402,4 @@ func (svc *Service) grpcServer() *grpc.Server {
 	sgtmpb.RegisterWebAPIServer(grpcServer, svc)
 
 	return grpcServer
-}
-
-func grpcServerStreamInterceptor() grpc.StreamServerInterceptor {
-	return func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		err := handler(srv, stream)
-		if err != nil {
-			log.Printf("%+v", err)
-		}
-		return err
-	}
-}
-
-func grpcServerUnaryInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		ret, err := handler(ctx, req)
-		if err != nil {
-			log.Printf("%+v", err)
-		}
-		return ret, err
-	}
 }

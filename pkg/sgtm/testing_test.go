@@ -26,12 +26,12 @@ func TestingService(t *testing.T) Service {
 	opts.applyDefaults()
 	ctx, cancel := context.WithCancel(opts.Context)
 	svc := Service{
-		db:        db,
+		_db:       db,
 		logger:    opts.Logger,
 		opts:      opts,
 		ctx:       ctx,
 		cancel:    cancel,
-		startedAt: time.Now(),
+		StartedAt: time.Now(),
 	}
 	return svc
 }
@@ -58,7 +58,7 @@ func TestingDB(t *testing.T) *gorm.DB {
 		t.Fatalf("snowflake.NewNode")
 	}
 
-	err = DBInit(db, sfn)
+	db, err = DBInit(db, sfn)
 	if err != nil {
 		t.Fatalf("DBInit")
 	}

@@ -9,13 +9,11 @@ import (
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"moul.io/banner"
 )
 
 type Service struct {
-	rodb          *gorm.DB
-	rwdb          *gorm.DB
+	_db           *gorm.DB
 	logger        *zap.Logger
 	opts          Opts
 	ctx           context.Context
@@ -36,8 +34,7 @@ func New(db *gorm.DB, opts Opts) (Service, error) {
 	fmt.Fprintln(os.Stderr, banner.Inline("sgtm"))
 	ctx, cancel := context.WithCancel(opts.Context)
 	svc := Service{
-		rodb:      db,
-		rwdb:      db.Omit(clause.Associations),
+		_db:       db,
 		logger:    opts.Logger,
 		opts:      opts,
 		ctx:       ctx,

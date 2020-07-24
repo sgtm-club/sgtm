@@ -42,7 +42,7 @@ func (svc *Service) newTemplateData(w http.ResponseWriter, r *http.Request) (*te
 			return nil, fmt.Errorf("parse jwt token: %w", err)
 		}
 		var user sgtmpb.User
-		if err := svc.rodb.
+		if err := svc.rodb().
 			Preload("RecentPosts", func(db *gorm.DB) *gorm.DB {
 				return db.
 					Where("kind IN (?)", []sgtmpb.Post_Kind{sgtmpb.Post_TrackKind}).

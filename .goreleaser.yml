@@ -17,7 +17,7 @@ builds:
       - amd64
       - arm
       - arm64
-    main: ./cmd/sgtm/main.go
+    main: ./cmd/sgtm/
     ignore:
       -
         goos: darwin

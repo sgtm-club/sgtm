@@ -26,7 +26,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 		{
 			userSlug := chi.URLParam(r, "user_slug")
 			var user sgtmpb.User
-			if err := svc.rodb.
+			if err := svc.rodb().
 				Where(sgtmpb.User{Slug: userSlug}).
 				First(&user).
 				Error; err != nil {
@@ -39,7 +39,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewProfileKind, TargetUserID: data.Profile.User.ID}
-			if err := svc.rwdb.Create(&viewEvent).Error; err != nil {
+			if err := svc.rwdb().Create(&viewEvent).Error; err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view profile", zap.Any("event", &viewEvent))
@@ -48,7 +48,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 
 		// tracks
 		{
-			query := svc.rodb.
+			query := svc.rodb().
 				Model(&sgtmpb.Post{}).
 				Where(sgtmpb.Post{
 					AuthorID:   data.Profile.User.ID,
@@ -75,7 +75,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 		// calendar heatmap
 		if data.Profile.Stats.Tracks > 0 {
 			timestamps := []int64{}
-			err := svc.rodb.Model(&sgtmpb.Post{}).
+			err := svc.rodb().Model(&sgtmpb.Post{}).
 				Select(`sort_date/1000000000 as timestamp`).
 				Where(sgtmpb.Post{
 					AuthorID:   data.Profile.User.ID,

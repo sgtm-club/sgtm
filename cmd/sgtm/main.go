@@ -62,6 +62,7 @@ func app(args []string) error {
 			ff.WithEnvVarPrefix("SGTM"),
 			ff.WithConfigFile("config.txt"),
 			ff.WithConfigFileParser(ff.PlainParser),
+			ff.WithAllowMissingConfigFile(true),
 		},
 		Subcommands: []*ffcli.Command{
 			{Name: "run", Exec: runCmd},

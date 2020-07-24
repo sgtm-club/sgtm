@@ -81,7 +81,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					// check if track already exists
 					{
 						var alreadyExists sgtmpb.Post
-						err := svc.rodb.
+						err := svc.rodb().
 							Model(&post).
 							Where(sgtmpb.Post{SoundCloudID: post.SoundCloudID}).
 							First(&alreadyExists).
@@ -139,7 +139,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 			}
 			post := validate()
 			if post != nil {
-				if err := svc.rwdb.Create(&post).Error; err != nil {
+				if err := svc.rwdb().Create(&post).Error; err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
 				}

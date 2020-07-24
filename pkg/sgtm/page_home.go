@@ -24,7 +24,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewHomeKind}
-			if err := svc.rwdb.Create(&viewEvent).Error; err != nil {
+			if err := svc.rwdb().Create(&viewEvent).Error; err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view home", zap.Any("event", &viewEvent))
@@ -37,7 +37,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 			if data.UserID == 0 {
 				limit = 10
 			}
-			if err := svc.rodb.
+			if err := svc.rodb().
 				Model(&sgtmpb.Post{}).
 				Preload("Author").
 				Where(sgtmpb.Post{
@@ -57,7 +57,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// last users
 		{
-			if err := svc.rodb.
+			if err := svc.rodb().
 				Model(&sgtmpb.User{}).
 				Order("created_at desc").
 				Limit(10).
