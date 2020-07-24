@@ -8,22 +8,22 @@ PRE_TEST_STEPS += gen.sum
 PRE_BUILD_STEPS += gen.sum
 PRE_LINT_STEPsS += gen.sum
 PRE_TIDY_STEPS += gen.sum
-PRE_BUMPDEPS_STEPS += gen.suma
+PRE_BUMPDEPS_STEPS += gen.sum
 
 include rules.mk
 
 COMPILEDAEMON_OPTIONS ?= -exclude-dir=.git -color=true -build=go\ install -build-dir=./cmd/sgtm
-
 .PHONY: run
-run: _devserver generate
+run: generate
+	go install github.com/githubnemo/CompileDaemon
 	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server --enable-discord run"
-
 .PHONY: run-discord
-run-discord: _devserver generate
+run-discord: generate
+	go install github.com/githubnemo/CompileDaemon
 	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-discord run"
-
 .PHONY: run-server
-run-server: _devserver generate
+run-server: generate
+	go install github.com/githubnemo/CompileDaemon
 	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server run"
 
 .PHONY: packr
@@ -126,7 +126,3 @@ packr.clean:
 
 .PHONY: regenerate
 regenerate: gen.clean generate
-
-.PHONY: _devserver
-_devserver:
-	go install github.com/githubnemo/CompileDaemon
