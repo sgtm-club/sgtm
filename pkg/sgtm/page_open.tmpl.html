@@ -26,11 +26,18 @@
         </p>
         <h4>Statistics</h4>
         <ul>
-          <li>Users: {{.Open.Users}}</li>
-          <li>Tracks: {{.Open.Tracks}}</li>
-          <li>Duration: {{.Open.TotalDuration | prettyDuration}}</li>
-          <!--<li>Track drafts: {{.Open.TrackDrafts}}</li>-->
-          <li>Uptime: <span data-toggle="tooltip" data-placement="right" title="{{.Service.StartedAt | prettyDate}}">{{.Service.StartedAt | prettyAgo | trimSuffix " ago"}}</span></li>
+          <li>Users: {{.Open.Count.Users}}</li>
+          <li>Tracks: {{.Open.Count.Tracks}}</li>
+          <li>Tracks Duration: {{.Open.Count.TotalDuration | prettyDuration}}</li>
+          <li>Comments: {{.Open.Count.Comments}}</li>
+          {{if .IsAdmin}}
+          <li>HomeViews: {{.Open.Count.HomeViews}}</li>
+          <li>OpenViews: {{.Open.Count.OpenViews}}</li>
+          <li>ProfileViews: {{.Open.Count.ProfileViews}}</li>
+          <li>PostViews: {{.Open.Count.PostViews}}</li>
+          {{end}}
+          <!--<li>Track drafts: {{.Open.Count.TrackDrafts}}</li>-->
+          <li>Service Uptime: <span data-toggle="tooltip" data-placement="right" title="{{.Service.StartedAt | prettyDate}}">{{.Service.StartedAt | prettyAgo | trimSuffix " ago"}}</span></li>
         </ul>
       </div>
     </div>

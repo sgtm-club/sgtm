@@ -177,10 +177,18 @@ type templateData struct {
 		CalendarHeatmap map[int64]int64
 	} `json:"Profile,omitempty"`
 	Open struct {
-		Users            int64
-		Tracks           int64
-		TrackDrafts      int64
-		TotalDuration    time.Duration
+		Count struct {
+			Users         int64
+			Tracks        int64
+			TrackDrafts   int64
+			Comments      int64
+			PostViews     int64
+			Logins        int64
+			HomeViews     int64
+			OpenViews     int64
+			ProfileViews  int64
+			TotalDuration time.Duration
+		}
 		UploadsByWeekday []int64
 		LastActivities   []*sgtmpb.Post
 	} `json:"Open,omitempty"`

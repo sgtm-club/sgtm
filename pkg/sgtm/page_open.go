@@ -31,18 +31,39 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			}
 		}
 
-		// public tracks
+		// events
 		{
+			type result struct {
+				Kind     sgtmpb.Post_Kind
+				Quantity int64
+			}
+			var results []result
 			err := svc.rodb().
 				Model(&sgtmpb.Post{}).
-				Where(sgtmpb.Post{
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Public,
-				}).
-				Count(&data.Open.Tracks).
+				//Where(sgtmpb.Post{Visibility: sgtmpb.Visibility_Public}).
+				Select(`kind, count(*) as quantity`).
+				Group("kind").
+				Find(&results).
 				Error
 			if err != nil {
-				data.Error = "Cannot fetch last tracks: " + err.Error()
+				data.Error = "Cannot fetch events: " + err.Error()
+			} else {
+				for _, result := range results {
+					switch result.Kind {
+					case sgtmpb.Post_TrackKind:
+						data.Open.Count.Tracks = result.Quantity
+					case sgtmpb.Post_CommentKind:
+						data.Open.Count.Comments = result.Quantity
+					case sgtmpb.Post_ViewHomeKind:
+						data.Open.Count.HomeViews = result.Quantity
+					case sgtmpb.Post_ViewPostKind:
+						data.Open.Count.PostViews = result.Quantity
+					case sgtmpb.Post_ViewProfileKind:
+						data.Open.Count.ProfileViews = result.Quantity
+					case sgtmpb.Post_ViewOpenKind:
+						data.Open.Count.OpenViews = result.Quantity
+					}
+				}
 			}
 		}
 
@@ -55,15 +76,15 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 				Model(&sgtmpb.Post{}).
 				Select("sum(duration) as total_duration").
 				Where(sgtmpb.Post{
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Public,
+					Kind: sgtmpb.Post_TrackKind,
+					//Visibility: sgtmpb.Visibility_Public,
 				}).
 				First(&result).
 				Error
 			if err != nil {
 				data.Error = "Cannot fetch last track durations: " + err.Error()
 			}
-			data.Open.TotalDuration = time.Duration(result.TotalDuration) * time.Millisecond
+			data.Open.Count.TotalDuration = time.Duration(result.TotalDuration) * time.Millisecond
 		}
 
 		// uploads by weekday
@@ -119,7 +140,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 					Kind:       sgtmpb.Post_TrackKind,
 					Visibility: sgtmpb.Visibility_Draft,
 				}).
-				Count(&data.Open.TrackDrafts).
+				Count(&data.Open.Count.TrackDrafts).
 				Error
 			if err != nil {
 				data.Error = "Cannot fetch last track drafts: " + err.Error()
@@ -129,7 +150,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		{
 			err := svc.rodb().
 				Model(&sgtmpb.User{}).
-				Count(&data.Open.Users).
+				Count(&data.Open.Count.Users).
 				Error
 			if err != nil {
 				data.Error = "Cannot fetch last users: " + err.Error()
