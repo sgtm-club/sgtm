@@ -8,6 +8,7 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/Bearer/bearer-go"
 	"github.com/bwmarrin/snowflake"
 	"github.com/oklog/run"
 	ff "github.com/peterbourgon/ff/v3"
@@ -55,6 +56,7 @@ func app(args []string) error {
 	rootFlags.StringVar(&svcOpts.JWTSigningKey, "jwt-signing-key", svcOpts.JWTSigningKey, "HMAC secret to sign JWT tokens")
 	rootFlags.StringVar(&svcOpts.Hostname, "hostname", svcOpts.Hostname, "I.e., https://sgtm.club")
 	rootFlags.StringVar(&svcOpts.SoundCloudClientID, "soundcloud-client-id", svcOpts.SoundCloudClientID, "SoundCloud client ID")
+	rootFlags.StringVar(&svcOpts.BearerToken, "bearer-token", svcOpts.BearerToken, "Bearer.sh token")
 
 	root := &ffcli.Command{
 		FlagSet: rootFlags,
@@ -94,6 +96,11 @@ func runCmd(ctx context.Context, _ []string) error {
 			return err
 		}
 		svcOpts.Logger = logger
+	}
+
+	// bearer
+	if token := svcOpts.BearerToken; token != "" {
+		bearer.ReplaceGlobals(bearer.Init(token))
 	}
 
 	// init db

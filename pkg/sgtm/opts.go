@@ -16,6 +16,7 @@ type Opts struct {
 	DevMode       bool
 	JWTSigningKey string
 	Snowflake     *snowflake.Node
+	BearerToken   string
 
 	/// Discord
 

@@ -3,6 +3,7 @@ module moul.io/sgtm
 go 1.14
 
 require (
+	github.com/Bearer/bearer-go v1.1.0
 	github.com/Masterminds/sprig/v3 v3.1.0
 	github.com/alta/protopatch v0.0.0-20200702232458-c2bd0c612764
 	github.com/bwmarrin/discordgo v0.21.1
