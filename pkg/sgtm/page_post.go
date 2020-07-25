@@ -1,6 +1,7 @@
 package sgtm
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/go-chi/chi"
 	packr "github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
+	"moul.io/godev"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
@@ -38,6 +40,13 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		}
 		data.Post.Post = &post
 		data.Post.Post.ApplyDefaults()
+
+		if r.URL.Query().Get("format") == "json" {
+			data.Post.Post.Filter()
+			data.Post.Post.Author.Filter()
+			fmt.Fprintln(w, godev.PrettyJSONPB(data.Post.Post))
+			return
+		}
 
 		if r.Method == "POST" && data.UserID != 0 {
 			validate := func() *sgtmpb.Post {
