@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	packr "github.com/gobuffalo/packr/v2"
@@ -112,7 +113,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					}
 					post.Genre = track.Genre
 					post.Duration = track.Duration
-					post.ArtworkURL = track.ArtworkUrl
+					post.ArtworkURL = strings.Replace(track.ArtworkUrl, "-large.jpg", "-t500x500.jpg", -1)
 					post.ISRC = track.ISRC
 					post.BPM = track.Bpm
 					post.KeySignature = track.KeySignature
