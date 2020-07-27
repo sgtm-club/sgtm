@@ -25,6 +25,9 @@ func (p *Post) ApplyDefaults() {
 }
 
 func (p *Post) CanonicalURL() string {
+	if p == nil {
+		return "#"
+	}
 	return fmt.Sprintf("/post/%d", p.ID)
 }
 
@@ -51,6 +54,9 @@ func (u *User) ApplyDefaults() {
 }
 
 func (u *User) CanonicalURL() string {
+	if u == nil {
+		return "#"
+	}
 	return fmt.Sprintf("/@%s", u.Slug)
 }
 
