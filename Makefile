@@ -12,6 +12,10 @@ PRE_BUMPDEPS_STEPS += gen.sum
 
 include rules.mk
 
+VCS_REF = `git rev-parse --short HEAD`
+BUILD_DATE = `date +%s`
+VERSION = `git describe --tags --always`
+
 LDFLAGS ?= -X moul.io/sgtm/internal/sgtmversion.VcsRef=$(VCS_REF) -X moul.io/sgtm/internal/sgtmversion.Version=$(VERSION) -X moul.io/sgtm/internal/sgtmversion.BuildTime=$(BUILD_DATE)
 
 COMPILEDAEMON_OPTIONS ?= -exclude-dir=.git -color=true -build=go\ install -build-dir=./cmd/sgtm
