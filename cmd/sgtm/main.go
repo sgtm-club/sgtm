@@ -86,7 +86,7 @@ func runCmd(ctx context.Context, _ []string) error {
 	svcOpts.Context = ctx
 
 	// sentry
-	{
+	if !svcOpts.DevMode {
 		err := sentry.Init(sentry.ClientOptions{
 			Dsn:     "https://5c6262a183b447b4909afc0ae980cef6@o419562.ingest.sentry.io/5371558",
 			Release: sgtmversion.Version,
