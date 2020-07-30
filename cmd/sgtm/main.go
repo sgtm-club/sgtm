@@ -7,9 +7,11 @@ import (
 	"math/rand"
 	"os"
 	"syscall"
+	"time"
 
 	"github.com/Bearer/bearer-go"
 	"github.com/bwmarrin/snowflake"
+	"github.com/getsentry/sentry-go"
 	"github.com/oklog/run"
 	ff "github.com/peterbourgon/ff/v3"
 	"github.com/peterbourgon/ff/v3/ffcli"
@@ -19,6 +21,7 @@ import (
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"moul.io/sgtm/internal/sgtmversion"
 	"moul.io/sgtm/pkg/sgtm"
 	"moul.io/srand"
 	"moul.io/zapgorm2"
@@ -82,6 +85,19 @@ func runCmd(ctx context.Context, _ []string) error {
 	rand.Seed(srand.Secure())
 	svcOpts.Context = ctx
 
+	// sentry
+	{
+		err := sentry.Init(sentry.ClientOptions{
+			Dsn:     "https://5c6262a183b447b4909afc0ae980cef6@o419562.ingest.sentry.io/5371558",
+			Release: sgtmversion.Version,
+		})
+		if err != nil {
+			return err
+		}
+		defer sentry.Flush(2 * time.Second)
+		sentry.CaptureMessage("Starting SGTM Server")
+	}
+
 	// bearer
 	// FIXME: TODO
 
@@ -96,6 +112,11 @@ func runCmd(ctx context.Context, _ []string) error {
 			return err
 		}
 		svcOpts.Logger = logger
+		logger.Debug("logger configured",
+			zap.String("version", sgtmversion.Version),
+			zap.String("vcs-ref", sgtmversion.VcsRef),
+			zap.String("biuld-date", sgtmversion.BuildDate),
+		)
 	}
 
 	// bearer

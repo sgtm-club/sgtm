@@ -12,6 +12,8 @@ PRE_BUMPDEPS_STEPS += gen.sum
 
 include rules.mk
 
+LDFLAGS ?= -X moul.io/sgtm/internal/sgtmversion.VcsRef=$(VCS_REF) -X moul.io/sgtm/internal/sgtmversion.Version=$(VERSION) -X moul.io/sgtm/internal/sgtmversion.BuildTime=$(BUILD_DATE)
+
 COMPILEDAEMON_OPTIONS ?= -exclude-dir=.git -color=true -build=go\ install -build-dir=./cmd/sgtm
 .PHONY: run
 run: generate
@@ -54,7 +56,7 @@ prod.logs:
 
 .PHONY: prod.deploy
 prod.deploy: generate packr
-	GOOS=linux GOARCH=amd64 $(GO) build -ldflags "-linkmode external -extldflags -static" -o sgtm-linux-static ./cmd/sgtm
+	GOOS=linux GOARCH=amd64 $(GO) build -ldflags "-linkmode external -extldflags -static $(LDFLAGS)" -o sgtm-linux-static ./cmd/sgtm
 	rm -rf ./pkg/sgtm/packrd ./pkg/sgtm/sgtm-packr.go
 	docker build -f Dockerfile.fast -t $(DOCKER_IMAGE) .
 	docker push $(DOCKER_IMAGE)
