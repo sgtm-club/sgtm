@@ -3,10 +3,10 @@ module moul.io/sgtm
 go 1.14
 
 require (
-	github.com/Bearer/bearer-go v1.1.0
+	github.com/Bearer/bearer-go v1.2.1
 	github.com/Masterminds/sprig/v3 v3.1.0
 	github.com/alta/protopatch v0.0.0-20200702232458-c2bd0c612764
-	github.com/bwmarrin/discordgo v0.21.1
+	github.com/bwmarrin/discordgo v0.22.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/cespare/hutil v0.1.0
 	github.com/clbanning/mxj v1.8.4 // indirect
@@ -43,14 +43,14 @@ require (
 	github.com/treastech/logger v0.0.0-20180705232552-e381e9ecf2e3
 	github.com/yanatan16/golang-soundcloud v0.0.0-20161013200625-a182dd459b66
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 // indirect
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
-	golang.org/x/sys v0.0.0-20200720211630-cb9d2d5c5666 // indirect
+	golang.org/x/sys v0.0.0-20200728102440-3e129f6d46b1 // indirect
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
-	google.golang.org/genproto v0.0.0-20200722002428-88e341933a54
+	google.golang.org/genproto v0.0.0-20200729003335-053ba62fc06f
 	google.golang.org/grpc v1.30.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/grpc/examples v0.0.0-20200626030347-424195440776 // indirect
@@ -58,7 +58,7 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/driver/sqlite v1.0.8
-	gorm.io/gorm v0.2.24
+	gorm.io/gorm v0.2.25
 	moul.io/banner v1.0.1
 	moul.io/godev v1.6.0
 	moul.io/srand v1.4.0

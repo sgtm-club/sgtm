@@ -21,6 +21,7 @@ import (
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"moul.io/sgtm/internal/sgtmversion"
 	"moul.io/sgtm/pkg/sgtm"
 	"moul.io/srand"
 	"moul.io/zapgorm2"
@@ -87,7 +88,8 @@ func runCmd(ctx context.Context, _ []string) error {
 	// sentry
 	{
 		err := sentry.Init(sentry.ClientOptions{
-			Dsn: "https://5c6262a183b447b4909afc0ae980cef6@o419562.ingest.sentry.io/5371558",
+			Dsn:     "https://5c6262a183b447b4909afc0ae980cef6@o419562.ingest.sentry.io/5371558",
+			Release: sgtmversion.Version,
 		})
 		if err != nil {
 			return err
@@ -110,6 +112,11 @@ func runCmd(ctx context.Context, _ []string) error {
 			return err
 		}
 		svcOpts.Logger = logger
+		logger.Debug("logger configured",
+			zap.String("version", sgtmversion.Version),
+			zap.String("vcs-ref", sgtmversion.VcsRef),
+			zap.String("biuld-date", sgtmversion.BuildDate),
+		)
 	}
 
 	// bearer
