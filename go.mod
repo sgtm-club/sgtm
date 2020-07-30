@@ -13,6 +13,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.9.0 // indirect
+	github.com/getsentry/sentry-go v0.7.0
 	github.com/githubnemo/CompileDaemon v1.2.1
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/jsonp v0.0.0-20170809160916-b971022286e2

@@ -7,9 +7,11 @@ import (
 	"math/rand"
 	"os"
 	"syscall"
+	"time"
 
 	"github.com/Bearer/bearer-go"
 	"github.com/bwmarrin/snowflake"
+	"github.com/getsentry/sentry-go"
 	"github.com/oklog/run"
 	ff "github.com/peterbourgon/ff/v3"
 	"github.com/peterbourgon/ff/v3/ffcli"
@@ -81,6 +83,18 @@ func runCmd(ctx context.Context, _ []string) error {
 	// init
 	rand.Seed(srand.Secure())
 	svcOpts.Context = ctx
+
+	// sentry
+	{
+		err := sentry.Init(sentry.ClientOptions{
+			Dsn: "https://5c6262a183b447b4909afc0ae980cef6@o419562.ingest.sentry.io/5371558",
+		})
+		if err != nil {
+			return err
+		}
+		defer sentry.Flush(2 * time.Second)
+		sentry.CaptureMessage("Starting SGTM Server")
+	}
 
 	// bearer
 	// FIXME: TODO
