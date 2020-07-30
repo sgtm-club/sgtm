@@ -17,18 +17,22 @@ import (
 	blackfriday "github.com/russross/blackfriday/v2"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"moul.io/sgtm/internal/sgtmversion"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
 func (svc *Service) newTemplateData(w http.ResponseWriter, r *http.Request) (*templateData, error) {
 	data := templateData{
-		Title:    "SGTM",
-		Date:     time.Now(),
-		Opts:     svc.opts.Filtered(),
-		Lang:     "en", // FIXME: dynamic
-		Request:  r,
-		Service:  svc,
-		PageKind: "other",
+		Title:            "SGTM",
+		Date:             time.Now(),
+		Opts:             svc.opts.Filtered(),
+		Lang:             "en", // FIXME: dynamic
+		Request:          r,
+		Service:          svc,
+		PageKind:         "other",
+		ReleaseVersion:   sgtmversion.Version,
+		ReleaseVcsRef:    sgtmversion.VcsRef,
+		ReleaseBuildDate: sgtmversion.BuildDate,
 	}
 	if svc.opts.DevMode {
 		data.Title += " (dev)"
@@ -141,20 +145,23 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 type templateData struct {
 	// common
 
-	PageKind string
-	Title    string
-	Date     time.Time
-	JWTToken string
-	Claims   *jwtClaims
-	Duration time.Duration
-	Opts     Opts
-	Lang     string
-	IsAdmin  bool
-	User     *sgtmpb.User
-	UserID   int64
-	Error    string
-	Service  *Service      `json:"-"`
-	Request  *http.Request `json:"-"`
+	PageKind         string
+	Title            string
+	Date             time.Time
+	JWTToken         string
+	Claims           *jwtClaims
+	Duration         time.Duration
+	Opts             Opts
+	Lang             string
+	IsAdmin          bool
+	User             *sgtmpb.User
+	UserID           int64
+	Error            string
+	Service          *Service      `json:"-"`
+	Request          *http.Request `json:"-"`
+	ReleaseVersion   string
+	ReleaseVcsRef    string
+	ReleaseBuildDate string
 
 	// specific
 

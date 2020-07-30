@@ -1,4 +1,9 @@
-Sentry.init({ dsn: 'https://e61830c1fa57411b9b2ce72e4edb47cc@o419562.ingest.sentry.io/5371550' });
+if (!window.sgtm.dev_mode) {
+  Sentry.init({
+    dsn: 'https://e61830c1fa57411b9b2ce72e4edb47cc@o419562.ingest.sentry.io/5371550',
+    release: window.sgtm.release.version,
+  });
+}
 $('button[type="submit"]').on("click", function() {
   setTimeout(function() {
     $(this).prop("disabled", true);
@@ -13,7 +18,9 @@ $("img").on("error", function () {
 });
 
 $('body.page-open').ready(function() {
-  var ctx = document.getElementById('myChart').getContext('2d');
+  var chart = document.getElementById('myChart');
+  if (chart == null) { return; }
+  var ctx = chart.getContext('2d');
   var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
