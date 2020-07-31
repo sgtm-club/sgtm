@@ -19,6 +19,28 @@ $("img").on("error", function () {
   $(this).attr("src", "_assets/img/logo-1x-no-blur.png");
 });
 
+$('body.page-post').ready(function() {
+  $('#soundcloud-player').each(function() {
+    var widget = SC.Widget(this);
+    widget.bind(SC.Widget.Events.PLAY, function(e) {
+      console.log("e", e);
+      amplitude.getInstance().logEvent("player_play", {event: e, iframe: this});
+    });
+    widget.bind(SC.Widget.Events.PAUSE, function(e) {
+      console.log("e", e);
+      amplitude.getInstance().logEvent("player_pause", {event: e, iframe: this});
+    });
+    widget.bind(SC.Widget.Events.FINISH, function(e) {
+      console.log("e", e);
+      amplitude.getInstance().logEvent("player_finish", {event: e, iframe: this});
+    });
+    widget.bind(SC.Widget.Events.SEEK, function(e) {
+      console.log("e", e);
+      amplitude.getInstance().logEvent("player_seek", {event: e, iframe: this});
+    });
+  });
+});
+
 $('body.page-open').ready(function() {
   var chart = document.getElementById('myChart');
   if (chart == null) { return; }
