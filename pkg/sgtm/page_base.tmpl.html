@@ -45,13 +45,14 @@
       {{end}}
 
       <!-- JS -->
-      <script>window.sgtm = window.sgtm || {};window.sgtm.release = {version: {{.ReleaseVersion}}, vcs_ref: {{.ReleaseVcsRef}}, build_date: {{.ReleaseBuildDate}}};window.sgtm.dev_mode = {{.Opts.DevMode}};</script>
+      <script>window.sgtm = window.sgtm || {};window.sgtm.release = {version: {{.ReleaseVersion}}, vcs_ref: {{.ReleaseVcsRef}}, build_date: {{.ReleaseBuildDate}}};window.sgtm.dev_mode = {{.Opts.DevMode}};window.$crisp=[];window.CRISP_WEBSITE_ID="3304d285-0a4a-4bc3-ad3c-f9078210f232";</script>
       <script src="https://browser.sentry-cdn.com/5.20.1/bundle.min.js" integrity="sha384-O8HdAJg1h8RARFowXd2J/r5fIWuinSBtjhwQoPesfVILeXzGpJxvyY/77OaPPXUo" crossorigin="anonymous" defer></script>
       <script src="https://browser.sentry-cdn.com/5.20.1/bundle.apm.min.js" integrity="sha384-yRb6uqOrDZO0UoaXIwntp3rtwds2Zred8O/qjChDYuUX6ried457MYhtj1ASZEsX" crossorigin="anonymous" defer></script>
       <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous" defer></script>-->
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js" integrity="sha512-/DXTXr6nQodMUiq+IUJYCt2PPOUjrHJ9wFrqpJ3XkgPNOZVfMok7cRw6CSxyCQxXn6ozlESsSh1/sMCTF1rL/g==" crossorigin="anonymous"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js" integrity="sha384-1CmrxMRARb6aLqgBO7yyAxTOQE2AKb9GfXnEo760AUcUmFx3ibVJJAzGytlQcNXd" crossorigin="anonymous" defer></script>
       <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js" integrity="sha512-G3jAqT2eM4MMkLMyQR5YBhvN5/Da3IG6kqgYqU9zlIH4+2a+GuMdLb5Kpxy6ItMdCfgaKlo2XFhI0dHtMJjoRw==" crossorigin="anonymous" defer></script>-->
+      <script type="text/javascript" src="https://client.crisp.chat/l.js" defer></script>
       <script src="/_assets/js/script.js?t={{.Service.StartedAt | unixEpoch}}" defer></script>
 
       <!-- social -->
