@@ -38,6 +38,22 @@ $('body.page-post').ready(function() {
       //console.log("e", e);
       amplitude.getInstance().logEvent("player_seek", {event: e, iframe: this});
     });
+    widget.bind(SC.Widget.Events.CLICK_DOWNLOAD, function(e) {
+      //console.log("e", e);
+      amplitude.getInstance().logEvent("player_click_download", {event: e, iframe: this});
+    });
+    widget.bind(SC.Widget.Events.CLICK_BUY, function(e) {
+      //console.log("e", e);
+      amplitude.getInstance().logEvent("player_click_buy", {event: e, iframe: this});
+    });
+    widget.bind(SC.Widget.Events.ERROR, function(e) {
+      //console.log("e", e);
+      amplitude.getInstance().logEvent("player_error", {event: e, iframe: this});
+    });
+    widget.bind(SC.Widget.Events.OPEN_SHARE_PANEL, function(e) {
+      //console.log("e", e);
+      amplitude.getInstance().logEvent("player_open_share_panel", {event: e, iframe: this});
+    });
   });
 });
 
