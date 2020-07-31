@@ -1,7 +1,9 @@
-if (!window.sgtm.dev_mode) {
+if (true || !window.sgtm.dev_mode) {
   Sentry.init({
     dsn: 'https://e61830c1fa57411b9b2ce72e4edb47cc@o419562.ingest.sentry.io/5371550',
     release: window.sgtm.release.version,
+    integrations: [new Sentry.Integrations.Tracing()],
+    traceSampleRate: 0.1,
   });
 }
 $('button[type="submit"]').on("click", function() {
