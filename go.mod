@@ -50,15 +50,15 @@ require (
 	golang.org/x/sys v0.0.0-20200728102440-3e129f6d46b1 // indirect
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
-	google.golang.org/genproto v0.0.0-20200729003335-053ba62fc06f
-	google.golang.org/grpc v1.30.0
+	google.golang.org/genproto v0.0.0-20200808173500-a06252235341
+	google.golang.org/grpc v1.31.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/grpc/examples v0.0.0-20200626030347-424195440776 // indirect
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
-	gorm.io/driver/sqlite v1.0.8
-	gorm.io/gorm v0.2.25
+	gorm.io/driver/sqlite v1.0.9
+	gorm.io/gorm v0.2.28
 	moul.io/banner v1.0.1
 	moul.io/godev v1.6.0
 	moul.io/srand v1.4.0
