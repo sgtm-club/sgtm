@@ -25,14 +25,14 @@ require (
 	github.com/gosimple/slug v1.9.0
 	github.com/grokify/html-strip-tags-go v0.0.0-20200322061010-ea0c1cf2f119
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
-	github.com/grpc-ecosystem/grpc-gateway v1.14.6
+	github.com/grpc-ecosystem/grpc-gateway v1.14.7
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2
 	github.com/imdario/mergo v0.3.10 // indirect
 	github.com/karrick/godirwalk v1.15.6 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
-	github.com/microcosm-cc/bluemonday v1.0.3
+	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/oklog/run v1.1.1-0.20200508094559-c7096881717e
 	github.com/peterbourgon/ff/v3 v3.0.0
 	github.com/rs/cors v1.7.0
@@ -50,7 +50,7 @@ require (
 	golang.org/x/sys v0.0.0-20200728102440-3e129f6d46b1 // indirect
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
-	google.golang.org/genproto v0.0.0-20200808173500-a06252235341
+	google.golang.org/genproto v0.0.0-20200813001606-1ccf2a5ae4fd
 	google.golang.org/grpc v1.31.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/grpc/examples v0.0.0-20200626030347-424195440776 // indirect
@@ -58,7 +58,7 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/driver/sqlite v1.0.9
-	gorm.io/gorm v0.2.28
+	gorm.io/gorm v0.2.31
 	moul.io/banner v1.0.1
 	moul.io/godev v1.6.0
 	moul.io/srand v1.4.0
