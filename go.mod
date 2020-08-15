@@ -24,7 +24,7 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/gosimple/slug v1.9.0
 	github.com/grokify/html-strip-tags-go v0.0.0-20200322061010-ea0c1cf2f119
-	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
+	github.com/grpc-ecosystem/go-grpc-middleware v1.2.1
 	github.com/grpc-ecosystem/grpc-gateway v1.14.7
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
 	github.com/huandu/xstrings v1.3.2 // indirect
@@ -50,7 +50,7 @@ require (
 	golang.org/x/sys v0.0.0-20200728102440-3e129f6d46b1 // indirect
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
-	google.golang.org/genproto v0.0.0-20200813001606-1ccf2a5ae4fd
+	google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70
 	google.golang.org/grpc v1.31.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/grpc/examples v0.0.0-20200626030347-424195440776 // indirect
