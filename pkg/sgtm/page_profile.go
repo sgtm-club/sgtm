@@ -61,7 +61,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 			if data.Profile.Stats.Tracks > 0 {
 				if err := query.
 					Order("sort_date desc").
-					Limit(50). // FIXME: pagination
+					Limit(100). // FIXME: pagination
 					Find(&data.Profile.LastTracks).
 					Error; err != nil {
 					data.Error = "Cannot fetch last tracks: " + err.Error()
