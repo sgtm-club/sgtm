@@ -188,7 +188,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 
 	// api
 	r.Route("/api", func(r chi.Router) {
-		//r.Use(auth(opts.BasicAuth, opts.Realm, opts.AuthSalt))
+		// r.Use(auth(opts.BasicAuth, opts.Realm, opts.AuthSalt))
 		r.Use(jsonp.Handler)
 		r.Mount("/", handler)
 	})
@@ -267,7 +267,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 	// configure server
 	http.DefaultServeMux = http.NewServeMux() // disables default handlers registered by importing net/http/pprof for security reasons
 
-	//apacheLogFormat := `%h - %u %{02/Jan/2006 15:04:05 -0700}t "%m %U%q %H" %s %b %D`
+	// apacheLogFormat := `%h - %u %{02/Jan/2006 15:04:05 -0700}t "%m %U%q %H" %s %b %D`
 	apacheLogFormat := `%h - %{Sgtm-User-Slug}o %t "%r" %s %b "%{Referer}i" "%{User-Agent}i"`
 	ljack := lumberjack.Logger{
 		Filename:   "./logs/access.log",
@@ -380,13 +380,13 @@ func (svc *Service) grpcServer() *grpc.Server {
 	serverUnaryOpts := []grpc.UnaryServerInterceptor{grpc_recovery.UnaryServerInterceptor(recoveryOpts...)}
 	serverStreamOpts = append(serverStreamOpts,
 		grpc_auth.StreamServerInterceptor(authFunc),
-		//grpc_ctxtags.StreamServerInterceptor(),
+		// grpc_ctxtags.StreamServerInterceptor(),
 		grpc_zap.StreamServerInterceptor(svc.logger),
 	)
 	serverUnaryOpts = append(
 		serverUnaryOpts,
 		grpc_auth.UnaryServerInterceptor(authFunc),
-		//grpc_ctxtags.UnaryServerInterceptor(),
+		// grpc_ctxtags.UnaryServerInterceptor(),
 		grpc_zap.UnaryServerInterceptor(svc.logger),
 	)
 	if svc.logger.Check(zap.DebugLevel, "") != nil {

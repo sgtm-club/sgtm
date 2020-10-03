@@ -40,7 +40,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			var results []result
 			err := svc.rodb().
 				Model(&sgtmpb.Post{}).
-				//Where(sgtmpb.Post{Visibility: sgtmpb.Visibility_Public}).
+				// Where(sgtmpb.Post{Visibility: sgtmpb.Visibility_Public}).
 				Select(`kind, count(*) as quantity`).
 				Group("kind").
 				Find(&results).
@@ -119,10 +119,10 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 					sgtmpb.Post_ViewHomeKind,
 					sgtmpb.Post_ViewOpenKind,
 				}). // filter admin recurring actions
-				//Where("author_id != 0"). // filter anonymous
+				// Where("author_id != 0"). // filter anonymous
 				Where("kind NOT IN (?)", []sgtmpb.Post_Kind{
 					sgtmpb.Post_LinkDiscordAccountKind,
-					//sgtmpb.Post_LoginKind,
+					// sgtmpb.Post_LoginKind,
 				}).
 				Limit(42).
 				Find(&data.Open.LastActivities).

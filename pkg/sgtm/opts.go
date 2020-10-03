@@ -18,7 +18,7 @@ type Opts struct {
 	Snowflake     *snowflake.Node
 	BearerToken   string
 
-	/// Discord
+	// Discord
 
 	EnableDiscord       bool
 	DiscordToken        string
@@ -26,15 +26,15 @@ type Opts struct {
 	DiscordClientID     string
 	DiscordClientSecret string
 
-	/// SoundCloud
+	// SoundCloud
 
 	SoundCloudClientID string
 
-	/// DB
+	// DB
 
 	DBPath string
 
-	/// Server
+	// Server
 
 	EnableServer             bool
 	ServerBind               string

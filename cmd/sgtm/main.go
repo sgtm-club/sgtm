@@ -104,7 +104,7 @@ func runCmd(ctx context.Context, _ []string) error {
 	// zap logger
 	{
 		svcOpts.Logger = zapconfig.Configurator{}.MustBuild()
-		svcOpts.logger.Debug("logger configured",
+		svcOpts.Logger.Debug("logger configured",
 			zap.String("version", sgtmversion.Version),
 			zap.String("vcs-ref", sgtmversion.VcsRef),
 			zap.String("biuld-date", sgtmversion.BuildDate),

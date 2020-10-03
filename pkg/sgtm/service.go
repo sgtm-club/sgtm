@@ -21,7 +21,7 @@ type Service struct {
 	StartedAt     time.Time
 	errRenderHTML func(w http.ResponseWriter, r *http.Request, err error, status int)
 
-	/// drivers
+	// drivers
 
 	discord discordDriver
 	server  serverDriver

@@ -113,12 +113,12 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					}
 					post.Genre = track.Genre
 					post.Duration = track.Duration
-					post.ArtworkURL = strings.Replace(track.ArtworkUrl, "-large.jpg", "-t500x500.jpg", -1)
+					post.ArtworkURL = strings.ReplaceAll(track.ArtworkUrl, "-large.jpg", "-t500x500.jpg")
 					post.ISRC = track.ISRC
 					post.BPM = track.Bpm
 					post.KeySignature = track.KeySignature
 					post.ProviderDescription = track.Description
-					//post.Body = track.Description
+					// post.Body = track.Description
 					/*post.Tags = track.TagList
 					post.WaveformURL = track.WaveformURL
 					post.License = track.License
