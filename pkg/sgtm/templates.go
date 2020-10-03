@@ -60,7 +60,7 @@ func (svc *Service) newTemplateData(w http.ResponseWriter, r *http.Request) (*te
 		data.User = &user
 		data.UserID = user.ID
 		data.IsAdmin = user.ID == 1280639244955553792
-		//w.Header().Set("SGTM-User-ID", fmt.Sprintf("%d", user.ID))
+		// w.Header().Set("SGTM-User-ID", fmt.Sprintf("%d", user.ID))
 		w.Header().Set("SGTM-User-Slug", user.Slug)
 	} else {
 		w.Header().Set("SGTM-User-Slug", "-")
@@ -114,13 +114,13 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 	funcmap["prettyDuration"] = func(input time.Duration) string {
 		input = input.Round(time.Second)
 		str := durafmt.Parse(input).LimitFirstN(2).String()
-		str = strings.Replace(str, " ", "", -1)
-		str = strings.Replace(str, "minutes", "m", -1)
-		str = strings.Replace(str, "minute", "m", -1)
-		str = strings.Replace(str, "hours", "h", -1)
-		str = strings.Replace(str, "hour", "h", -1)
-		str = strings.Replace(str, "seconds", "s", -1)
-		str = strings.Replace(str, "second", "s", -1)
+		str = strings.ReplaceAll(str, " ", "")
+		str = strings.ReplaceAll(str, "minutes", "m")
+		str = strings.ReplaceAll(str, "minute", "m")
+		str = strings.ReplaceAll(str, "hours", "h")
+		str = strings.ReplaceAll(str, "hour", "h")
+		str = strings.ReplaceAll(str, "seconds", "s")
+		str = strings.ReplaceAll(str, "second", "s")
 
 		return str
 	}

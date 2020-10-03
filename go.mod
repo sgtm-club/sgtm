@@ -42,7 +42,7 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/treastech/logger v0.0.0-20180705232552-e381e9ecf2e3
 	github.com/yanatan16/golang-soundcloud v0.0.0-20161013200625-a182dd459b66
-	go.uber.org/zap v1.15.0
+	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
@@ -62,6 +62,7 @@ require (
 	moul.io/banner v1.0.1
 	moul.io/godev v1.6.0
 	moul.io/srand v1.4.0
+	moul.io/zapconfig v1.1.0
 	moul.io/zapgorm2 v1.0.1
 	ultre.me/calcbiz v1.0.0
 )

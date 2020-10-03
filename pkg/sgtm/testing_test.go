@@ -8,11 +8,11 @@ import (
 
 	"github.com/bwmarrin/snowflake"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"moul.io/zapconfig"
 	"moul.io/zapgorm2"
 )
 
@@ -68,16 +68,7 @@ func TestingDB(t *testing.T) *gorm.DB {
 
 func TestingLogger(t *testing.T) *zap.Logger {
 	if *debugFlag {
-		config := zap.NewDevelopmentConfig()
-		config.DisableStacktrace = true
-		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-		config.Level.SetLevel(zap.DebugLevel)
-		logger, err := config.Build()
-		if err != nil {
-			t.Errorf("setup debug logger error: `%v`", err)
-			return zap.NewNop()
-		}
-		return logger
+		return zapconfig.Configurator{}.MustBuild()
 	}
 	return zap.NewNop()
 }
