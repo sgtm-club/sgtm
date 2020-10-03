@@ -16,7 +16,6 @@ import (
 	ff "github.com/peterbourgon/ff/v3"
 	"github.com/peterbourgon/ff/v3/ffcli"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
@@ -24,6 +23,7 @@ import (
 	"moul.io/sgtm/internal/sgtmversion"
 	"moul.io/sgtm/pkg/sgtm"
 	"moul.io/srand"
+	"moul.io/zapconfig"
 	"moul.io/zapgorm2"
 )
 
@@ -103,16 +103,8 @@ func runCmd(ctx context.Context, _ []string) error {
 
 	// zap logger
 	{
-		config := zap.NewDevelopmentConfig()
-		config.Level.SetLevel(zap.DebugLevel)
-		config.DisableStacktrace = true
-		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-		logger, err := config.Build()
-		if err != nil {
-			return err
-		}
-		svcOpts.Logger = logger
-		logger.Debug("logger configured",
+		svcOpts.Logger = zapconfig.Configurator{}.MustBuild()
+		svcOpts.logger.Debug("logger configured",
 			zap.String("version", sgtmversion.Version),
 			zap.String("vcs-ref", sgtmversion.VcsRef),
 			zap.String("biuld-date", sgtmversion.BuildDate),
