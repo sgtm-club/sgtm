@@ -82,7 +82,7 @@ func app(args []string) error {
 
 func runCmd(ctx context.Context, _ []string) error {
 	// init
-	rand.Seed(srand.Secure())
+	rand.Seed(srand.MustSecure())
 	svcOpts.Context = ctx
 
 	// sentry
