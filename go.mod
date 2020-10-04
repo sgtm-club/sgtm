@@ -23,9 +23,9 @@ require (
 	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/gosimple/slug v1.9.0
-	github.com/grokify/html-strip-tags-go v0.0.0-20200322061010-ea0c1cf2f119
-	github.com/grpc-ecosystem/go-grpc-middleware v1.2.1
-	github.com/grpc-ecosystem/grpc-gateway v1.14.7
+	github.com/grokify/html-strip-tags-go v0.0.0-20200923094847-079d207a09f1
+	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
+	github.com/grpc-ecosystem/grpc-gateway v1.15.0
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2
@@ -44,24 +44,19 @@ require (
 	github.com/yanatan16/golang-soundcloud v0.0.0-20161013200625-a182dd459b66
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
-	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
-	golang.org/x/sys v0.0.0-20200728102440-3e129f6d46b1 // indirect
-	golang.org/x/text v0.3.3 // indirect
-	google.golang.org/appengine v1.6.6 // indirect
-	google.golang.org/genproto v0.0.0-20200827165113-ac2560b5e952
-	google.golang.org/grpc v1.31.1
+	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
+	google.golang.org/genproto v0.0.0-20201002142447-3860012362da
+	google.golang.org/grpc v1.32.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/grpc/examples v0.0.0-20200626030347-424195440776 // indirect
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
-	gorm.io/driver/sqlite v1.0.9
-	gorm.io/gorm v0.2.38
+	gorm.io/driver/sqlite v1.1.3
+	gorm.io/gorm v1.20.1
 	moul.io/banner v1.0.1
-	moul.io/godev v1.6.0
-	moul.io/srand v1.4.0
+	moul.io/godev v1.7.0
+	moul.io/srand v1.6.0
 	moul.io/zapconfig v1.1.0
 	moul.io/zapgorm2 v1.0.1
 	ultre.me/calcbiz v1.0.0
