@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/Bearer/bearer-go v1.2.1
 	github.com/Masterminds/sprig/v3 v3.1.0
-	github.com/alta/protopatch v0.0.0-20200702232458-c2bd0c612764
+	github.com/alta/protopatch v0.0.0-20201016184603-76d4a1d79afd
 	github.com/bwmarrin/discordgo v0.22.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/cespare/hutil v0.1.0
@@ -20,7 +20,7 @@ require (
 	github.com/go-chi/render v1.0.1
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gogo/gateway v1.1.0
-	github.com/golang/protobuf v1.4.2
+	github.com/golang/protobuf v1.4.3
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/gosimple/slug v1.9.0
@@ -47,7 +47,7 @@ require (
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
 	golang.org/x/net v0.0.0-20201002202402-0a1ea396d57c // indirect
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
-	google.golang.org/genproto v0.0.0-20201012135029-0c95dc0d88e8
+	google.golang.org/genproto v0.0.0-20201015140912-32ed001d685c
 	google.golang.org/grpc v1.32.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/grpc/examples v0.0.0-20200626030347-424195440776 // indirect
