@@ -46,7 +46,7 @@ require (
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
 	golang.org/x/net v0.0.0-20201002202402-0a1ea396d57c // indirect
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
-	google.golang.org/genproto v0.0.0-20201030142918-24207fddd1c3
+	google.golang.org/genproto v0.0.0-20201104152603-2e45c02ce95c
 	google.golang.org/grpc v1.33.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/grpc/examples v0.0.0-20200626030347-424195440776 // indirect
