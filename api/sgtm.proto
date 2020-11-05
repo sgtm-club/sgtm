@@ -111,6 +111,7 @@ message User {
   string other_links = 26;
   string goals = 27;
   string soundcloud_username = 28;
+  string role = 29;
 
   repeated Post recent_posts = 50 [(go.field) = {tags: 'gorm:"foreignkey:AuthorID;PRELOAD:false"'}];
   // timezone
