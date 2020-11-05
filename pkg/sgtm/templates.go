@@ -59,7 +59,7 @@ func (svc *Service) newTemplateData(w http.ResponseWriter, r *http.Request) (*te
 		}
 		data.User = &user
 		data.UserID = user.ID
-		data.IsAdmin = user.ID == 1280639244955553792
+		data.IsAdmin = user.Role == "admin"
 		// w.Header().Set("SGTM-User-ID", fmt.Sprintf("%d", user.ID))
 		w.Header().Set("SGTM-User-Slug", user.Slug)
 	} else {
