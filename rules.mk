@@ -207,7 +207,11 @@ TIDY_STEPS += go.tidy
 LINT_STEPS += go.lint
 UNITTEST_STEPS += go.unittest
 FMT_STEPS += go.fmt
-GENERATE_STEPS += go.depaware-update
+
+# FIXME: disabled, because currently slow
+# new rule that is manually run sometimes, i.e. `make pre-release` or `make maintenance`.
+# alternative: run it each time the go.mod is changed
+#GENERATE_STEPS += go.depaware-update
 endif
 
 ##
