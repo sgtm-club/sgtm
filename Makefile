@@ -19,116 +19,135 @@ VERSION = `git describe --tags --always`
 LDFLAGS ?= -X moul.io/sgtm/internal/sgtmversion.VcsRef=$(VCS_REF) -X moul.io/sgtm/internal/sgtmversion.Version=$(VERSION) -X moul.io/sgtm/internal/sgtmversion.BuildTime=$(BUILD_DATE)
 
 COMPILEDAEMON_OPTIONS ?= -exclude-dir=.git -color=true -build=go\ install -build-dir=./cmd/sgtm
-.PHONY: run
 run: generate
 	go install github.com/githubnemo/CompileDaemon
 	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server --enable-discord run"
-.PHONY: run-discord
+.PHONY: run
+
 run-discord: generate
 	go install github.com/githubnemo/CompileDaemon
 	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-discord run"
-.PHONY: run-server
+.PHONY: run-discord
+
 run-server: generate
 	go install github.com/githubnemo/CompileDaemon
 	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server run"
+.PHONY: run-server
 
-.PHONY: packr
 packr:
 	(cd static; git clean -fxd)
 	cd pkg/sgtm && packr2
+.PHONY: packr
 
-.PHONY: flushdb
 flushdb:
 	rm -f /tmp/sgtm.db
+.PHONY: flushdb
 
-.PHONY: docker.push
 docker.push: tidy generate docker.build
 	docker push $(DOCKER_IMAGE)
+.PHONY: docker.push
 
 # prod
 
 PROD_HOST = zrwf.m.42.am
 PROD_PATH = infra/projects/sgtm.club
 
-.PHONY: prod.deploy.full
 prod.deploy.full: docker.push
 	ssh $(PROD_HOST) make -C $(PROD_PATH) re
+.PHONY: prod.deploy.full
 
-.PHONY: prod.logs
 prod.logs:
 	ssh $(PROD_HOST) make -C $(PROD_PATH) logs
+.PHONY: prod.logs
 
-.PHONY: prod.deploy
 prod.deploy: generate packr
 	GOOS=linux GOARCH=amd64 $(GO) build -ldflags "-linkmode external -extldflags -static $(LDFLAGS)" -o sgtm-linux-static ./cmd/sgtm
 	rm -rf ./pkg/sgtm/packrd ./pkg/sgtm/sgtm-packr.go
 	docker build -f Dockerfile.fast -t $(DOCKER_IMAGE) .
 	docker push $(DOCKER_IMAGE)
 	ssh $(PROD_HOST) make -C $(PROD_PATH) re
+.PHONY: prod.deploy
 
-.PHONY: prod.syncdb
 prod.syncdb:
 	rsync -avze ssh $(PROD_HOST):$(PROD_PATH)/sgtm.db /tmp/sgtm.db
+.PHONY: prod.syncdb
 
-.PHONY: prod.dbdump
 prod.dbdump:
 	ssh $(PROD_HOST) sqlite3 $(PROD_PATH)/sgtm.db .dump
+.PHONY: prod.dbdump
 
-.PHONY: prod.dbshell
 prod.dbshell:
 	ssh -t $(PROD_HOST) sudo sqlite3 $(PROD_PATH)/sgtm.db
+.PHONY: prod.dbshell
 
-.PHONY: prod.accesslog
 prod.accesslog:
 	#ssh $(PROD_HOST) sudo apt install grc
 	#ssh $(PROD_HOST) grc tail -n 1000 -f $(PROD_PATH)/logs/access.log
 	ssh $(PROD_HOST) tail -n 1000 -f $(PROD_PATH)/logs/access.log
+.PHONY: prod.accesslog
 
-.PHONY: dbshell
 dbshell:
 	sqlite3 /tmp/sgtm.db
+.PHONY: dbshell
 
-PROTOS_SRC := $(wildcard ./api/*.proto)
-GEN_DEPS := $(PROTOS_SRC) Makefile
-.PHONY: generate
+protos_src := $(wildcard ./api/*.proto)
+gen_src := $(protos_src) Makefile
 generate: gen.sum
-gen.sum: $(GEN_DEPS)
-	shasum $(GEN_DEPS) | sort > gen.sum.tmp
-	@diff -q gen.sum gen.sum.tmp || make generate.protoc generate.sum
-	@rm -f gen.sum.tmp
+.PHONY: generate
+gen.sum: $(gen_src)
+	@shasum $(gen_src) | sort -k 2 > gen.sum.tmp
+	@diff -q gen.sum gen.sum.tmp || ( \
+	  set -xe; \
+	  make generate.protoc; \
+	  make go.fmt; \
+	  go mod tidy; \
+	  shasum $(gen_src) | sort -k 2 > gen.sum.tmp; \
+	  mv gen.sum.tmp gen.sum; \
+	)
 
-.PHONY: generate.sum
-generate.sum:
-	shasum $(GEN_DEPS) | sort > gen.sum.tmp
-	mv gen.sum.tmp gen.sum
-
-.PHONY: generate.protoc
 generate.protoc:
-	go install github.com/alta/protopatch/cmd/protoc-gen-go-patch
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	go install google.golang.org/protobuf/cmd/protoc-gen-go
-	@set -e; for proto in $(PROTOS_SRC); do ( set -e; \
-	  proto_dirs=./api:`go list -m -f {{.Dir}} github.com/alta/protopatch`:`go list -m -f {{.Dir}} google.golang.org/protobuf`:`go list -m -f {{.Dir}} github.com/grpc-ecosystem/grpc-gateway`/third_party/googleapis; \
+	go mod download
+	@ uid=`id -u`; set -xe; \
+	docker run \
+	  --user="$$uid" \
+	  --volume="`go env GOPATH`/pkg/mod:/go/pkg/mod" \
+	  --volume="$(PWD):/go/src/moul.io/sgtm" \
+	  --workdir="/go/src/moul.io/sgtm" \
+	  --entrypoint="sh" \
+	  --rm \
+	  moul/sgtm-protoc:1 \
+	  -ec 'make generate.protoc_local'
+.PHONY: generate.protoc
+
+generate.protoc_local:
+	@set -e; for proto in $(protos_src); do ( set -e; \
+	  proto_dirs=./api:`go list -m -f {{.Dir}} github.com/alta/protopatch`:`go list -m -f {{.Dir}} google.golang.org/protobuf`:`go list -m -f {{.Dir}} github.com/grpc-ecosystem/grpc-gateway`/third_party/googleapis:/protobuf; \
 	  set -x; \
 	  protoc \
 	    -I $$proto_dirs \
+		--go_out=pkg/sgtmpb --go_opt=paths=source_relative \
+		--go-grpc_out=pkg/sgtmpb --go-grpc_opt=paths=source_relative \
 	    --grpc-gateway_out=logtostderr=true:"$(GOPATH)/src" \
-	    --go-patch_out=plugin=go,paths=import:$(GOPATH)/src \
-	    --go-patch_out=plugin=go-grpc,requireUnimplementedServers=false,paths=import:$(GOPATH)/src \
+	    "$$proto"; \
+	  protoc \
+	    -I $$proto_dirs \
+	    --go-patch_out=plugin=go,paths=source_relative:pkg/sgtmpb \
+	    --go-patch_out=plugin=go-grpc,paths=source_relative:pkg/sgtmpb \
 	    "$$proto" \
 	); done
 	goimports -w ./pkg ./cmd ./internal
+.PHONY: generate.protoc_local
 
-.PHONY: gen.clean
 gen.clean:
 	rm -f gen.sum $(wildcard */*/*.pb.go */*/*.pb.gw.go */*/*/*_grpc.pb.go)
+.PHONY: gen.clean
 
-.PHONY: clean
 clean: gen.clean packr.clean
+.PHONY: clean
 
-.PHONY: packr.clean
 packr.clean:
 	rm -rf ./pkg/sgtm/packrd ./pkg/sgtm/sgtm-packr.go
+.PHONY: packr.clean
 
-.PHONY: regenerate
 regenerate: gen.clean generate
+.PHONY: regenerate

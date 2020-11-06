@@ -197,7 +197,7 @@ go.bumpdeps:
 go.fmt:
 	@set -e; for dir in $(GOMOD_DIRS); do ( set -xe; \
 	  cd $$dir; \
-	  $(GO) run golang.org/x/tools/cmd/goimports -w `go list -f '{{.Dir}}' ./...)` \
+	  $(GO) run golang.org/x/tools/cmd/goimports -w `go list -f '{{.Dir}}' ./...` \
 	); done
 
 VERIFY_STEPS += go.depaware-check

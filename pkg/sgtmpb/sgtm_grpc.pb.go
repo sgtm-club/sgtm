@@ -12,7 +12,7 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+const _ = grpc.SupportPackageIsVersion7
 
 // WebAPIClient is the client API for WebAPI service.
 //
@@ -81,7 +81,7 @@ func (c *webAPIClient) Status(ctx context.Context, in *Status_Request, opts ...g
 }
 
 // WebAPIServer is the server API for WebAPI service.
-// All implementations should embed UnimplementedWebAPIServer
+// All implementations must embed UnimplementedWebAPIServer
 // for forward compatibility
 type WebAPIServer interface {
 	//rpc Register(Register.Request) returns (Register.Response) { option (google.api.http) = {post: "/api/v1/Register", body: "*"}; }
@@ -91,29 +91,38 @@ type WebAPIServer interface {
 	Me(context.Context, *Me_Request) (*Me_Response, error)
 	Ping(context.Context, *Ping_Request) (*Ping_Response, error)
 	Status(context.Context, *Status_Request) (*Status_Response, error)
+	mustEmbedUnimplementedWebAPIServer()
 }
 
-// UnimplementedWebAPIServer should be embedded to have forward compatible implementations.
+// UnimplementedWebAPIServer must be embedded to have forward compatible implementations.
 type UnimplementedWebAPIServer struct {
 }
 
-func (*UnimplementedWebAPIServer) UserList(context.Context, *UserList_Request) (*UserList_Response, error) {
+func (UnimplementedWebAPIServer) UserList(context.Context, *UserList_Request) (*UserList_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserList not implemented")
 }
-func (*UnimplementedWebAPIServer) PostList(context.Context, *PostList_Request) (*PostList_Response, error) {
+func (UnimplementedWebAPIServer) PostList(context.Context, *PostList_Request) (*PostList_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PostList not implemented")
 }
-func (*UnimplementedWebAPIServer) Me(context.Context, *Me_Request) (*Me_Response, error) {
+func (UnimplementedWebAPIServer) Me(context.Context, *Me_Request) (*Me_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Me not implemented")
 }
-func (*UnimplementedWebAPIServer) Ping(context.Context, *Ping_Request) (*Ping_Response, error) {
+func (UnimplementedWebAPIServer) Ping(context.Context, *Ping_Request) (*Ping_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
-func (*UnimplementedWebAPIServer) Status(context.Context, *Status_Request) (*Status_Response, error) {
+func (UnimplementedWebAPIServer) Status(context.Context, *Status_Request) (*Status_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Status not implemented")
 }
+func (UnimplementedWebAPIServer) mustEmbedUnimplementedWebAPIServer() {}
 
-func RegisterWebAPIServer(s *grpc.Server, srv WebAPIServer) {
+// UnsafeWebAPIServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to WebAPIServer will
+// result in compilation errors.
+type UnsafeWebAPIServer interface {
+	mustEmbedUnimplementedWebAPIServer()
+}
+
+func RegisterWebAPIServer(s grpc.ServiceRegistrar, srv WebAPIServer) {
 	s.RegisterService(&_WebAPI_serviceDesc, srv)
 }
 
