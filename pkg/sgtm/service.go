@@ -10,9 +10,12 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"moul.io/banner"
+	"moul.io/sgtm/pkg/sgtmpb"
 )
 
 type Service struct {
+	sgtmpb.UnimplementedWebAPIServer
+
 	_db           *gorm.DB
 	logger        *zap.Logger
 	opts          Opts

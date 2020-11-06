@@ -111,6 +111,9 @@ generate.protoc:
 	  proto_dirs=./api:`go list -m -f {{.Dir}} github.com/alta/protopatch`:`go list -m -f {{.Dir}} google.golang.org/protobuf`:`go list -m -f {{.Dir}} github.com/grpc-ecosystem/grpc-gateway`/third_party/googleapis; \
 	  set -x; \
 	  protoc \
+			--proto_path=api \
+			--go_out=pkg/sgtmpb --go_opt=paths=source_relative \
+			--go-grpc_out=pkg/sgtmpb --go-grpc_opt=paths=source_relative \
 	    -I $$proto_dirs \
 	    --grpc-gateway_out=logtostderr=true:"$(GOPATH)/src" \
 	    --go-patch_out=plugin=go,paths=import:$(GOPATH)/src \
