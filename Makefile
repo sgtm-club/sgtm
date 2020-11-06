@@ -114,7 +114,7 @@ generate.protoc:
 	    -I $$proto_dirs \
 	    --grpc-gateway_out=logtostderr=true:"$(GOPATH)/src" \
 	    --go-patch_out=plugin=go,paths=import:$(GOPATH)/src \
-	    --go-patch_out=plugin=go-grpc,requireUnimplementedServers=false,paths=import:$(GOPATH)/src \
+	    --go-patch_out=plugin=go-grpc,paths=import:$(GOPATH)/src \
 	    "$$proto" \
 	); done
 	goimports -w ./pkg ./cmd ./internal

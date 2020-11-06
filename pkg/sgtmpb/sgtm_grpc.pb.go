@@ -81,7 +81,7 @@ func (c *webAPIClient) Status(ctx context.Context, in *Status_Request, opts ...g
 }
 
 // WebAPIServer is the server API for WebAPI service.
-// All implementations should embed UnimplementedWebAPIServer
+// All implementations must embed UnimplementedWebAPIServer
 // for forward compatibility
 type WebAPIServer interface {
 	//rpc Register(Register.Request) returns (Register.Response) { option (google.api.http) = {post: "/api/v1/Register", body: "*"}; }
@@ -91,9 +91,10 @@ type WebAPIServer interface {
 	Me(context.Context, *Me_Request) (*Me_Response, error)
 	Ping(context.Context, *Ping_Request) (*Ping_Response, error)
 	Status(context.Context, *Status_Request) (*Status_Response, error)
+	mustEmbedUnimplementedWebAPIServer()
 }
 
-// UnimplementedWebAPIServer should be embedded to have forward compatible implementations.
+// UnimplementedWebAPIServer must be embedded to have forward compatible implementations.
 type UnimplementedWebAPIServer struct {
 }
 
@@ -112,6 +113,7 @@ func (*UnimplementedWebAPIServer) Ping(context.Context, *Ping_Request) (*Ping_Re
 func (*UnimplementedWebAPIServer) Status(context.Context, *Status_Request) (*Status_Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Status not implemented")
 }
+func (*UnimplementedWebAPIServer) mustEmbedUnimplementedWebAPIServer() {}
 
 func RegisterWebAPIServer(s *grpc.Server, srv WebAPIServer) {
 	s.RegisterService(&_WebAPI_serviceDesc, srv)
