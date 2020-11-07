@@ -60,6 +60,7 @@ func app(args []string) error {
 	rootFlags.StringVar(&svcOpts.Hostname, "hostname", svcOpts.Hostname, "I.e., https://sgtm.club")
 	rootFlags.StringVar(&svcOpts.SoundCloudClientID, "soundcloud-client-id", svcOpts.SoundCloudClientID, "SoundCloud client ID")
 	rootFlags.StringVar(&svcOpts.BearerToken, "bearer-token", svcOpts.BearerToken, "Bearer.sh token")
+	rootFlags.StringVar(&svcOpts.IPFSAPI, "ipfs-api", svcOpts.IPFSAPI, "IPFS API multiaddress, if not provided or empry, will use the ipfs cli without an '--api' arg")
 
 	root := &ffcli.Command{
 		FlagSet: rootFlags,

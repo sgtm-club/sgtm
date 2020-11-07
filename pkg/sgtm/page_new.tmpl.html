@@ -8,7 +8,7 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-8">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
           <div class="form-row">
             <div class="col-md-8 mb-3">
               <label for="linkField">🌐 Link to your track</label>
@@ -21,7 +21,7 @@
             </div>
             <div class="col-md-4 mb-3">
               <label for="uploadField">🗃 or upload a file</label>
-              <input type="file" name="upload" class="form-control" id="uploadField" disabled data-toggle="tooltip" title="Coming soon">
+              <input type="file" name="upload" class="form-control" id="uploadField" data-toggle="tooltip" title="Coming soon">
               <!--<small id="uploadHelp" class="form-text text-muted">Coming soon</small>-->
             </div>
           </div>

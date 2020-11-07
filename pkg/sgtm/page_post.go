@@ -2,6 +2,7 @@ package sgtm
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,6 +17,7 @@ import (
 
 func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	tmpl := loadTemplates(box, "base.tmpl.html", "post.tmpl.html")
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		started := time.Now()
 		data, err := svc.newTemplateData(w, r)
@@ -243,6 +245,9 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 				// FIXME: blacklist, etc
 				fields := map[string]interface{}{}
 				fields["body"] = strings.TrimSpace(r.Form.Get("body"))
+				if data.PostEdit.Post.Provider == sgtmpb.Provider_IPFS {
+					fields["title"] = r.Form.Get("title")
+				}
 				return fields
 			}
 			fields := validate()
@@ -263,6 +268,45 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 		}
 		data.Duration = time.Since(started)
 		if err := tmpl.Execute(w, &data); err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+	}
+}
+
+func (svc *Service) postDownloadPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		postSlug := chi.URLParam(r, "post_slug")
+		query := svc.rodb().Preload("Author")
+		id, err := strconv.ParseInt(postSlug, 10, 64)
+		if err == nil {
+			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
+		} else {
+			query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
+		}
+		var post sgtmpb.Post
+		if err := query.First(&post).Error; err != nil {
+			svc.error404Page(box)(w, r)
+			return
+		}
+
+		if post.MIMEType != "" {
+			w.Header().Set("Content-Type", post.MIMEType)
+		}
+
+		if post.SizeBytes > 0 {
+			w.Header().Set("Content-Length", fmt.Sprint(post.SizeBytes))
+		}
+
+		reader, err := StreamPost(&svc.ipfs, &post)
+		if err != nil {
+			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+			return
+		}
+		defer reader.Close()
+
+		_, err = io.Copy(w, reader)
+		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
 		}

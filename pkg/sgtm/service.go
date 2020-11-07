@@ -28,6 +28,7 @@ type Service struct {
 
 	discord discordDriver
 	server  serverDriver
+	ipfs    ipfsWrapper
 }
 
 func New(db *gorm.DB, opts Opts) (Service, error) {
@@ -43,6 +44,7 @@ func New(db *gorm.DB, opts Opts) (Service, error) {
 		ctx:       ctx,
 		cancel:    cancel,
 		StartedAt: time.Now(),
+		ipfs:      ipfsWrapper{api: opts.IPFSAPI},
 	}
 	svc.logger.Info("service initialized", zap.Bool("dev-mode", opts.DevMode))
 	return svc, nil

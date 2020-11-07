@@ -1,3 +1,5 @@
+FROM            ipfs/go-ipfs as ipfs
+
 FROM            jpauwels/sonic-annotator:v1.5-ubuntu18.04
 RUN             apt update && apt -y install curl python && rm -rf /var/lib/apt/lists/*
 RUN             curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl \
@@ -12,6 +14,7 @@ RUN             set -xe \
  &&             rm -rf *-plugins*/ *-vamp.t* \
  &&             ls -la /usr/lib/vamp/*
 RUN             sonic-annotator --version && youtube-dl --version && sonic-annotator --list
+COPY            --from=ipfs /usr/local/bin/ipfs /bin/ipfs
 
 WORKDIR         /app
 ENTRYPOINT      ["/bin/sgtm"]
