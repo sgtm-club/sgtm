@@ -33,15 +33,77 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 		}
 		if r.Method == "POST" {
 			validate := func() *sgtmpb.Post {
-				if err := r.ParseForm(); err != nil {
+				if err := r.ParseMultipartForm(25 * 1024 * 1024); err != nil {
 					data.Error = err.Error()
 					return nil
 				}
+
+				fileURL := r.Form.Get("url")
+
 				if r.Form.Get("url") == "" {
-					data.New.URLInvalidMsg = "Please specify a track link."
-					return nil
+					// get file from upload if possible
+					file, header, err := r.FormFile("upload")
+					if err != nil {
+						data.Error = err.Error()
+						return nil
+					}
+					defer file.Close()
+
+					fmt.Println("header", header.Header)
+
+					// stream file to ipfs and get cid
+					fmt.Println("uploading to ipfs")
+					cid, err := svc.ipfs.add(file)
+					if err != nil {
+						data.Error = err.Error()
+						return nil
+					}
+					fmt.Println("done uploading to ipfs")
+
+					// check if track already exists
+					{
+						var alreadyExists sgtmpb.Post
+						err := svc.rodb().
+							Model(&sgtmpb.Post{}).
+							Where(sgtmpb.Post{IPFSCID: cid}).
+							First(&alreadyExists).
+							Error
+						if err == nil && alreadyExists.ID != 0 {
+							data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="/post/%d">%s</a>.`, alreadyExists.ID, alreadyExists.Title)
+							return nil
+						}
+					}
+
+					mimeType := header.Header["Content-Type"][0]
+					fmt.Println("MIME", mimeType)
+					// FIXME: check that mimeType starts with audio/ maybe
+
+					// TODO: run mimetype detection on file maybe
+					filenameParts := strings.Split(header.Filename, ".")
+					ext := "blob"
+					filename := header.Filename
+					numParts := len(filenameParts)
+					if numParts >= 2 {
+						ext = filenameParts[numParts-1]
+						filename = strings.Join(filenameParts[:numParts-1], ".")
+					}
+
+					return &sgtmpb.Post{
+						Kind:               sgtmpb.Post_TrackKind,
+						Visibility:         sgtmpb.Visibility_Public,
+						AuthorID:           data.User.ID,
+						Slug:               "",
+						Title:              filename,
+						SortDate:           time.Now().UnixNano(),
+						URL:                "https://ipfs.io/ipfs/" + cid,
+						Provider:           sgtmpb.Provider_IPFS,
+						IPFSCID:            cid,
+						MIMEType:           mimeType,
+						SizeBytes:          header.Size,
+						FileExtension:      ext,
+						AttachmentFilename: header.Filename,
+					}
 				}
-				data.New.URLValue = r.Form.Get("url")
 
 				// FIXME: check if valid SoundCloud link
 				post := sgtmpb.Post{
@@ -53,7 +115,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					SortDate:   time.Now().UnixNano(),
 				}
 
-				u, err := url.Parse(r.Form.Get("url"))
+				u, err := url.Parse(fileURL)
 				if err != nil {
 					data.Error = fmt.Sprintf("Parse URL: %s", err.Error())
 					return nil

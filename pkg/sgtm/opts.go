@@ -43,6 +43,10 @@ type Opts struct {
 	ServerShutdownTimeout    time.Duration
 	ServerWithPprof          bool
 	Hostname                 string
+
+	// IPFS
+
+	IPFSAPI string // multiaddress or empty string to use the cli without "--api" option
 }
 
 func (opts *Opts) applyDefaults() error {

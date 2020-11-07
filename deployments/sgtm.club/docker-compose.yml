@@ -10,7 +10,10 @@ services:
     working_dir: /app
     labels:
       com.centurylinklabs.watchtower.enable: "true"
-    command: --enable-server run
+    command: |
+      --enable-server
+      --ipfs-api /dns4/ipfs-daemon/tcp/5001
+      run
     ports:
       - 8000
     environment:
@@ -19,6 +22,7 @@ services:
       - VIRTUAL_PORT=8000
     networks:
       - default
+      - ipfs
       - service-proxy
 
   sgtm-discord:
@@ -33,6 +37,19 @@ services:
     networks:
       - default
 
+  ipfs-daemon:
+    image: ipfs/go-ipfs:latest
+    restart: on-failure
+    volumes:
+      - ./ipfs/export:/export
+      - ./ipfs/data:/data/ipfs
+    ports:
+      - 4001:4001
+      - 4001:4001/udp
+    networks:
+      - ipfs
+
 networks:
   service-proxy:
     external: true
+  ipfs:

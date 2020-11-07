@@ -12,7 +12,10 @@
   <meta name="twitter:description" property="og:description" itemprop="description" content="Sounds good to me (SGTM)." />
   <meta name="description" content="Check out {{.Post.Post.Title}} by {{.Post.Post.Author.DisplayName}} on SGTM." />
 
-  <script type="text/javascript" src="https://w.soundcloud.com/player/api.js" defer></script>
+  {{if .Post.Post.IsSoundCloud}}
+    <script type="text/javascript" src="https://w.soundcloud.com/player/api.js" defer></script>
+  {{end}}
+
 {{end}}
 
 {{define "content"}}
@@ -22,13 +25,26 @@
       <div class="col-md-8">
         <h1>{{.Post.Post.Title}}</h1>
         <p>by <a href="{{.Post.Post.Author.CanonicalURL}}"><img height="30" src="{{.Post.Post.Author.Avatar}}" />@{{.Post.Post.Author.Slug}}</a></p>
-        <iframe id="soundcloud-player" width=100% height=166 scrolling=no frameborder=no allow=autoplay
-          src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/{{.Post.Post.SoundCloudID}}{{with .Post.Post.SoundCloudSecretToken}}%3Fsecret_token%3D{{.}}{{end}}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"></iframe>
+        
+        {{if .Post.Post.IsSoundCloud}}
+          <iframe id="soundcloud-player" width=100% height=166 scrolling=no frameborder=no allow=autoplay
+            src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/{{.Post.Post.SoundCloudID}}{{with .Post.Post.SoundCloudSecretToken}}%3Fsecret_token%3D{{.}}{{end}}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"></iframe>
+        {{else}}{{if .Post.Post.IsIPFS}}
+          <audio controls src="/post/{{ .Post.Post.ID }}/download">
+            Your browser does not support the
+            <code>audio</code> element.
+          </audio>
+        {{end}}{{end}}
         {{with .Post.Post.SafeDescription}}{{. | markdownify}}{{end}}
         {{with .Post.Post.Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
         {{if .Post.Post.Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.GoDuration}}">{{.Post.Post.GoDuration | prettyDuration}}</span></div>{{end}}
         {{with .Post.Post.BPM}}
           <div>⏩ BPM: {{.}}</div>
+        {{end}}
+        {{if .Post.Post.IsIPFS}}
+          <div>🔈 Type: {{ .Post.Post.MIMEType }}</div>
+          <div>⬇️ <a download="{{.Post.Post.Title}}.{{.Post.Post.FileExtension}}" href="/post/{{ .Post.Post.ID }}/download">Download</a></div>
+          <div style="word-break: break-all;">⚓ IPFS CID: {{ .Post.Post.IPFSCID }}</div>
         {{end}}
         <!--{{with .Post.Post.DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}-->
         <div>📆 Added <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.SortDate | fromUnixNano | prettyDate}}">{{.Post.Post.SortDate | fromUnixNano | prettyAgo}}</span></div>
@@ -75,7 +91,9 @@
           <div class="card-header"><span class="fa fa-user-cog"></span> Manage (author)</div>
           <div class="p-2">
             <div><a href="{{.Post.Post.CanonicalURL}}/edit" class="text-white"><span class="fa fa-edit"></span> Edit</a></div>
-            <div><a href="{{.Post.Post.URL}}" class="text-white"><span class="fab fa-soundcloud"></span> See original</a></div>
+            {{if .Post.Post.IsSoundCloud}}
+              <div><a href="{{.Post.Post.URL}}" class="text-white"><span class="fab fa-soundcloud"></span> See original</a></div>
+            {{end}}
           </div>
         </div>
         {{end}}

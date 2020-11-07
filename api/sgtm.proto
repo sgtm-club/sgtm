@@ -165,6 +165,13 @@ message Post {
   uint64 soundcloud_id = 81 [(go.field) = {name: 'SoundCloudID'}];
   SoundCloudKind soundcloud_kind = 83 [(go.field) = {name: 'SoundCloudKind'}];
 
+  // ipfs post
+  string ipfs_cid = 90 [(go.field) = {name: 'IPFSCID'}];
+  string mime_type = 51 [(go.field) = {name: 'MIMEType'}];
+  int64 size_bytes = 52;
+  string file_extension = 53;
+  string attachment_filename = 54;
+
   /// tracking activities
   int64 target_user_id = 101 [(go.field) = {name: 'TargetUserID'}];
   User target_user = 102;
@@ -209,6 +216,7 @@ enum Visibility {
 enum Provider {
   UnknownProvider = 0;
   SoundCloud = 1;
+  IPFS = 2;
 }
 
 /// Internal

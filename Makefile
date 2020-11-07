@@ -60,10 +60,17 @@ prod.logs:
 	ssh $(PROD_HOST) make -C $(PROD_PATH) logs
 .PHONY: prod.logs
 
-prod.deploy: generate packr
-	GOOS=linux GOARCH=amd64 $(GO) build -ldflags "-linkmode external -extldflags -static $(LDFLAGS)" -o sgtm-linux-static ./cmd/sgtm
+# FIXME: add deps
+sgtm-linux-static:
+	GOOS=linux GOARCH=amd64 $(GO) build -ldflags "-linkmode external -extldflags -static $(LDFLAGS)" -o $@ ./cmd/sgtm
+.PHONY: sgtm-linux-static
+
+prod.build: generate packr sgtm-linux-static
 	rm -rf ./pkg/sgtm/packrd ./pkg/sgtm/sgtm-packr.go
 	docker build -f Dockerfile.fast -t $(DOCKER_IMAGE) .
+.PHONY: prod.build
+
+prod.deploy: prod.build
 	docker push $(DOCKER_IMAGE)
 	ssh $(PROD_HOST) make -C $(PROD_PATH) re
 .PHONY: prod.deploy

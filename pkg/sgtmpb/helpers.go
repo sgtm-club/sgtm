@@ -47,6 +47,9 @@ func (p *Post) Filter() {
 	p.DownloadURL = ""
 }
 
+func (p *Post) IsSoundCloud() bool { return p.GetProvider() == Provider_SoundCloud }
+func (p *Post) IsIPFS() bool       { return p.GetProvider() == Provider_IPFS }
+
 // User
 
 func (u *User) ApplyDefaults() {
