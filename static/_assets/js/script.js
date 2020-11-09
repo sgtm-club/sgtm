@@ -16,7 +16,7 @@ $(function () {
 });
 
 $("img").on("error", function () {
-  $(this).attr("src", "_assets/img/logo-1x-no-blur.png");
+  $(this).attr("src", "/_assets/img/logo-1x-no-blur.png");
 });
 
 $('body.page-post').ready(function() {
