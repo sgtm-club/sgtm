@@ -2,7 +2,6 @@ package sgtm
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -293,22 +292,12 @@ func (svc *Service) postDownloadPage(box *packr.Box) func(w http.ResponseWriter,
 		if post.MIMEType != "" {
 			w.Header().Set("Content-Type", post.MIMEType)
 		}
-
-		if post.SizeBytes > 0 {
-			w.Header().Set("Content-Length", fmt.Sprint(post.SizeBytes))
-		}
-
 		reader, err := StreamPost(&svc.ipfs, &post)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
 		}
 		defer reader.Close()
-
-		_, err = io.Copy(w, reader)
-		if err != nil {
-			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-			return
-		}
+		http.ServeContent(w, r, "", time.Time{}, reader)
 	}
 }
