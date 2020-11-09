@@ -68,11 +68,16 @@ func DownloadPost(post *sgtmpb.Post, force bool) (*Download, error) {
 	return &download, nil
 }
 
-func StreamPost(ipfs *ipfsWrapper, post *sgtmpb.Post) (io.ReadCloser, error) {
+type ReadSeekerCloser interface {
+	io.ReadSeeker
+	io.ReadCloser
+}
+
+func StreamPost(ipfs *ipfsWrapper, post *sgtmpb.Post) (ReadSeekerCloser, error) {
 	if post.Provider != sgtmpb.Provider_IPFS {
 		return nil, fmt.Errorf("provider %q not supported", post.Provider.String())
 	}
-	return ipfs.cat(post.IPFSCID)
+	return ipfs.cat(post.IPFSCID, post.SizeBytes), nil
 }
 
 func ExtractBPM(p string) (float64, error) {
