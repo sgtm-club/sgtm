@@ -26,9 +26,10 @@ type Service struct {
 
 	// drivers
 
-	discord discordDriver
-	server  serverDriver
-	ipfs    ipfsWrapper
+	discord          discordDriver
+	server           serverDriver
+	processingWorker processingWorkerDriver
+	ipfs             ipfsWrapper
 }
 
 func New(db *gorm.DB, opts Opts) (Service, error) {

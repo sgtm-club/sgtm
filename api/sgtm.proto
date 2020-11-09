@@ -112,6 +112,8 @@ message User {
   string goals = 27;
   string soundcloud_username = 28;
   string role = 29;
+  int64 processing_version = 30;
+  string processing_error = 31;
 
   repeated Post recent_posts = 50 [(go.field) = {tags: 'gorm:"foreignkey:AuthorID;PRELOAD:false"'}];
   // timezone
@@ -138,6 +140,8 @@ message Post {
   Provider provider = 17;
   string body = 18;
   int64 sort_date = 19;
+  int64 processing_version = 20;
+  string processing_error = 21;
 
   /// comment
 
