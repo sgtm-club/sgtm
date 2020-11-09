@@ -30,7 +30,12 @@
           <iframe id="soundcloud-player" width=100% height=166 scrolling=no frameborder=no allow=autoplay
             src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/{{.Post.Post.SoundCloudID}}{{with .Post.Post.SoundCloudSecretToken}}%3Fsecret_token%3D{{.}}{{end}}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"></iframe>
         {{else}}{{if .Post.Post.IsIPFS}}
-          <audio controls src="/post/{{ .Post.Post.ID }}/download">
+          <audio controls>
+            <source  src="/post/{{.Post.Post.ID}}/download" />
+            <source  src="https://gateway.ipfs.io/ipfs/{{.Post.Post.IPFSCID}}" />
+            <source  src="https://ipfs.io/ipfs/{{.Post.Post.IPFSCID}}" />
+            <source src="https://cloudflare-ipfs.com/ipfs/{{.Post.Post.IPFSCID}}" />
+            <source  src="https://jorropo.ovh/ipfs/{{.Post.Post.IPFSCID}}" />
             Your browser does not support the
             <code>audio</code> element.
           </audio>

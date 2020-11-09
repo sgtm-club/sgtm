@@ -86,13 +86,13 @@ type ipfsReadSeeker struct {
 var _ ReadSeekerCloser = (*ipfsReadSeeker)(nil)
 
 func (irs *ipfsReadSeeker) Seek(offset int64, whence int) (int64, error) {
-	err := irs.Close()
+	irs.mu.Lock()
+	defer irs.mu.Unlock()
+
+	err := irs.lockedClose()
 	if err != nil {
 		return irs.offset, err
 	}
-
-	irs.mu.Lock()
-	defer irs.mu.Unlock()
 
 	switch whence {
 	case io.SeekStart:
@@ -122,6 +122,10 @@ func (irs *ipfsReadSeeker) Close() error {
 	irs.mu.Lock()
 	defer irs.mu.Unlock()
 
+	return irs.lockedClose()
+}
+
+func (irs *ipfsReadSeeker) lockedClose() error {
 	if irs.pipe != nil {
 		err := irs.pipe.Close()
 		if err != nil {
