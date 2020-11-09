@@ -31,6 +31,7 @@ require (
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/karrick/godirwalk v1.16.1 // indirect
+	github.com/kyokomi/emoji/v2 v2.2.5
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/oklog/run v1.1.1-0.20200508094559-c7096881717e

@@ -13,6 +13,7 @@ import (
 	packr "github.com/gobuffalo/packr/v2"
 	striptags "github.com/grokify/html-strip-tags-go"
 	"github.com/hako/durafmt"
+	emoji "github.com/kyokomi/emoji/v2"
 	"github.com/microcosm-cc/bluemonday"
 	blackfriday "github.com/russross/blackfriday/v2"
 	"go.uber.org/zap"
@@ -104,6 +105,9 @@ func loadTemplates(box *packr.Box, filenames ...string) *template.Template {
 		shorten = strings.TrimRight(shorten, "/")
 		shorten = strings.TrimPrefix(shorten, "www.")
 		return shorten
+	}
+	funcmap["emojify"] = func(input string) string {
+		return emoji.Sprint(input)
 	}
 	funcmap["newline"] = func() string {
 		return "\n"
