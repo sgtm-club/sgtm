@@ -36,11 +36,11 @@ LABEL           org.label-schema.build-date=$BUILD_DATE \
                 org.label-schema.description="" \
                 org.label-schema.url="https://moul.io/sgtm/" \
                 org.label-schema.vcs-ref=$VCS_REF \
-                org.label-schema.vcs-url="https://github.com/moul/sgtm" \
+                org.label-schema.vcs-url="https://github.com/sgtm-club/sgtm" \
                 org.label-schema.vendor="Manfred Touron" \
                 org.label-schema.version=$VERSION \
                 org.label-schema.schema-version="1.0" \
-                org.label-schema.cmd="docker run -i -t --rm moul/sgtm" \
+                org.label-schema.cmd="docker run -i -t --rm sgtm-club/sgtm" \
                 org.label-schema.help="docker exec -it $CONTAINER sgtm --help"
 COPY            --from=builder /go/bin/sgtm /bin/
 ENTRYPOINT      ["/bin/sgtm"]
