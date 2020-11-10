@@ -61,6 +61,7 @@ func app(args []string) error {
 	rootFlags.StringVar(&svcOpts.SoundCloudClientID, "soundcloud-client-id", svcOpts.SoundCloudClientID, "SoundCloud client ID")
 	rootFlags.StringVar(&svcOpts.BearerToken, "bearer-token", svcOpts.BearerToken, "Bearer.sh token")
 	rootFlags.StringVar(&svcOpts.IPFSAPI, "ipfs-api", svcOpts.IPFSAPI, "IPFS API multiaddress, if not provided or empry, will use the ipfs cli without an '--api' arg")
+	rootFlags.BoolVar(&svcOpts.EnableProcessingWorker, "enable-processing-worker", svcOpts.EnableProcessingWorker, "enable processing worker")
 
 	root := &ffcli.Command{
 		FlagSet: rootFlags,
@@ -159,11 +160,14 @@ func runCmd(ctx context.Context, _ []string) error {
 	// run.Group
 	var gr run.Group
 	{
-		if svcOpts.EnableDiscord || svcOpts.EnableServer {
+		if svcOpts.EnableDiscord || svcOpts.EnableServer || svcOpts.EnableProcessingWorker {
 			gr.Add(run.SignalHandler(ctx, syscall.SIGTERM, syscall.SIGINT, os.Interrupt, os.Kill))
 		}
 		if svcOpts.EnableDiscord {
 			gr.Add(svc.StartDiscord, svc.CloseDiscord)
+		}
+		if svcOpts.EnableProcessingWorker {
+			gr.Add(svc.StartProcessingWorker, svc.CloseProcessingWorker)
 		}
 		if svcOpts.EnableServer {
 			gr.Add(svc.StartServer, svc.CloseServer)

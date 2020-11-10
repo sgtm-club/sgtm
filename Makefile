@@ -21,7 +21,7 @@ LDFLAGS ?= -X moul.io/sgtm/internal/sgtmversion.VcsRef=$(VCS_REF) -X moul.io/sgt
 COMPILEDAEMON_OPTIONS ?= -exclude-dir=.git -color=true -build=go\ install -build-dir=./cmd/sgtm
 run: generate
 	go install github.com/githubnemo/CompileDaemon
-	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server --enable-discord run"
+	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server --enable-discord --enable-processing-worker run"
 .PHONY: run
 
 run-discord: generate
@@ -33,6 +33,11 @@ run-server: generate
 	go install github.com/githubnemo/CompileDaemon
 	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-server run"
 .PHONY: run-server
+
+run-processing-worker: generate
+	go install github.com/githubnemo/CompileDaemon
+	CompileDaemon $(COMPILEDAEMON_OPTIONS) -command="sgtm --dev-mode --enable-processing-worker run"
+.PHONY: run-processing-worker
 
 packr:
 	(cd static; git clean -fxd)

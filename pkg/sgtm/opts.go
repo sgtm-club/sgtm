@@ -26,6 +26,10 @@ type Opts struct {
 	DiscordClientID     string
 	DiscordClientSecret string
 
+	// Processing Worker
+
+	EnableProcessingWorker bool
+
 	// SoundCloud
 
 	SoundCloudClientID string
