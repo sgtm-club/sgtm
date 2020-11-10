@@ -10,16 +10,60 @@ Share your work early, get feedback from other musicians, be more productive, le
 [![GitHub release](https://img.shields.io/github/release/sgtm-club/sgtm.svg)](https://github.com/sgtm-club/sgtm/releases)
 [![Go Report Card](https://goreportcard.com/badge/moul.io/sgtm)](https://goreportcard.com/report/moul.io/sgtm)
 [![CodeFactor](https://www.codefactor.io/repository/github/sgtm-club/sgtm/badge)](https://www.codefactor.io/repository/github/sgtm-club/sgtm)
-[![codecov](https://codecov.io/gh/sgtm-club/sgtm/branch/master/graph/badge.svg)](https://codecov.io/gh/sgtm-club/sgtm)
-[![Docker Metrics](https://images.microbadger.com/badges/image/moul/sgtm.svg)](https://microbadger.com/images/moul/sgtm)
 [![GolangCI](https://golangci.com/badges/github.com/sgtm-club/sgtm.svg)](https://golangci.com/r/github.com/sgtm-club/sgtm)
 
 [Sounds good to me](https://sgtm.club) is a platform made by developers making music.
 The platform aims to provide an experience similar to what developers can find with modern collaboration tools, such as Git and GitHub.
 
-## Philosophy
+## Inspiration
 
-TODO
+This is an incredible period of history for developers. There are a bunch of free and awesome tools, processes, courses and services to help people connect while they are working on their projects. One of the most noticeable one is [Open-Source](https://en.wikipedia.org/wiki/Open_source) ecosystem, and particularly, the social tools around it, such as GitHub.
+
+As developers who also make music, it's very frustrating to lose all of these advantages when making music.
+
+---
+
+The way we make coding projects is basically:
+
+* brainstorms & chat on GitHub, Discord, Slack, etc.
+* looking for snippets on StackOverflow or GitHub.
+* reading advices, feedback and other good practices on dev.to, blogs, etc.
+* coding and getting instant feedback thanks to the pull-request flow.
+* when you publish your project, it's not finished, you can still add new stuff.
+* even if you make the project for your own need, there are chances that making it open-source will help other people directly or indirectly.
+
+In other words, as a developer you are always sharing micro changes and getting feedback/help during the ongoing creation process.
+
+---
+
+Now let's talk about the music creation process:
+
+* if you are lucky, you are in a band and you are already sharing your project files, but most of the time, a music creation process is very solitary.
+* if you are lucky, you create masterpieces very quickly and release singles very often, but most of the time, an artist is working for multiple months without showing anything, and then, one day, it's the release day, you release it, everyone discovers your finished work and start giving feedback.
+* during these lonely months, musicians are used to show to their friends "hey look at what I'm working on", but this is something they do directly on their computer or by sending .mp3 files on messengers.
+
+In other words, a long & lonely process; then the release where people will give feedback on a finished work that won't change.
+
+## What SGTM could be
+
+* A platform where you upload your ongoing (unfinished) tracks to receive feedback or just get the motivation of publicly showing that you are doing music
+* A platform focused on the interactions between individual contributors where you can easily have someone doing a V1, and another one doing the V2, etc
+* A platform where artists can easily share the sources of their work or just the materials to help people making remixes (.mid, scores/chords, etc)
+* A platform made by engineers how love the science behind audio and music; connected to a lot of tools and services to automatically give you information about your tracks (BPM, energy, mood, fingerprints, peaks, etc)
+
+## Comparison with other platforms
+
+This comparison is not very detailed but aims to give you an overview of what makes SGTM different.
+
+Please feel free to open a PR if you think that this comparison may unfairly harm any of our **"**competitors**"** :p.
+
+|                     | Existing Platforms         | SGTM                          |
+| ------------------- | -------------------------- | ----------------------------- |
+| User Target         | Bands/Artists              | Individual Musician           |
+| Audience Target     | Music listeners            | Other Musicians/Collaborators       |
+| What is uploaded    | Finished tracks and albums | Ongoing tracks                |
+| When it is uploaded | On new release             | While the work is in progress |
+| What kind of feedback | "WOW I LOVE IT" | "I think this VST would be amazing on your snare" |
 
 ## Contributing
 
@@ -43,7 +87,7 @@ Everything on contribution is sum up here: [CONTRIBUTING.MD](./CONTRIBUTING.MD).
 
 ## License
 
-© 2020 [Manfred Touron](https://manfred.life) and other contributors.
+© 2020 [Manfred Touron](https://manfred.life) and other [contributors](https://github.com/sgtm-club/sgtm/graphs/contributors).
 
 Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0) ([`LICENSE-APACHE`](LICENSE-APACHE)) or the [MIT license](https://opensource.org/licenses/MIT) ([`LICENSE-MIT`](LICENSE-MIT)), at your option. See the [`COPYRIGHT`](COPYRIGHT) file for more details.
 
