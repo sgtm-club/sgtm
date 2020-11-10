@@ -152,7 +152,7 @@ message Post {
 
   /// track
 
-  string genre = 40;
+  string genre = 40 [deprecated = true]; // replaced by 'tags'
   uint64 duration = 41;
   string artwork_url = 42 [(go.field) = {name: 'ArtworkURL'}];
   double bpm = 43 [(go.field) = {name: 'BPM'}];
@@ -163,6 +163,7 @@ message Post {
   int64 provider_created_at = 48;
   int64 provider_updated_at = 49;
   string provider_metadata = 50;
+  string tags = 51; // comma separated list of tags
 
   // soundcloud post
   string soundcloud_secret_token = 80 [(go.field) = {name: 'SoundCloudSecretToken'}];
@@ -171,10 +172,10 @@ message Post {
 
   // ipfs post
   string ipfs_cid = 90 [(go.field) = {name: 'IPFSCID'}];
-  string mime_type = 51 [(go.field) = {name: 'MIMEType'}];
-  int64 size_bytes = 52;
-  string file_extension = 53;
-  string attachment_filename = 54;
+  string mime_type = 91 [(go.field) = {name: 'MIMEType'}];
+  int64 size_bytes = 92;
+  string file_extension = 93;
+  string attachment_filename = 94;
 
   /// tracking activities
   int64 target_user_id = 101 [(go.field) = {name: 'TargetUserID'}];

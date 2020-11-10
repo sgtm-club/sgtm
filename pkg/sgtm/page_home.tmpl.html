@@ -62,7 +62,7 @@
                   <div class="media-body">
                     <a href="{{.CanonicalURL}}"><h5 class="mt-0 d-inline-block">{{.Title}}</h5></a>
                     <div>
-                      {{with .Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
+                      {{with .TagList}}<div>📁 Tags: {{range .}}<span class="badge badge-secondary">{{.}}</span> {{end}}</div>{{end}}
                       {{if .Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.GoDuration}}">{{.GoDuration | prettyDuration}}</span></div>{{end}}
                     </div>
                   </div>

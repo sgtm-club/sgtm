@@ -173,18 +173,23 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						post.ProviderCreatedAt = createdAt.UnixNano()
 						post.SortDate = createdAt.UnixNano()
 					}
-					post.Genre = track.Genre
+					tags := append(
+						[]string{track.Genre},
+						strings.Split(track.TagList, " ")...,
+					)
+					post.Tags = strings.Join(tags, ", ")
 					post.Duration = track.Duration
 					post.ArtworkURL = strings.ReplaceAll(track.ArtworkUrl, "-large.jpg", "-t500x500.jpg")
 					post.ISRC = track.ISRC
 					post.BPM = track.Bpm
 					post.KeySignature = track.KeySignature
 					post.ProviderDescription = track.Description
-					// post.Body = track.Description
-					/*post.Tags = track.TagList
-					post.WaveformURL = track.WaveformURL
-					post.License = track.License
-					track.User*/
+					/*
+						post.Body = track.Description
+						post.WaveformURL = track.WaveformURL
+						post.License = track.License
+						track.User
+					*/
 					if track.Downloadable {
 						post.DownloadURL = track.DownloadUrl
 					}

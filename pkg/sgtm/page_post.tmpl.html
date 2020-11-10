@@ -41,7 +41,7 @@
           </audio>
         {{end}}{{end}}
         {{with .Post.Post.SafeDescription}}{{. | markdownify}}{{end}}
-        {{with .Post.Post.Genre}}<div>📁 Genre: <span class="badge badge-secondary">{{.}}</span></div>{{end}}
+        {{with .Post.Post.TagList}}<div>📁 Tags: {{range .}}<span class="badge badge-secondary">{{.}}</span> {{end}}</div>{{end}}
         {{if .Post.Post.Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.GoDuration}}">{{.Post.Post.GoDuration | prettyDuration}}</span></div>{{end}}
         {{with .Post.Post.BPM}}
           <div>⏩ BPM: {{.}}</div>

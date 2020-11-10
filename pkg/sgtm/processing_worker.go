@@ -16,7 +16,7 @@ type processingWorkerDriver struct {
 	started bool
 	wg      *sync.WaitGroup
 
-	trackMigrations []func(*sgtmpb.Post) error
+	trackMigrations []func(*sgtmpb.Post, *gorm.DB) error
 }
 
 func (svc *Service) StartProcessingWorker() error {
@@ -72,12 +72,12 @@ func (svc *Service) processingLoop(i int) error {
 			return fmt.Errorf("failed to fetch tracks that need to be processed: %w", err)
 		}
 
-		err = svc.rwdb().Transaction(func(db *gorm.DB) error {
+		err = svc.rwdb().Transaction(func(tx *gorm.DB) error {
 			for _, entryPtr := range outdated {
 				entry := entryPtr
 				version := 1
 				for _, migration := range svc.processingWorker.trackMigrations {
-					err := migration(entry)
+					err := migration(entry, tx)
 					if err != nil {
 						entry.ProcessingError = err.Error()
 						break
@@ -85,7 +85,7 @@ func (svc *Service) processingLoop(i int) error {
 					entry.ProcessingVersion = int64(version)
 					version++
 				}
-				if err := db.
+				if err := tx.
 					Model(&entry).
 					Updates(map[string]interface{}{
 						"processing_version": entry.ProcessingVersion,
@@ -113,7 +113,19 @@ func (svc *Service) processingLoop(i int) error {
 }
 
 func (svc *Service) setupMigrations() {
-	svc.processingWorker.trackMigrations = []func(*sgtmpb.Post) error{
+	svc.processingWorker.trackMigrations = []func(*sgtmpb.Post, *gorm.DB) error{
+		// migrate track.Genre to track.Tags
+		func(post *sgtmpb.Post, tx *gorm.DB) error {
+			if post.Tags != "" || post.Genre == "" { // nolint:staticcheck
+				// nothing to do
+				return nil
+			}
+
+			return tx.Model(post).Updates(map[string]interface{}{
+				"tags":  post.Genre, // nolint:staticcheck
+				"genre": "",
+			}).Error
+		},
 		/*
 			// FIXME: try downloading the mp3 locally
 			func(post *sgtmpb.Post) error { return fmt.Errorf("not implemented") },
