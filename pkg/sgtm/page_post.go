@@ -244,6 +244,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 				// FIXME: blacklist, etc
 				fields := map[string]interface{}{}
 				fields["body"] = strings.TrimSpace(r.Form.Get("body"))
+				fields["lyrics"] = strings.TrimSpace(r.Form.Get("lyrics"))
 				if data.PostEdit.Post.Provider == sgtmpb.Provider_IPFS {
 					fields["title"] = r.Form.Get("title")
 				}
