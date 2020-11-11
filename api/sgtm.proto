@@ -164,6 +164,7 @@ message Post {
   int64 provider_updated_at = 49;
   string provider_metadata = 50;
   string tags = 51; // comma separated list of tags
+  string lyrics = 52;
 
   // soundcloud post
   string soundcloud_secret_token = 80 [(go.field) = {name: 'SoundCloudSecretToken'}];

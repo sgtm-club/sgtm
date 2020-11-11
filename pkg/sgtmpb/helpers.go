@@ -42,6 +42,10 @@ func (p *Post) SafeDescription() string {
 	return p.ProviderDescription
 }
 
+func (p *Post) SafeLyrics() string {
+	return strings.TrimSpace(p.Lyrics)
+}
+
 func (p *Post) Filter() {
 	p.ProviderMetadata = ""
 	p.DownloadURL = ""

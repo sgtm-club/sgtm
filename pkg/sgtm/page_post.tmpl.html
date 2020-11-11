@@ -40,7 +40,15 @@
             <code>audio</code> element.
           </audio>
         {{end}}{{end}}
-        {{with .Post.Post.SafeDescription}}{{. | markdownify}}{{end}}
+        {{with .Post.Post.SafeDescription}}
+          <p>{{. | markdownify}}</p>
+        {{end}}
+        {{with .Post.Post.SafeLyrics}}
+          <div>
+            Lyrics:
+            <pre class="border p-2">{{.}}</pre>
+          </div>
+        {{end}}
         {{with .Post.Post.TagList}}<div>📁 Tags: {{range .}}<span class="badge badge-secondary">{{.}}</span> {{end}}</div>{{end}}
         {{if .Post.Post.Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.GoDuration}}">{{.Post.Post.GoDuration | prettyDuration}}</span></div>{{end}}
         {{with .Post.Post.BPM}}
