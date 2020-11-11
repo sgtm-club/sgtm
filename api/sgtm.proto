@@ -87,10 +87,14 @@ message Me {
  */
 
 message User {
+  /// model base
+
   int64 id = 1 [(go.field) = {name: 'ID', tags: 'gorm:"primary_key"'}];
   int64 created_at = 2 [(go.field) = {tags: 'gorm:"autocreatetime:nano"'}];
   int64 updated_at = 3 [(go.field) = {tags: 'gorm:"autoupdatetime:nano"'}];
   int64 deleted_at = 4;
+
+  /// fields
 
   string email = 10 [(go.field) = {tags: 'gorm:"size:255;not null;index:,unique"'}];
   string slug = 11 [(go.field) = {tags: 'gorm:"size:32;not null;default:\'\'"'}];
@@ -114,10 +118,14 @@ message User {
   string role = 29;
   int64 processing_version = 30;
   string processing_error = 31;
-
-  repeated Post recent_posts = 50 [(go.field) = {tags: 'gorm:"foreignkey:AuthorID;PRELOAD:false"'}];
   // timezone
   // location
+
+  /// relationships
+
+  repeated Post recent_posts = 50 [(go.field) = {tags: 'gorm:"foreignkey:AuthorID;PRELOAD:false"'}];
+  repeated Relationship relationships_as_source = 51 [(go.field) = {tags: 'gorm:"many2many:user_relationship;"'}];
+  repeated Relationship relationships_as_target = 52 [(go.field) = {tags: 'gorm:"many2many:relationship_user;"'}];
 }
 
 message Post {
@@ -166,12 +174,14 @@ message Post {
   string tags = 51; // comma separated list of tags
   string lyrics = 52;
 
-  // soundcloud post
+  /// soundcloud post
+
   string soundcloud_secret_token = 80 [(go.field) = {name: 'SoundCloudSecretToken'}];
   uint64 soundcloud_id = 81 [(go.field) = {name: 'SoundCloudID'}];
   SoundCloudKind soundcloud_kind = 83 [(go.field) = {name: 'SoundCloudKind'}];
 
-  // ipfs post
+  /// ipfs post
+
   string ipfs_cid = 90 [(go.field) = {name: 'IPFSCID'}];
   string mime_type = 91 [(go.field) = {name: 'MIMEType'}];
   int64 size_bytes = 92;
@@ -179,11 +189,17 @@ message Post {
   string attachment_filename = 94;
 
   /// tracking activities
+
   int64 target_user_id = 101 [(go.field) = {name: 'TargetUserID'}];
   User target_user = 102;
   int64 target_post_id = 103 [(go.field) = {name: 'TargetPostID'}];
   Post target_post = 104;
   string target_metadata = 105;
+
+  /// relationships
+
+  repeated Relationship relationships_as_source = 110 [(go.field) = {tags: 'gorm:"many2many:post_relationship;"'}];
+  repeated Relationship relationships_as_target = 111 [(go.field) = {tags: 'gorm:"many2many:relationship_post;"'}];
 
   enum SoundCloudKind {
     UnknownSoundCloudKind = 0;
@@ -209,6 +225,39 @@ message Post {
     //ReactionKind
     //ForkKind
     //FeatKind
+  }
+}
+
+message Relationship {
+  /// model base
+
+  int64 id = 1 [(go.field) = {name: 'ID', tags: 'gorm:"primary_key"'}];
+  int64 created_at = 2 [(go.field) = {tags: 'gorm:"autocreatetime:nano"'}];
+  int64 updated_at = 3 [(go.field) = {tags: 'gorm:"autoupdatetime:nano"'}];
+  int64 deleted_at = 4;
+
+  /// relationship fields
+
+  Kind kind = 10;
+  int64 source_post_id = 11 [(go.field) = {name: 'SourcePostID', tags: 'gorm:"many2many:post_relationship;"'}];
+  Post source_post = 12;
+  int64 target_post_id = 13 [(go.field) = {name: 'TargetPostID', tags: 'gorm:"many2many:relationship_post;"'}];
+  Post target_post = 14;
+  int64 source_user_id = 15 [(go.field) = {name: 'SourceUserID', tags: 'gorm:"many2many:user_relationship;"'}];
+  User source_user = 16;
+  int64 target_user_id = 17 [(go.field) = {name: 'TargetUserID', tags: 'gorm:"many2many:relationship_user;"'}];
+  User target_user = 18;
+  string source_raw = 19;
+  string target_raw = 20;
+  string metadata = 21;
+
+  enum Kind {
+    UnknownKind = 0;
+    FeaturingUserKind = 1;
+    RemixOfTrackKind = 2;
+    NewVersionOfTrackKind = 3;
+    InspiredByTrackKind = 4;
+    RemixOfUserKind = 5;
   }
 }
 
