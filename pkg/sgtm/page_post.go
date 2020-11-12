@@ -3,6 +3,7 @@ package sgtm
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -10,8 +11,13 @@ import (
 	"github.com/go-chi/chi"
 	packr "github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"moul.io/godev"
 	"moul.io/sgtm/pkg/sgtmpb"
+)
+
+var (
+	featRegex = regexp.MustCompile(`(?im)(feat.|feat|featuring|features)\s*[:= ]\s*@([^\s,]+)\s*`)
 )
 
 func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +33,14 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// custom
 		data.PageKind = "post"
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.rodb().Preload("Author")
+		query := svc.rodb().
+			Preload("Author").
+			Preload("RelationshipsAsSource").
+			Preload("RelationshipsAsSource.TargetPost").
+			Preload("RelationshipsAsSource.TargetUser").
+			Preload("RelationshipsAsTarget").
+			Preload("RelationshipsAsTarget.SourcePost").
+			Preload("RelationshipsAsTarget.SourceUser")
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
 			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
@@ -118,9 +131,22 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 	}
 }
 
-func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	tmpl := loadTemplates(box, "base.tmpl.html", "dummy.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
+		var (
+			shouldExtractBpm          = r.URL.Query().Get("extract_bpm") == "1"
+			shouldDetectRelationships = r.URL.Query().Get("detect_relationships") == "1"
+			shouldResyncSoundCloud    = r.URL.Query().Get("resync_soundcloud") == "1"
+			shouldDL                  = shouldExtractBpm
+			shouldDoSomething         = shouldExtractBpm || shouldDetectRelationships || shouldResyncSoundCloud
+		)
+		if !shouldDoSomething {
+			svc.error404Page(box)(w, r)
+			return
+		}
+
+		// common init
 		started := time.Now()
 		data, err := svc.newTemplateData(w, r)
 		if err != nil {
@@ -133,7 +159,10 @@ func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *
 			return
 		}
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.rodb().Preload("Author")
+		query := svc.rodb().
+			Preload("Author").
+			Preload("RelationshipsAsSource").
+			Preload("RelationshipsAsTarget")
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
 			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
@@ -150,22 +179,79 @@ func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *
 			return
 		}
 
-		// FIXME: do the sync here
-		dl, err := DownloadPost(&post, false)
-		if err != nil {
-			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+		// dl file
+		var dl *Download
+		if shouldDL {
+			var err error
+			dl, err = DownloadPost(&post, false)
+			if err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
+			svc.logger.Debug("file downloaded", zap.String("path", dl.Path))
+		}
+
+		// resync soundcloud
+		if shouldResyncSoundCloud {
+			svc.error404Page(box)(w, r)
 			return
 		}
-		svc.logger.Debug("file downloaded", zap.String("path", dl.Path))
-		bpm, err := ExtractBPM(dl.Path)
-		if err != nil {
-			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-			return
+
+		// extract bpm
+		if shouldExtractBpm {
+			bpm, err := ExtractBPM(dl.Path)
+			if err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
+			svc.logger.Debug("BPM extracted", zap.Float64("bpm", bpm))
+			if err := svc.rwdb().Model(&post).Update("bpm", bpm).Error; err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
 		}
-		svc.logger.Debug("BPM extracted", zap.Float64("bpm", bpm))
-		if err := svc.rwdb().Model(&post).Update("bpm", bpm).Error; err != nil {
-			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-			return
+
+		if shouldDetectRelationships {
+			// FIXME: support more relationship kinds
+
+			err := svc.rwdb().Transaction(func(tx *gorm.DB) error {
+				// FIXME: avoid delete/recreate associations if they didn't changed
+
+				body := post.Title + "\n\n" + post.SafeDescription()
+
+				if err := tx.Model(&post).Association("RelationshipsAsSource").Clear(); err != nil {
+					return err
+				}
+				if err := tx.Model(&post).Association("RelationshipsAsTarget").Clear(); err != nil {
+					return err
+				}
+
+				for _, match := range featRegex.FindAllStringSubmatch(body, -1) {
+					target := strings.ToLower(strings.TrimSpace(match[len(match)-1]))
+					var user sgtmpb.User
+					err := svc.rodb().
+						Where("LOWER(slug) = ?", target).
+						First(&user).
+						Error
+					if err != nil {
+						svc.logger.Debug("cannot find the featured artist in DB", zap.Error(err))
+						continue
+					}
+
+					if err := tx.Model(&post).Association("RelationshipsAsSource").Append(&sgtmpb.Relationship{
+						SourcePostID: post.ID,
+						TargetUserID: user.ID,
+						Kind:         sgtmpb.Relationship_FeaturingUserKind,
+					}); err != nil {
+						return err
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
 		}
 
 		switch r.URL.Query().Get("return") {
@@ -211,7 +297,10 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 		// fetch post from db
 		{
 			postSlug := chi.URLParam(r, "post_slug")
-			query := svc.rodb().Preload("Author")
+			query := svc.rodb().
+				Preload("Author").
+				Preload("RelationshipsAsSource").
+				Preload("RelationshipsAsTarget")
 			id, err := strconv.ParseInt(postSlug, 10, 64)
 			if err == nil {
 				query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
@@ -277,7 +366,9 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 func (svc *Service) postDownloadPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.rodb().Preload("Author")
+		query := svc.rodb().
+			Preload("Author")
+
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
 			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})

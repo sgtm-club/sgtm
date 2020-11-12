@@ -16,6 +16,7 @@ func DBInit(db *gorm.DB, sfn *snowflake.Node) (*gorm.DB, error) {
 	err = db.AutoMigrate(
 		&sgtmpb.User{},
 		&sgtmpb.Post{},
+		&sgtmpb.Relationship{},
 	)
 	if err != nil {
 		return nil, err
