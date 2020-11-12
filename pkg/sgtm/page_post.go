@@ -3,6 +3,7 @@ package sgtm
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -10,8 +11,13 @@ import (
 	"github.com/go-chi/chi"
 	packr "github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"moul.io/godev"
 	"moul.io/sgtm/pkg/sgtmpb"
+)
+
+var (
+	featRegex = regexp.MustCompile(`(?im)(feat.|feat|featuring|features)\s*[:= ]\s*@([^\s,]+)\s*`)
 )
 
 func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +33,14 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// custom
 		data.PageKind = "post"
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.rodb().Preload("Author")
+		query := svc.rodb().
+			Preload("Author").
+			Preload("RelationshipsAsSource").
+			Preload("RelationshipsAsSource.TargetPost").
+			Preload("RelationshipsAsSource.TargetUser").
+			Preload("RelationshipsAsTarget").
+			Preload("RelationshipsAsTarget.SourcePost").
+			Preload("RelationshipsAsTarget.SourceUser")
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
 			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
@@ -146,7 +159,10 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 			return
 		}
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.rodb().Preload("Author")
+		query := svc.rodb().
+			Preload("Author").
+			Preload("RelationshipsAsSource").
+			Preload("RelationshipsAsTarget")
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
 			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
@@ -196,8 +212,46 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 		}
 
 		if shouldDetectRelationships {
-			svc.error404Page(box)(w, r)
-			return
+			// FIXME: support more relationship kinds
+
+			err := svc.rwdb().Transaction(func(tx *gorm.DB) error {
+				// FIXME: avoid delete/recreate associations if they didn't changed
+
+				body := post.Title + "\n\n" + post.SafeDescription()
+
+				if err := tx.Model(&post).Association("RelationshipsAsSource").Clear(); err != nil {
+					return err
+				}
+				if err := tx.Model(&post).Association("RelationshipsAsTarget").Clear(); err != nil {
+					return err
+				}
+
+				for _, match := range featRegex.FindAllStringSubmatch(body, -1) {
+					target := strings.ToLower(strings.TrimSpace(match[len(match)-1]))
+					var user sgtmpb.User
+					err := svc.rodb().
+						Where("LOWER(slug) = ?", target).
+						First(&user).
+						Error
+					if err != nil {
+						svc.logger.Debug("cannot find the featured artist in DB", zap.Error(err))
+						continue
+					}
+
+					if err := tx.Model(&post).Association("RelationshipsAsSource").Append(&sgtmpb.Relationship{
+						SourcePostID: post.ID,
+						TargetUserID: user.ID,
+						Kind:         sgtmpb.Relationship_FeaturingUserKind,
+					}); err != nil {
+						return err
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
 		}
 
 		switch r.URL.Query().Get("return") {
@@ -243,7 +297,10 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 		// fetch post from db
 		{
 			postSlug := chi.URLParam(r, "post_slug")
-			query := svc.rodb().Preload("Author")
+			query := svc.rodb().
+				Preload("Author").
+				Preload("RelationshipsAsSource").
+				Preload("RelationshipsAsTarget")
 			id, err := strconv.ParseInt(postSlug, 10, 64)
 			if err == nil {
 				query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
@@ -309,7 +366,9 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 func (svc *Service) postDownloadPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.rodb().Preload("Author")
+		query := svc.rodb().
+			Preload("Author")
+
 		id, err := strconv.ParseInt(postSlug, 10, 64)
 		if err == nil {
 			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})

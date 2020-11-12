@@ -63,6 +63,14 @@
         <div>📆 Added <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.SortDate | fromUnixNano | prettyDate}}">{{.Post.Post.SortDate | fromUnixNano | prettyAgo}}</span></div>
         <!--<div><span class="fa fa-soundcloud"></span> {{.Post.Post.URL}}</div>-->
 
+        <!-- RELATIONSHIPS -->
+        {{ range $rel := .Post.Post.RelationshipsAsSource }}
+          {{$kind := .Kind.String}}
+          {{with eq $kind "FeaturingUserKind"}}{{":handshake:" | emojify}} feat. {{template "user_link_with_pict_and_name" $rel.TargetUser}}{{end}}
+        {{end}}
+        <!-- FIXME: .Post.Post.RelationshipsAsTarget -->
+
+
 
         {{if or (len .Post.Comments) (.User)}}
           <div class="card mt-3 p-1">
