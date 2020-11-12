@@ -118,9 +118,22 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 	}
 }
 
-func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
+func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	tmpl := loadTemplates(box, "base.tmpl.html", "dummy.tmpl.html")
 	return func(w http.ResponseWriter, r *http.Request) {
+		var (
+			shouldExtractBpm          = r.URL.Query().Get("extract_bpm") == "1"
+			shouldDetectRelationships = r.URL.Query().Get("detect_relationships") == "1"
+			shouldResyncSoundCloud    = r.URL.Query().Get("resync_soundcloud") == "1"
+			shouldDL                  = shouldExtractBpm
+			shouldDoSomething         = shouldExtractBpm || shouldDetectRelationships || shouldResyncSoundCloud
+		)
+		if !shouldDoSomething {
+			svc.error404Page(box)(w, r)
+			return
+		}
+
+		// common init
 		started := time.Now()
 		data, err := svc.newTemplateData(w, r)
 		if err != nil {
@@ -150,21 +163,40 @@ func (svc *Service) postSyncPage(box *packr.Box) func(w http.ResponseWriter, r *
 			return
 		}
 
-		// FIXME: do the sync here
-		dl, err := DownloadPost(&post, false)
-		if err != nil {
-			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+		// dl file
+		var dl *Download
+		if shouldDL {
+			var err error
+			dl, err = DownloadPost(&post, false)
+			if err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
+			svc.logger.Debug("file downloaded", zap.String("path", dl.Path))
+		}
+
+		// resync soundcloud
+		if shouldResyncSoundCloud {
+			svc.error404Page(box)(w, r)
 			return
 		}
-		svc.logger.Debug("file downloaded", zap.String("path", dl.Path))
-		bpm, err := ExtractBPM(dl.Path)
-		if err != nil {
-			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-			return
+
+		// extract bpm
+		if shouldExtractBpm {
+			bpm, err := ExtractBPM(dl.Path)
+			if err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
+			svc.logger.Debug("BPM extracted", zap.Float64("bpm", bpm))
+			if err := svc.rwdb().Model(&post).Update("bpm", bpm).Error; err != nil {
+				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+				return
+			}
 		}
-		svc.logger.Debug("BPM extracted", zap.Float64("bpm", bpm))
-		if err := svc.rwdb().Model(&post).Update("bpm", bpm).Error; err != nil {
-			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+
+		if shouldDetectRelationships {
+			svc.error404Page(box)(w, r)
 			return
 		}
 

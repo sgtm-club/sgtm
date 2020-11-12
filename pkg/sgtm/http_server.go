@@ -215,7 +215,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 		r.Post("/post/{post_slug}", svc.postPage(srcBox))
 		r.Get("/post/{post_slug}/edit", svc.postEditPage(srcBox))
 		r.Post("/post/{post_slug}/edit", svc.postEditPage(srcBox))
-		r.Get("/post/{post_slug}/sync", svc.postSyncPage(srcBox))
+		r.Get("/post/{post_slug}/maintenance", svc.postMaintenancePage(srcBox))
 		r.Get("/post/{post_slug}/download", svc.postDownloadPage(srcBox))
 		// FIXME: r.Use(ModeratorOnly) + r.Get("/moderator")
 		// FIXME: r.Use(AdminOnly) + r.Get("/admin")
