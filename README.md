@@ -97,6 +97,7 @@ Everything on contribution is sum up here: [CONTRIBUTING.MD](./CONTRIBUTING.MD).
 * Created by [Manfred Touron](https://manfred.life)
 * Help & Support: click on the chat button at the bottom-right of sgtm or [fill an issue](https://github.com/sgtm-club/sgtm/issues)
 * [Join the Discord](https://discord.gg/bMjFtACYp3) _(not yet widely used, but we need to start somewhere :p)_
+* [SGTM Logos (Figma)](https://www.figma.com/file/w1OBRhdj2jndsfjlalbRBa)
 
 ## Stargazers over time
 
