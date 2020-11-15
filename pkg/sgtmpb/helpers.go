@@ -12,9 +12,6 @@ import (
 // Post
 
 func (p *Post) ApplyDefaults() {
-	if p.Title == "" {
-		p.Title = "noname"
-	}
 	if p.ArtworkURL == "" && p.Provider == Provider_SoundCloud {
 		var metadata soundcloud.Track
 		err := json.Unmarshal([]byte(p.ProviderMetadata), &metadata)
@@ -40,6 +37,16 @@ func (p *Post) SafeDescription() string {
 		return p.Body
 	}
 	return p.ProviderDescription
+}
+
+func (p *Post) SafeTitle() string {
+	if p.Title != "" {
+		return p.Title
+	}
+	if p.ProviderTitle != "" {
+		return p.ProviderTitle
+	}
+	return "noname"
 }
 
 func (p *Post) SafeLyrics() string {

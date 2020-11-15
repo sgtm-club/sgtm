@@ -217,7 +217,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 			err := svc.rwdb().Transaction(func(tx *gorm.DB) error {
 				// FIXME: avoid delete/recreate associations if they didn't changed
 
-				body := post.Title + "\n\n" + post.SafeDescription()
+				body := post.SafeTitle() + "\n\n" + post.SafeDescription()
 
 				if err := tx.Model(&post).Association("RelationshipsAsSource").Clear(); err != nil {
 					return err
@@ -332,6 +332,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 				}
 				// FIXME: blacklist, etc
 				fields := map[string]interface{}{}
+				fields["title"] = strings.TrimSpace(r.Form.Get("title"))
 				fields["body"] = strings.TrimSpace(r.Form.Get("body"))
 				fields["lyrics"] = strings.TrimSpace(r.Form.Get("lyrics"))
 				if data.PostEdit.Post.Provider == sgtmpb.Provider_IPFS {
