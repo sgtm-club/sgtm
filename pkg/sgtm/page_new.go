@@ -69,7 +69,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 							First(&alreadyExists).
 							Error
 						if err == nil && alreadyExists.ID != 0 {
-							data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="/post/%d">%s</a>.`, alreadyExists.ID, alreadyExists.Title)
+							data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="/post/%d">%s</a>.`, alreadyExists.ID, alreadyExists.SafeTitle())
 							return nil
 						}
 					}
@@ -93,7 +93,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						Visibility:         sgtmpb.Visibility_Public,
 						AuthorID:           data.User.ID,
 						Slug:               "",
-						Title:              filename,
+						ProviderTitle:      filename,
 						SortDate:           time.Now().UnixNano(),
 						URL:                "https://ipfs.io/ipfs/" + cid,
 						Provider:           sgtmpb.Provider_IPFS,
@@ -107,12 +107,12 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 
 				// FIXME: check if valid SoundCloud link
 				post := sgtmpb.Post{
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Public,
-					AuthorID:   data.User.ID,
-					Slug:       "",
-					Title:      "",
-					SortDate:   time.Now().UnixNano(),
+					Kind:          sgtmpb.Post_TrackKind,
+					Visibility:    sgtmpb.Visibility_Public,
+					AuthorID:      data.User.ID,
+					Slug:          "",
+					ProviderTitle: "",
+					SortDate:      time.Now().UnixNano(),
 				}
 
 				u, err := url.Parse(fileURL)
@@ -150,7 +150,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 							First(&alreadyExists).
 							Error
 						if err == nil && alreadyExists.ID != 0 {
-							data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="%s">%s</a>.`, alreadyExists.CanonicalURL(), alreadyExists.Title)
+							data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="%s">%s</a>.`, alreadyExists.CanonicalURL(), alreadyExists.SafeTitle())
 							return nil
 						}
 					}
@@ -167,7 +167,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					}
 
 					post.ProviderMetadata = godev.JSON(track)
-					post.Title = track.Title
+					post.ProviderTitle = track.Title
 					createdAt, err := time.Parse("2006/01/02 15:04:05 +0000", track.CreatedAt)
 					if err == nil {
 						post.ProviderCreatedAt = createdAt.UnixNano()

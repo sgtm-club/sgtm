@@ -166,6 +166,7 @@ message Post {
   double bpm = 43 [(go.field) = {name: 'BPM'}];
   string key_signature = 44;
   string isrc = 45 [(go.field) = {name: 'ISRC'}];
+  string provider_title = 53;
   string provider_description = 46;
   string provider_download_url = 47 [(go.field) = {name: 'DownloadURL'}];
   int64 provider_created_at = 48;

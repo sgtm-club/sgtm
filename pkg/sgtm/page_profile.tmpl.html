@@ -36,7 +36,7 @@
               <div class="media">
                 <a href="{{.CanonicalURL}}"><img src="{{ .ArtworkURL }}" class="p-1 mr-3" width="100" alt="Artwork" /></a>
                 <div class="media-body">
-                  <a href="{{.CanonicalURL}}"><h5 class="mt-0 d-inline-block">{{.Title}}</h5></a>
+                  <a href="{{.CanonicalURL}}"><h5 class="mt-0 d-inline-block">{{.SafeTitle}}</h5></a>
                   <a href="{{.CanonicalURL}}"><small class="text-muted">{{.SortDate | fromUnixNano | prettyAgo}}</small></a>
                   <div>
                     {{with .SafeDescription}}<p>{{.}}</p>{{end}}

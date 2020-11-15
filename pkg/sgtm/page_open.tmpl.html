@@ -82,13 +82,13 @@
           {{with eq $kind "ViewHomeKind"}}🏠 View home page{{end}}
           {{with eq $kind "LoginKind"}}👌 Login{{end}}
           {{with eq $kind "RegisterKind"}}👋 Register{{end}}
-          {{with eq $kind "TrackKind"}}🎶 Post <a href="{{$post.CanonicalURL}}">{{$post.Title}}</a>{{end}}
-          {{with eq $kind "CommentKind"}}{{with $post.TargetPost}}✏️  Comment <a href="{{$post.TargetPost.CanonicalURL}}">{{$post.TargetPost.Title}}</a>{{end}}{{end}}
+          {{with eq $kind "TrackKind"}}🎶 Post <a href="{{$post.CanonicalURL}}">{{$post.SafeTitle}}</a>{{end}}
+          {{with eq $kind "CommentKind"}}{{with $post.TargetPost}}✏️  Comment <a href="{{$post.TargetPost.CanonicalURL}}">{{$post.TargetPost.SafeTitle}}</a>{{end}}{{end}}
           {{with eq $kind "ViewProfileKind"}}{{with $post.TargetUser}}👤 View <a href="{{$post.TargetUser.CanonicalURL}}">{{$post.TargetUser.DisplayName}}</a> profile{{end}}{{end}}
           {{with eq $kind "ViewPostKind"}}
             {{with $post.TargetPost}}
               <!-- FIXME: switch case on .TargetPost.Kind -->
-              🎶 View <a href="{{$post.TargetPost.CanonicalURL}}">{{$post.TargetPost.Title}}</a>
+              🎶 View <a href="{{$post.TargetPost.CanonicalURL}}">{{$post.TargetPost.SafeTitle}}</a>
             {{end}}
           {{end}}
           <span class="text-muted">{{$post.CreatedAt | fromUnixNano | prettyAgo}}</span>

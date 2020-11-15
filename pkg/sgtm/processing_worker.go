@@ -120,12 +120,24 @@ func (svc *Service) setupMigrations() {
 				// nothing to do
 				return nil
 			}
-
 			return tx.Model(post).Updates(map[string]interface{}{
 				"tags":  post.Genre, // nolint:staticcheck
 				"genre": "",
 			}).Error
 		},
+
+		// set SoundCloud provider_title
+		func(post *sgtmpb.Post, tx *gorm.DB) error {
+			if post.GetProvider() != sgtmpb.Provider_SoundCloud || post.ProviderTitle != "" {
+				return nil
+			}
+
+			return tx.Model(post).Updates(map[string]interface{}{
+				"provider_title": post.Title,
+				"title":          "",
+			}).Error
+		},
+
 		/*
 			// FIXME: try downloading the mp3 locally
 			func(post *sgtmpb.Post) error { return fmt.Errorf("not implemented") },

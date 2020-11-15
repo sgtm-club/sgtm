@@ -60,7 +60,7 @@
                 <div class="media">
                   <a href="{{.CanonicalURL}}"><img src="{{ .ArtworkURL }}" width="100" class="pr-1 mr-3" alt="Artwork" /></a>
                   <div class="media-body">
-                    <a href="{{.CanonicalURL}}"><h5 class="mt-0 d-inline-block">{{.Title}}</h5></a>
+                    <a href="{{.CanonicalURL}}"><h5 class="mt-0 d-inline-block">{{.SafeTitle}}</h5></a>
                     <div>
                       {{with .TagList}}<div>📁 Tags: {{range .}}<span class="badge badge-secondary">{{.}}</span> {{end}}</div>{{end}}
                       {{if .Duration}}<div>⏱ Duration: <span data-toggle="tooltip" data-placement="right" title="{{.GoDuration}}">{{.GoDuration | prettyDuration}}</span></div>{{end}}

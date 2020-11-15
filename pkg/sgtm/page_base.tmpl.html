@@ -142,7 +142,7 @@
                       <div>
                         <a href="{{.CanonicalURL}}" class="text-light">
                           {{ if eq .Kind 1}}<span class="fa fa-music"></span>{{end}}
-                          {{.Title}}
+                          {{.SafeTitle}}
                         </a>
                         <small class="text-muted">{{.CreatedAt | fromUnixNano | prettyAgo}}</small>
                       </div>
