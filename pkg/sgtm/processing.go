@@ -172,12 +172,12 @@ func ExtractAbletonTrackInfos(fileReader io.Reader) (*TrackSourceFile, error) {
 }
 
 func findPlugins(track *etree.Element) []string {
-	var plugins []string
 	devices := track.FindElements("DeviceChain/DeviceChain/Devices")
 	if devices == nil {
 		return nil
 	}
 
+	plugins := make([]string, 0, len(devices))
 	for _, device := range devices {
 		pluginDevice := device.FindElement("PluginDevice/PluginDesc/VstPluginInfo/PlugName")
 		if pluginDevice == nil {

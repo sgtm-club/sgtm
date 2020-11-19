@@ -59,9 +59,9 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					}
 
 					var trackInfos = &TrackSourceFile{
-						Daw:      "",
-						Tracks:   0,
-						Plugins:  []string{},
+						Daw:     "",
+						Tracks:  0,
+						Plugins: []string{},
 					}
 					// TODO: move to an async worker
 					// TODO: parse other source file extensions
@@ -120,7 +120,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						FileExtension:      ext,
 						AttachmentFilename: header.Filename,
 						DawName:            trackInfos.Daw,
-						Plugins:            strings.Join(trackInfos.Plugins[:], ","),
+						Plugins:            strings.Join(trackInfos.Plugins, ","),
 						TracksNumber:       int64(trackInfos.Tracks),
 					}
 				}
