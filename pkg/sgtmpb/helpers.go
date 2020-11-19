@@ -61,6 +61,8 @@ func (p *Post) Filter() {
 func (p *Post) IsSoundCloud() bool { return p.GetProvider() == Provider_SoundCloud }
 func (p *Post) IsIPFS() bool       { return p.GetProvider() == Provider_IPFS }
 
+func (p *Post) IsSource() bool { return p.GetDawName() != "" }
+
 func (p *Post) TagList() []string {
 	if strings.TrimSpace(p.Tags) == "" {
 		return nil

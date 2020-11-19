@@ -47,6 +47,33 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						data.Error = err.Error()
 						return nil
 					}
+
+					// TODO: run mimetype detection on file maybe
+					filenameParts := strings.Split(header.Filename, ".")
+					ext := "blob"
+					filename := header.Filename
+					numParts := len(filenameParts)
+					if numParts >= 2 {
+						ext = filenameParts[numParts-1]
+						filename = strings.Join(filenameParts[:numParts-1], ".")
+					}
+
+					var trackInfos = &TrackSourceFile{
+						Daw:     "",
+						Tracks:  0,
+						Plugins: []string{},
+					}
+					// TODO: move to an async worker
+					// TODO: parse other source file extensions
+					if ext == "als" {
+						trackInfos, err = ExtractAbletonTrackInfos(file)
+						if err != nil {
+							data.Error = err.Error()
+							return nil
+						}
+					}
+					fmt.Println("trackInfos", trackInfos)
+
 					defer file.Close()
 
 					fmt.Println("header", header.Header)
@@ -58,7 +85,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						data.Error = err.Error()
 						return nil
 					}
-					fmt.Println("done uploading to ipfs")
+					fmt.Println("done uploading to ipfs: ", cid)
 
 					// check if track already exists
 					{
@@ -78,16 +105,6 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					fmt.Println("MIME", mimeType)
 					// FIXME: check that mimeType starts with audio/ maybe
 
-					// TODO: run mimetype detection on file maybe
-					filenameParts := strings.Split(header.Filename, ".")
-					ext := "blob"
-					filename := header.Filename
-					numParts := len(filenameParts)
-					if numParts >= 2 {
-						ext = filenameParts[numParts-1]
-						filename = strings.Join(filenameParts[:numParts-1], ".")
-					}
-
 					return &sgtmpb.Post{
 						Kind:               sgtmpb.Post_TrackKind,
 						Visibility:         sgtmpb.Visibility_Public,
@@ -102,6 +119,9 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						SizeBytes:          header.Size,
 						FileExtension:      ext,
 						AttachmentFilename: header.Filename,
+						DawName:            trackInfos.Daw,
+						Plugins:            strings.Join(trackInfos.Plugins, ","),
+						TracksNumber:       int64(trackInfos.Tracks),
 					}
 				}
 

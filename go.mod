@@ -6,6 +6,7 @@ require (
 	github.com/Bearer/bearer-go v1.2.1
 	github.com/Masterminds/sprig/v3 v3.1.0
 	github.com/alta/protopatch v0.0.0-20201016184603-76d4a1d79afd
+	github.com/beevik/etree v1.1.0
 	github.com/bwmarrin/discordgo v0.22.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/cespare/hutil v0.1.0
