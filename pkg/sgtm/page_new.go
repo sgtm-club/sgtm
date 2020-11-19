@@ -58,11 +58,14 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						filename = strings.Join(filenameParts[:numParts-1], ".")
 					}
 
-					var trackInfos *TrackSourceFile
+					var trackInfos = &TrackSourceFile{
+						Daw:      "",
+						Tracks:   0,
+						Plugins:  []string{},
+					}
 					// TODO: move to an async worker
 					// TODO: parse other source file extensions
-					const abletonExtension = "als"
-					if ext == abletonExtension {
+					if ext == "als" {
 						trackInfos, err = ExtractAbletonTrackInfos(file)
 						if err != nil {
 							data.Error = err.Error()
@@ -82,7 +85,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						data.Error = err.Error()
 						return nil
 					}
-					fmt.Println("done uploading to ipfs")
+					fmt.Println("done uploading to ipfs: ", cid)
 
 					// check if track already exists
 					{
@@ -116,11 +119,9 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						SizeBytes:          header.Size,
 						FileExtension:      ext,
 						AttachmentFilename: header.Filename,
-						SourceFile: &sgtmpb.SourceFile{
-							Daw:     trackInfos.Daw,
-							Plugins: strings.Join(trackInfos.Plugins[:], ","),
-							Tracks:  int64(trackInfos.Tracks),
-						},
+						DawName:            trackInfos.Daw,
+						Plugins:            strings.Join(trackInfos.Plugins[:], ","),
+						TracksNumber:       int64(trackInfos.Tracks),
 					}
 				}
 

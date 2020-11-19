@@ -59,6 +59,12 @@
           <div>⬇️ <a download="{{.Post.Post.SafeTitle}}.{{.Post.Post.FileExtension}}" href="/post/{{ .Post.Post.ID }}/download">Download</a></div>
           <div style="word-break: break-all;">⚓ IPFS CID: {{ .Post.Post.IPFSCID }}</div>
         {{end}}
+        {{if .Post.Post.IsSource}}
+          <div>💻 DAW: {{ .Post.Post.DawName }}</div>
+          <div>🔌️ Plugins: {{ .Post.Post.Plugins }}</div>
+          <div>Number of tracks: {{ .Post.Post.TracksNumber }}</div>
+        {{end}}
+
         <!--{{with .Post.Post.DownloadURL}}<div><a href="{{.}}" class="btn">⬇️ Download</a></div>{{end}}-->
         <div>📆 Added <span data-toggle="tooltip" data-placement="right" title="{{.Post.Post.SortDate | fromUnixNano | prettyDate}}">{{.Post.Post.SortDate | fromUnixNano | prettyAgo}}</span></div>
         <!--<div><span class="fa fa-soundcloud"></span> {{.Post.Post.URL}}</div>-->

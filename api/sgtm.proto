@@ -174,7 +174,9 @@ message Post {
   string provider_metadata = 50;
   string tags = 51; // comma separated list of tags
   string lyrics = 52;
-  SourceFile source_file = 54;
+  string daw_name = 54;
+  int64 tracks_number = 55;
+  string plugins = 56;
 
   /// soundcloud post
 
@@ -228,12 +230,6 @@ message Post {
     //ForkKind
     //FeatKind
   }
-}
-
-message SourceFile {
-	string daw = 1;
-	int64 tracks = 2;
-	string plugins = 3;
 }
 
 message Relationship {
