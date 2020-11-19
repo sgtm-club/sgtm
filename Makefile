@@ -84,6 +84,13 @@ prod.syncdb:
 	rsync -avze ssh $(PROD_HOST):$(PROD_PATH)/sgtm.db /tmp/sgtm.db
 .PHONY: prod.syncdb
 
+dbshare:
+	@echo "== EASY SHARING WITH IPFS =="
+	@ls -lh /tmp/sgtm.db
+	@echo https://ipfs.io/ipfs/`ipfs add -q /tmp/sgtm.db`?filename=sgtm.sqlite3
+	@echo
+.PHONY: dbshare
+
 prod.dbdump:
 	ssh $(PROD_HOST) sqlite3 $(PROD_PATH)/sgtm.db .dump
 .PHONY: prod.dbdump
