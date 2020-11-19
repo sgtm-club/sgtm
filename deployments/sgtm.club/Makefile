@@ -17,6 +17,10 @@ logs-once:
 ps pull restart stop kill:
 	docker-compose $@
 
+.PHONY: dbshell
+dbshell:
+	sudo sqlite3 sgtm.db
+
 .PHONY: dbdump
 dbdump:
 	sqlite3 sgtm.db .dump
