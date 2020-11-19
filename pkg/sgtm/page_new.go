@@ -47,6 +47,30 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						data.Error = err.Error()
 						return nil
 					}
+
+					// TODO: run mimetype detection on file maybe
+					filenameParts := strings.Split(header.Filename, ".")
+					ext := "blob"
+					filename := header.Filename
+					numParts := len(filenameParts)
+					if numParts >= 2 {
+						ext = filenameParts[numParts-1]
+						filename = strings.Join(filenameParts[:numParts-1], ".")
+					}
+
+					var trackInfos *TrackSourceFile
+					// TODO: move to an async worker
+					// TODO: parse other source file extensions
+					const abletonExtension = "als"
+					if ext == abletonExtension {
+						trackInfos, err = ExtractAbletonTrackInfos(file)
+						if err != nil {
+							data.Error = err.Error()
+							return nil
+						}
+					}
+					fmt.Println("trackInfos", trackInfos)
+
 					defer file.Close()
 
 					fmt.Println("header", header.Header)
@@ -78,16 +102,6 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 					fmt.Println("MIME", mimeType)
 					// FIXME: check that mimeType starts with audio/ maybe
 
-					// TODO: run mimetype detection on file maybe
-					filenameParts := strings.Split(header.Filename, ".")
-					ext := "blob"
-					filename := header.Filename
-					numParts := len(filenameParts)
-					if numParts >= 2 {
-						ext = filenameParts[numParts-1]
-						filename = strings.Join(filenameParts[:numParts-1], ".")
-					}
-
 					return &sgtmpb.Post{
 						Kind:               sgtmpb.Post_TrackKind,
 						Visibility:         sgtmpb.Visibility_Public,
@@ -102,6 +116,11 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 						SizeBytes:          header.Size,
 						FileExtension:      ext,
 						AttachmentFilename: header.Filename,
+						SourceFile: &sgtmpb.SourceFile{
+							Daw:     trackInfos.Daw,
+							Plugins: strings.Join(trackInfos.Plugins[:], ","),
+							Tracks:  int64(trackInfos.Tracks),
+						},
 					}
 				}
 

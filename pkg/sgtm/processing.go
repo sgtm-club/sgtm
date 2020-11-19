@@ -1,6 +1,7 @@
 package sgtm
 
 import (
+	"compress/gzip"
 	"context"
 	"encoding/csv"
 	"encoding/json"
@@ -14,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/beevik/etree"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
@@ -123,6 +125,69 @@ func ExtractBPM(p string) (float64, error) {
 	average := bpmTotal / bpmCount
 	average = math.Round(average*100) / 100
 	return average, nil
+}
+
+type TrackSourceFile struct {
+	Daw     string
+	Tracks  int
+	Plugins []string
+}
+
+func ExtractAbletonTrackInfos(fileReader io.Reader) (*TrackSourceFile, error) {
+	uncompressedStream, err := gzip.NewReader(fileReader)
+	if err != nil {
+		return nil, err
+	}
+	defer uncompressedStream.Close()
+
+	fileContents, err := ioutil.ReadAll(uncompressedStream)
+	if err != nil {
+		return nil, err
+	}
+
+	doc := etree.NewDocument()
+	if err := doc.ReadFromBytes(fileContents); err != nil {
+		panic(err)
+	}
+
+	daw := doc.Root().SelectAttr("Creator").Value
+	tracks := doc.Root().FindElement("LiveSet/Tracks")
+	midiTracks := tracks.FindElements("MidiTrack")
+	audioTracks := tracks.FindElements("AudioTrack")
+	nbTracks := len(midiTracks) + len(audioTracks)
+
+	var plugins []string
+	for _, track := range midiTracks {
+		plugins = append(plugins, findPlugins(track)...)
+	}
+	for _, track := range audioTracks {
+		plugins = append(plugins, findPlugins(track)...)
+	}
+
+	return &TrackSourceFile{
+		Daw:     daw,
+		Tracks:  nbTracks,
+		Plugins: unique(plugins),
+	}, nil
+}
+
+func findPlugins(track *etree.Element) []string {
+	var plugins []string
+	devices := track.FindElements("DeviceChain/DeviceChain/Devices")
+	if devices == nil {
+		return nil
+	}
+
+	for _, device := range devices {
+		pluginDevice := device.FindElement("PluginDevice/PluginDesc/VstPluginInfo/PlugName")
+		if pluginDevice == nil {
+			continue
+		}
+		pluginName := pluginDevice.SelectAttr("Value")
+		plugins = append(plugins, pluginName.Value)
+	}
+
+	return plugins
 }
 
 type YoutubeDLOutput struct {
