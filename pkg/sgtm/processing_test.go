@@ -26,11 +26,11 @@ func TestExtractAbletonTrackInfos(t *testing.T) {
 		{"should parse a correct ableton file",
 			args{fileReader: file},
 			&TrackSourceFile{
-			Daw:     "Ableton Live 10.0.4",
-			Tracks:  26,
-			Plugins: []string{"Serum", "BalanceSPTeufelsbergReverb", "FabFilter Pro-Q 2", "Auburn Sounds Graillon 2"},
-		},
-		false},
+				Daw:     "Ableton Live 10.0.4",
+				Tracks:  26,
+				Plugins: []string{"Serum", "BalanceSPTeufelsbergReverb", "FabFilter Pro-Q 2", "Auburn Sounds Graillon 2"},
+			},
+			false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

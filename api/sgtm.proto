@@ -174,7 +174,7 @@ message Post {
   string provider_metadata = 50;
   string tags = 51; // comma separated list of tags
   string lyrics = 52;
-  SourceFile source_file = 53;
+  SourceFile source_file = 54;
 
   /// soundcloud post
 
