@@ -156,7 +156,7 @@ func ExtractAbletonTrackInfos(fileReader io.Reader) (*TrackSourceFile, error) {
 	audioTracks := tracks.FindElements("AudioTrack")
 	nbTracks := len(midiTracks) + len(audioTracks)
 
-	var plugins []string
+	plugins := make([]string, 0)
 	for _, track := range midiTracks {
 		plugins = append(plugins, findPlugins(track)...)
 	}
