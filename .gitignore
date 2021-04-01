@@ -32,3 +32,6 @@ gin-bin
 
 # better safe than sorry
 config.txt
+
+# IDE Settings
+.idea
