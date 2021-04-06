@@ -35,7 +35,6 @@ func (svc *Service) Me(ctx context.Context, req *sgtmpb.Me_Request) (*sgtmpb.Me_
 		return nil, err
 	}
 	return &sgtmpb.Me_Response{User: user}, nil
-
 }
 
 func (svc *Service) Ping(context.Context, *sgtmpb.Ping_Request) (*sgtmpb.Ping_Response, error) {
