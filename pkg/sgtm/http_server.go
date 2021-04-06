@@ -302,10 +302,7 @@ func (svc *Service) generateSitemap() *stm.Sitemap {
 	})
 	// users
 	{
-		var users []*sgtmpb.User
-		err := svc.rodb().
-			Find(&users).
-			Error
+		users, err := svc.storage.GetUsersList()
 		if err != nil {
 			svc.logger.Error("query users for sitemap", zap.Error(err))
 		} else {
@@ -319,14 +316,7 @@ func (svc *Service) generateSitemap() *stm.Sitemap {
 	}
 	// posts
 	{
-		var posts []*sgtmpb.Post
-		err := svc.rodb().
-			Where(sgtmpb.Post{
-				Visibility: sgtmpb.Visibility_Public,
-				Kind:       sgtmpb.Post_TrackKind,
-			}).
-			Find(&posts).
-			Error
+		posts, err := svc.storage.GetPostList()
 		if err != nil {
 			svc.logger.Error("query posts for sitemap", zap.Error(err))
 		} else {
