@@ -16,6 +16,8 @@ import (
 type Service struct {
 	sgtmpb.UnimplementedWebAPIServer
 
+	storage Storage
+
 	_db           *gorm.DB
 	logger        *zap.Logger
 	opts          Opts
@@ -32,6 +34,7 @@ type Service struct {
 	ipfs             ipfsWrapper
 }
 
+// New constructor that initializes new Service
 func New(db *gorm.DB, opts Opts) (Service, error) {
 	if err := opts.applyDefaults(); err != nil {
 		return Service{}, err
@@ -47,6 +50,7 @@ func New(db *gorm.DB, opts Opts) (Service, error) {
 		StartedAt: time.Now(),
 		ipfs:      ipfsWrapper{api: opts.IPFSAPI},
 	}
+	svc.storage = NewStorage(db)
 	svc.logger.Info("service initialized", zap.Bool("dev-mode", opts.DevMode))
 	return svc, nil
 }
