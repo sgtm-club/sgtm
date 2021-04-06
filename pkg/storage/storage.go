@@ -14,7 +14,7 @@ import (
 type Storage interface {
 	GetMe(userID int64) (*sgtmpb.User, error)
 	GetUsersList() ([]*sgtmpb.User, error)
-	GetPostList() ([]*sgtmpb.Post, error)
+	GetPostList(limit int) ([]*sgtmpb.Post, error)
 	PatchUser(
 		email string,
 		userID string,
@@ -64,7 +64,7 @@ func (s *storage) GetUsersList() ([]*sgtmpb.User, error) {
 	return users, nil
 }
 
-func (s *storage) GetPostList() ([]*sgtmpb.Post, error) {
+func (s *storage) GetPostList(limit int) ([]*sgtmpb.Post, error) {
 	var posts []*sgtmpb.Post
 
 	err := s.db.
@@ -73,7 +73,7 @@ func (s *storage) GetPostList() ([]*sgtmpb.Post, error) {
 			Visibility: sgtmpb.Visibility_Public,
 		}).
 		Where("kind in (?)", sgtmpb.Post_TrackKind).
-		Limit(100).
+		Limit(limit).
 		Find(&posts).
 		Error
 	if err != nil {

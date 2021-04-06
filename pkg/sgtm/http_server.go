@@ -316,7 +316,7 @@ func (svc *Service) generateSitemap() *stm.Sitemap {
 	}
 	// posts
 	{
-		posts, err := svc.storage.GetPostList()
+		posts, err := svc.storage.GetPostList(100)
 		if err != nil {
 			svc.logger.Error("query posts for sitemap", zap.Error(err))
 		} else {
