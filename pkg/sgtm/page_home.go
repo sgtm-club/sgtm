@@ -37,17 +37,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 			if data.UserID == 0 {
 				limit = 10
 			}
-			if err := svc.rodb().
-				Model(&sgtmpb.Post{}).
-				Preload("Author").
-				Where(sgtmpb.Post{
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Public,
-				}).
-				Order("sort_date desc").
-				Limit(limit). // FIXME: pagination
-				Find(&data.Home.LastTracks).
-				Error; err != nil {
+			if data.Home.LastTracks, err = svc.storage.GetPostList(limit); err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
 			}
 			for _, track := range data.Home.LastTracks {
@@ -57,12 +47,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// last users
 		{
-			if err := svc.rodb().
-				Model(&sgtmpb.User{}).
-				Order("created_at desc").
-				Limit(10).
-				Find(&data.Home.LastUsers).
-				Error; err != nil {
+			if data.Home.LastUsers, err = svc.storage.GetUsersList(); err != nil {
 				data.Error = "Cannot fetch last users: " + err.Error() // FIXME: use slice instead of string
 			}
 			for _, user := range data.Home.LastUsers {

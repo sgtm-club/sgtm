@@ -59,7 +59,7 @@ func (svc *Service) UserList(context.Context, *sgtmpb.UserList_Request) (*sgtmpb
 }
 
 func (svc *Service) PostList(context.Context, *sgtmpb.PostList_Request) (*sgtmpb.PostList_Response, error) {
-	posts, err := svc.storage.GetPostList()
+	posts, err := svc.storage.GetPostList(100)
 	if err != nil {
 		return nil, err
 	}
