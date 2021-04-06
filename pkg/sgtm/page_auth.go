@@ -12,11 +12,10 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/gosimple/slug"
+	"github.com/dgrijalva/jwt-go"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
-	"gorm.io/gorm"
+
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
@@ -123,65 +122,21 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 		svc.logger.Debug("get user settings", zap.Any("user", discordUser))
 	}
 
-	// create/update user in DB
-	var dbUser sgtmpb.User
-	{
-		dbUser.Email = discordUser.Email
-		err := svc.rodb().Where(&dbUser).First(&dbUser).Error
-		switch {
-		case errors.Is(err, gorm.ErrRecordNotFound):
-			// user not found, creating it
-			dbUser = sgtmpb.User{
-				Email:           discordUser.Email,
-				Avatar:          fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", discordUser.ID, discordUser.Avatar),
-				Slug:            slug.Make(discordUser.Username),
-				Locale:          discordUser.Locale,
-				DiscordID:       discordUser.ID,
-				DiscordUsername: fmt.Sprintf("%s#%s", discordUser.Username, discordUser.Discriminator),
-				// Firstname
-				// Lastname
-			}
-			// FIXME: check if slug already exists, if yes, append something to the slug
-			err = svc.rwdb().Transaction(func(tx *gorm.DB) error {
-				if err := tx.Create(&dbUser).Error; err != nil {
-					return err
-				}
+	var dbUser *sgtmpb.User
 
-				registerEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_RegisterKind}
-				if err := tx.Create(&registerEvent).Error; err != nil {
-					return err
-				}
-				svc.logger.Debug("new register", zap.Any("event", &registerEvent))
-
-				linkDiscordEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LinkDiscordAccountKind}
-				if err := tx.Create(&linkDiscordEvent).Error; err != nil {
-					return err
-				}
-				svc.logger.Debug("new link discord event", zap.Any("event", &registerEvent))
-
-				return nil
-			})
-			if err != nil {
-				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-				return
-			}
-
-		case err == nil:
-			// user exists
-			// FIXME: update user in DB if needed
-
-			loginEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LoginKind}
-			if err := svc.rwdb().Create(&loginEvent).Error; err != nil {
-				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-				return
-			}
-			svc.logger.Debug("new login", zap.Any("event", &loginEvent))
-
-		default:
-			// unexpected error
-			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
-			return
-		}
+	// todo: Moul help ---   what about the loggers?
+	dbUser, err := svc.storage.PatchUser(
+		discordUser.Email,
+		discordUser.ID,
+		discordUser.Avatar,
+		discordUser.Username,
+		discordUser.Locale,
+		discordUser.ID,
+		discordUser.Discriminator,
+	)
+	if err != nil {
+		svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
+		return
 	}
 
 	// prepare JWT token
