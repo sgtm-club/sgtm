@@ -16,7 +16,7 @@ type storage struct {
 	db *gorm.DB
 }
 
-func NewStorage(db *gorm.DB) *storage {
+func NewStorage(db *gorm.DB) Storage {
 	return &storage{db: db}
 }
 
