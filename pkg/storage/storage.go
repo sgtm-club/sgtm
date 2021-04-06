@@ -1,4 +1,4 @@
-package sgtm
+package storage
 
 import (
 	"errors"
