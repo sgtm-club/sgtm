@@ -24,6 +24,8 @@ type Storage interface {
 		discordID string,
 		discriminator string,
 	) (*sgtmpb.User, error)
+	GetTrackByCID(cid string) (*sgtmpb.Post, error)
+	GetTrackBySCID(scid uint64) (*sgtmpb.Post, error)
 }
 
 type storage struct {
@@ -148,4 +150,30 @@ func (s *storage) PatchUser(
 		}
 	}
 	return &dbUser, nil
+}
+
+func (s *storage) GetTrackByCID(cid string) (*sgtmpb.Post, error) {
+	var post *sgtmpb.Post
+	err := s.db.
+		Model(&sgtmpb.Post{}).
+		Where(sgtmpb.Post{IPFSCID: cid}).
+		First(&post).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return post, nil
+}
+
+func (s *storage) GetTrackBySCID(scid uint64) (*sgtmpb.Post, error) {
+	var post *sgtmpb.Post
+	err := s.db.
+		Model(&sgtmpb.Post{}).
+		Where(sgtmpb.Post{SoundCloudID: scid}).
+		First(&post).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return post, nil
 }
