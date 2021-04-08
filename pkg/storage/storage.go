@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/gosimple/slug"
 	"gorm.io/gorm"
@@ -31,6 +32,12 @@ type Storage interface {
 	GetLastActivities(moulID int64) ([]*sgtmpb.Post, error)
 	GetNumberOfDraftPosts() (int64, error)
 	GetNumberOfUsers() (int64, error)
+	PatchPost(post *sgtmpb.Post) error
+	GetNumberOfPostsByKind() ([]*entities.PostByKind, error)
+	GetTotalDuration() (int64, error)
+	GetCustomPost(postSlug string) (*sgtmpb.Post, error)
+	GetPostComments(postID int64) ([]*sgtmpb.Post, error)
+	GetUserBySlug(slug string) (*sgtmpb.User, error)
 }
 
 type storage struct {
@@ -247,4 +254,92 @@ func (s *storage) GetNumberOfUsers() (int64, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func (s *storage) PatchPost(post *sgtmpb.Post) error {
+	return s.db.Omit(clause.Associations).Create(&post).Error
+}
+
+func (s *storage) GetNumberOfPostsByKind() ([]*entities.PostByKind, error) {
+	var postsByKind []*entities.PostByKind
+	err := s.db.
+		Model(&sgtmpb.Post{}).
+		// Where(sgtmpb.Post{Visibility: sgtmpb.Visibility_Public}).
+		Select(`kind, count(*) as quantity`).
+		Group("kind").
+		Find(&postsByKind).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return postsByKind, nil
+}
+
+func (s *storage) GetTotalDuration() (int64, error) {
+	var totalDuration int64
+	err := s.db.
+		Model(&sgtmpb.Post{}).
+		Select("sum(duration) as total_duration").
+		Where(sgtmpb.Post{
+			Kind: sgtmpb.Post_TrackKind,
+			//Visibility: sgtmpb.Visibility_Public,
+		}).
+		First(&totalDuration).
+		Error
+	if err != nil {
+		return 0, err
+	}
+	return totalDuration, nil
+}
+
+func (s *storage) GetCustomPost(postSlug string) (*sgtmpb.Post, error) {
+	query := s.db.
+		Preload("Author").
+		Preload("RelationshipsAsSource").
+		Preload("RelationshipsAsSource.TargetPost").
+		Preload("RelationshipsAsSource.TargetUser").
+		Preload("RelationshipsAsTarget").
+		Preload("RelationshipsAsTarget.SourcePost").
+		Preload("RelationshipsAsTarget.SourceUser")
+	id, err := strconv.ParseInt(postSlug, 10, 64)
+	if err == nil {
+		query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
+	} else {
+		query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
+	}
+	var post *sgtmpb.Post
+	err = query.First(&post).Error
+	if err != nil {
+		return nil, err
+	}
+	return post, nil
+}
+
+func (s *storage) GetPostComments(postID int64) ([]*sgtmpb.Post, error) {
+	var postComments []*sgtmpb.Post
+	err := s.db.
+		Where(sgtmpb.Post{
+			Kind:         sgtmpb.Post_CommentKind,
+			TargetPostID: postID,
+			Visibility:   sgtmpb.Visibility_Public,
+		}).
+		Preload("Author").
+		Find(&postComments).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return postComments, nil
+}
+
+func (s *storage) GetUserBySlug(slug string) (*sgtmpb.User, error) {
+	var user *sgtmpb.User
+	err := s.db.
+		Where("LOWER(slug) = ?", slug).
+		First(&user).
+		Error
+	if err != nil {
+		return nil, nil
+	}
+	return user, nil
 }

@@ -25,15 +25,12 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 		// load profile
 		{
 			userSlug := chi.URLParam(r, "user_slug")
-			var user sgtmpb.User
-			if err := svc.rodb().
-				Where(sgtmpb.User{Slug: userSlug}).
-				First(&user).
-				Error; err != nil {
+			user, err := svc.storage.GetUserBySlug(userSlug)
+			if err != nil {
 				svc.error404Page(box)(w, r)
 				return
 			}
-			data.Profile.User = &user
+			data.Profile.User = user
 		}
 
 		// tracking

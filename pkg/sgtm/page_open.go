@@ -25,7 +25,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewOpenKind}
-			if err := svc.rwdb().Create(&viewEvent).Error; err != nil {
+			if err := svc.storage.PatchPost(&viewEvent); err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view open", zap.Any("event", &viewEvent))
@@ -34,22 +34,11 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// events
 		{
-			type result struct {
-				Kind     sgtmpb.Post_Kind
-				Quantity int64
-			}
-			var results []result
-			err := svc.rodb().
-				Model(&sgtmpb.Post{}).
-				// Where(sgtmpb.Post{Visibility: sgtmpb.Visibility_Public}).
-				Select(`kind, count(*) as quantity`).
-				Group("kind").
-				Find(&results).
-				Error
+			postByKind, err := svc.storage.GetNumberOfPostsByKind()
 			if err != nil {
 				data.Error = "Cannot fetch events: " + err.Error()
 			} else {
-				for _, result := range results {
+				for _, result := range postByKind {
 					switch result.Kind {
 					case sgtmpb.Post_TrackKind:
 						data.Open.Count.Tracks = result.Quantity
@@ -70,22 +59,11 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// tracks' duration
 		{
-			var result struct {
-				TotalDuration int64
-			}
-			err := svc.rodb().
-				Model(&sgtmpb.Post{}).
-				Select("sum(duration) as total_duration").
-				Where(sgtmpb.Post{
-					Kind: sgtmpb.Post_TrackKind,
-					//Visibility: sgtmpb.Visibility_Public,
-				}).
-				First(&result).
-				Error
+			totalDuration, err := svc.storage.GetTotalDuration()
 			if err != nil {
 				data.Error = "Cannot fetch last track durations: " + err.Error()
 			}
-			data.Open.Count.TotalDuration = time.Duration(result.TotalDuration) * time.Millisecond
+			data.Open.Count.TotalDuration = time.Duration(totalDuration) * time.Millisecond
 		}
 
 		{
