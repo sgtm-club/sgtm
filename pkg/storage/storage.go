@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
+	"moul.io/sgtm/pkg/entities"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
@@ -26,6 +27,10 @@ type Storage interface {
 	) (*sgtmpb.User, error)
 	GetTrackByCID(cid string) (*sgtmpb.Post, error)
 	GetTrackBySCID(scid uint64) (*sgtmpb.Post, error)
+	GetUploadsByWeek() ([]*entities.UploadsByWeekDay, error)
+	GetLastActivities(moulID int64) ([]*sgtmpb.Post, error)
+	GetNumberOfDraftPosts() (int64, error)
+	GetNumberOfUsers() (int64, error)
 }
 
 type storage struct {
@@ -176,4 +181,70 @@ func (s *storage) GetTrackBySCID(scid uint64) (*sgtmpb.Post, error) {
 		return nil, err
 	}
 	return post, nil
+}
+
+func (s *storage) GetUploadsByWeek() ([]*entities.UploadsByWeekDay, error) {
+	var upbyw []*entities.UploadsByWeekDay
+	err := s.db.Model(&sgtmpb.Post{}).
+		Where(&sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
+		Select(`strftime("%w", sort_date/1000000000, "unixepoch") as weekday , count(*) as quantity`).
+		Group("weekday").Find(&upbyw).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return upbyw, nil
+}
+
+func (s *storage) GetLastActivities(moulID int64) ([]*sgtmpb.Post, error) {
+	var lastAct []*sgtmpb.Post
+	err := s.db.
+		Preload("Author").
+		Preload("TargetPost").
+		Preload("TargetUser").
+		Order("created_at desc").
+		Where("NOT (author_id == ? AND kind IN (?))", moulID, []sgtmpb.Post_Kind{
+			sgtmpb.Post_ViewHomeKind,
+			sgtmpb.Post_ViewOpenKind,
+		}). // filter admin recurring actions
+		// Where("author_id != 0"). // filter anonymous
+		Where("kind NOT IN (?)", []sgtmpb.Post_Kind{
+			sgtmpb.Post_LinkDiscordAccountKind,
+			// sgtmpb.Post_LoginKind,
+		}).
+		Limit(42).
+		Find(&lastAct).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return lastAct, nil
+}
+
+func (s *storage) GetNumberOfDraftPosts() (int64, error) {
+	var count int64
+	err := s.db.
+		Model(&sgtmpb.Post{}).
+		Where(sgtmpb.Post{
+			Kind:       sgtmpb.Post_TrackKind,
+			Visibility: sgtmpb.Visibility_Draft,
+		}).
+		Count(&count).
+		Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (s *storage) GetNumberOfUsers() (int64, error) {
+	var count int64
+	err := s.db.
+		Model(&sgtmpb.User{}).
+		Count(&count).
+		Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
