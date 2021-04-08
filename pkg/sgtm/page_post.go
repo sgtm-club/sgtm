@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi"
-	packr "github.com/gobuffalo/packr/v2"
+	"github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"moul.io/godev"
+
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
@@ -33,26 +33,12 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// custom
 		data.PageKind = "post"
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.rodb().
-			Preload("Author").
-			Preload("RelationshipsAsSource").
-			Preload("RelationshipsAsSource.TargetPost").
-			Preload("RelationshipsAsSource.TargetUser").
-			Preload("RelationshipsAsTarget").
-			Preload("RelationshipsAsTarget.SourcePost").
-			Preload("RelationshipsAsTarget.SourceUser")
-		id, err := strconv.ParseInt(postSlug, 10, 64)
-		if err == nil {
-			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
-		} else {
-			query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
-		}
-		var post sgtmpb.Post
-		if err := query.First(&post).Error; err != nil {
+		post, err := svc.storage.GetCustomPost(postSlug)
+		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
 		}
-		data.Post.Post = &post
+		data.Post.Post = post
 		data.Post.Post.ApplyDefaults()
 
 		if r.URL.Query().Get("format") == "json" {
@@ -94,15 +80,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// load comments
 		{
-			err := svc.rodb().
-				Where(sgtmpb.Post{
-					Kind:         sgtmpb.Post_CommentKind,
-					TargetPostID: data.Post.Post.ID,
-					Visibility:   sgtmpb.Visibility_Public,
-				}).
-				Preload("Author").
-				Find(&data.Post.Comments).
-				Error
+			data.Post.Comments, err = svc.storage.GetPostComments(data.Post.Post.ID)
 			if err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
@@ -112,7 +90,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewPostKind, TargetPostID: data.Post.Post.ID}
-			if err := svc.rwdb().Create(&viewEvent).Error; err != nil {
+			if err := svc.storage.PatchPost(&viewEvent); err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view post", zap.Any("event", &viewEvent))
@@ -159,18 +137,8 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 			return
 		}
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.rodb().
-			Preload("Author").
-			Preload("RelationshipsAsSource").
-			Preload("RelationshipsAsTarget")
-		id, err := strconv.ParseInt(postSlug, 10, 64)
-		if err == nil {
-			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
-		} else {
-			query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
-		}
-		var post sgtmpb.Post
-		if err := query.First(&post).Error; err != nil {
+		post, err := svc.storage.GetCustomPost(postSlug)
+		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
 		}
@@ -183,7 +151,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 		var dl *Download
 		if shouldDL {
 			var err error
-			dl, err = DownloadPost(&post, false)
+			dl, err = DownloadPost(post, false)
 			if err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
@@ -228,11 +196,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 
 				for _, match := range featRegex.FindAllStringSubmatch(body, -1) {
 					target := strings.ToLower(strings.TrimSpace(match[len(match)-1]))
-					var user sgtmpb.User
-					err := svc.rodb().
-						Where("LOWER(slug) = ?", target).
-						First(&user).
-						Error
+					user, err := svc.storage.GetUserBySlug(target)
 					if err != nil {
 						svc.logger.Debug("cannot find the featured artist in DB", zap.Error(err))
 						continue
@@ -240,6 +204,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 
 					if err := tx.Model(&post).Association("RelationshipsAsSource").Append(&sgtmpb.Relationship{
 						SourcePostID: post.ID,
+						// todo: this may lead to nil pointer? Moul?
 						TargetUserID: user.ID,
 						Kind:         sgtmpb.Relationship_FeaturingUserKind,
 					}); err != nil {
@@ -297,22 +262,12 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 		// fetch post from db
 		{
 			postSlug := chi.URLParam(r, "post_slug")
-			query := svc.rodb().
-				Preload("Author").
-				Preload("RelationshipsAsSource").
-				Preload("RelationshipsAsTarget")
-			id, err := strconv.ParseInt(postSlug, 10, 64)
-			if err == nil {
-				query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
-			} else {
-				query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
-			}
-			var post sgtmpb.Post
-			if err := query.First(&post).Error; err != nil {
+			post, err := svc.storage.GetCustomPost(postSlug)
+			if err != nil {
 				svc.error404Page(box)(w, r)
 				return
 			}
-			data.PostEdit.Post = &post
+			data.PostEdit.Post = post
 		}
 
 		// only author or admin
@@ -367,17 +322,8 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 func (svc *Service) postDownloadPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postSlug := chi.URLParam(r, "post_slug")
-		query := svc.rodb().
-			Preload("Author")
-
-		id, err := strconv.ParseInt(postSlug, 10, 64)
-		if err == nil {
-			query = query.Where(sgtmpb.Post{ID: id, Kind: sgtmpb.Post_TrackKind})
-		} else {
-			query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
-		}
-		var post sgtmpb.Post
-		if err := query.First(&post).Error; err != nil {
+		post, err := svc.storage.GetCustomPost(postSlug)
+		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
 		}
@@ -385,7 +331,7 @@ func (svc *Service) postDownloadPage(box *packr.Box) func(w http.ResponseWriter,
 		if post.MIMEType != "" {
 			w.Header().Set("Content-Type", post.MIMEType)
 		}
-		reader, err := StreamPost(&svc.ipfs, &post)
+		reader, err := StreamPost(&svc.ipfs, post)
 		if err != nil {
 			svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			return
