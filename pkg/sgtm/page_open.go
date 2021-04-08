@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	packr "github.com/gobuffalo/packr/v2"
+	"github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
+
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
@@ -87,46 +88,20 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			data.Open.Count.TotalDuration = time.Duration(result.TotalDuration) * time.Millisecond
 		}
 
-		// uploads by weekday
 		{
-			type result struct {
-				Weekday  int64
-				Quantity int64
-			}
-			var results []result
-			err := svc.rodb().Model(&sgtmpb.Post{}).
-				Where(&sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
-				Select(`strftime("%w", sort_date/1000000000, "unixepoch") as weekday , count(*) as quantity`).
-				Group("weekday").Find(&results).
-				Error
+			upbyweek, err := svc.storage.GetUploadsByWeek()
 			if err != nil {
 				data.Error = "Cannot fetch uploads by weekday: " + err.Error()
 			}
 			data.Open.UploadsByWeekday = make([]int64, 7)
-			for _, result := range results {
+			for _, result := range upbyweek {
 				data.Open.UploadsByWeekday[result.Weekday] = result.Quantity
 			}
 		}
 
 		// last activities
 		{
-			err := svc.rodb().
-				Preload("Author").
-				Preload("TargetPost").
-				Preload("TargetUser").
-				Order("created_at desc").
-				Where("NOT (author_id == ? AND kind IN (?))", moulID, []sgtmpb.Post_Kind{
-					sgtmpb.Post_ViewHomeKind,
-					sgtmpb.Post_ViewOpenKind,
-				}). // filter admin recurring actions
-				// Where("author_id != 0"). // filter anonymous
-				Where("kind NOT IN (?)", []sgtmpb.Post_Kind{
-					sgtmpb.Post_LinkDiscordAccountKind,
-					// sgtmpb.Post_LoginKind,
-				}).
-				Limit(42).
-				Find(&data.Open.LastActivities).
-				Error
+			data.Open.LastActivities, err = svc.storage.GetLastActivities(moulID)
 			if err != nil {
 				data.Error = "Cannot fetch last activities: " + err.Error()
 			}
@@ -134,24 +109,14 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// track drafts
 		{
-			err := svc.rodb().
-				Model(&sgtmpb.Post{}).
-				Where(sgtmpb.Post{
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Draft,
-				}).
-				Count(&data.Open.Count.TrackDrafts).
-				Error
+			data.Open.Count.TrackDrafts, err = svc.storage.GetNumberOfDraftPosts()
 			if err != nil {
 				data.Error = "Cannot fetch last track drafts: " + err.Error()
 			}
 		}
 		// users
 		{
-			err := svc.rodb().
-				Model(&sgtmpb.User{}).
-				Count(&data.Open.Count.Users).
-				Error
+			data.Open.Count.Users, err = svc.storage.GetNumberOfUsers()
 			if err != nil {
 				data.Error = "Cannot fetch last users: " + err.Error()
 			}
