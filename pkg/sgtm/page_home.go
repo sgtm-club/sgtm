@@ -38,7 +38,8 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 			if data.UserID == 0 {
 				limit = 10
 			}
-			if data.Home.LastTracks, err = svc.storage.GetPostList(limit); err != nil {
+			data.Home.LastTracks, err = svc.storage.GetPostList(limit)
+			if err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
 			}
 			for _, track := range data.Home.LastTracks {

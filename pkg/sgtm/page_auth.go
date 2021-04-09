@@ -130,12 +130,12 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 		Locale:          discordUser.Locale,
 		Avatar:          discordUser.Avatar,
 	}
-	dbUser, err := svc.storage.PatchUser(dbUser)
+	dbUser, err := svc.storage.CreateUser(dbUser)
 	if err != nil {
 		svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 		return
 	}
-	svc.logger.Debug("new patch user", zap.Any("event", &dbUser))
+	svc.logger.Debug("user created/updated", zap.Any("user", &dbUser))
 
 	// prepare JWT token
 	var tokenString string
