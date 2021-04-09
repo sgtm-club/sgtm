@@ -8,16 +8,16 @@ import (
 	"strings"
 	"time"
 
-	sprig "github.com/Masterminds/sprig/v3"
-	humanize "github.com/dustin/go-humanize"
-	packr "github.com/gobuffalo/packr/v2"
+	"github.com/Masterminds/sprig/v3"
+	"github.com/dustin/go-humanize"
+	"github.com/gobuffalo/packr/v2"
 	striptags "github.com/grokify/html-strip-tags-go"
 	"github.com/hako/durafmt"
-	emoji "github.com/kyokomi/emoji/v2"
+	"github.com/kyokomi/emoji/v2"
 	"github.com/microcosm-cc/bluemonday"
-	blackfriday "github.com/russross/blackfriday/v2"
+	"github.com/russross/blackfriday/v2"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
+
 	"moul.io/sgtm/internal/sgtmversion"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
@@ -46,19 +46,12 @@ func (svc *Service) newTemplateData(w http.ResponseWriter, r *http.Request) (*te
 		if err != nil {
 			return nil, fmt.Errorf("parse jwt token: %w", err)
 		}
-		var user sgtmpb.User
-		if err := svc.rodb().
-			Preload("RecentPosts", func(db *gorm.DB) *gorm.DB {
-				return db.
-					Where("kind IN (?)", []sgtmpb.Post_Kind{sgtmpb.Post_TrackKind}).
-					Order("created_at desc").
-					Limit(3)
-			}).
-			First(&user, data.Claims.Session.UserID).
-			Error; err != nil {
+		var user *sgtmpb.User
+		user, err = svc.storage.GetUserRecentPost(data.Claims.Session.UserID)
+		if err != nil {
 			svc.logger.Warn("load user from DB", zap.Error(err))
 		}
-		data.User = &user
+		data.User = user
 		data.UserID = user.ID
 		data.IsAdmin = user.Role == "admin"
 		// w.Header().Set("SGTM-User-ID", fmt.Sprintf("%d", user.ID))

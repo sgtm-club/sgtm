@@ -4,8 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	packr "github.com/gobuffalo/packr/v2"
-	"moul.io/sgtm/pkg/sgtmpb"
+	"github.com/gobuffalo/packr/v2"
 )
 
 func (svc *Service) rssPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
@@ -21,17 +20,8 @@ func (svc *Service) rssPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 		w.Header().Add("Content-Type", "application/xml")
 		// last tracks
 		{
-			if err := svc.rodb().
-				Model(&sgtmpb.Post{}).
-				Preload("Author").
-				Where(sgtmpb.Post{
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Public,
-				}).
-				Order("sort_date desc").
-				Limit(50). // FIXME: pagination
-				Find(&data.RSS.LastTracks).
-				Error; err != nil {
+			data.RSS.LastTracks, err = svc.storage.GetPostList(50)
+			if err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			}
 			for _, track := range data.Home.LastTracks {

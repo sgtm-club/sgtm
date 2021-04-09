@@ -30,6 +30,10 @@ type Storage interface {
 	GetCustomPost(postSlug string) (*sgtmpb.Post, error)
 	GetPostComments(postID int64) ([]*sgtmpb.Post, error)
 	GetUserBySlug(slug string) (*sgtmpb.User, error)
+	GetCalendarHeatMap(authorID int64) ([]int64, error)
+	UpdatePost(post *sgtmpb.Post) error
+	GenericUpdatePost(fields map[string]interface{}) error
+	GetUserRecentPost(userID int64) (*sgtmpb.User, error)
 }
 
 type storage struct {
@@ -324,6 +328,48 @@ func (s *storage) GetUserBySlug(slug string) (*sgtmpb.User, error) {
 		Error
 	if err != nil {
 		return nil, nil
+	}
+	return user, nil
+}
+
+func (s *storage) GetCalendarHeatMap(authorID int64) ([]int64, error) {
+	var timestamps []int64
+	err := s.db.Model(&sgtmpb.Post{}).
+		Select(`sort_date/1000000000 as timestamp`).
+		Where(sgtmpb.Post{
+			AuthorID:   authorID,
+			Kind:       sgtmpb.Post_TrackKind,
+			Visibility: sgtmpb.Visibility_Public,
+		}).
+		Pluck("timestamp", &timestamps).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return timestamps, nil
+}
+
+func (s *storage) UpdatePost(post *sgtmpb.Post) error {
+	return s.db.Omit(clause.Associations).Where("id = ?", post.ID).Save(post).Error
+}
+
+func (s *storage) GenericUpdatePost(fields map[string]interface{}) error {
+	return s.db.Omit(clause.Associations).Model(sgtmpb.Post{}).Updates(fields).Error
+}
+
+func (s *storage) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
+	var user *sgtmpb.User
+	err := s.db.
+		Preload("RecentPosts", func(db *gorm.DB) *gorm.DB {
+			return db.
+				Where("kind IN (?)", []sgtmpb.Post_Kind{sgtmpb.Post_TrackKind}).
+				Order("created_at desc").
+				Limit(3)
+		}).
+		First(&user, userID).
+		Error
+	if err != nil {
+		return nil, err
 	}
 	return user, nil
 }
