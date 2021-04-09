@@ -17,7 +17,7 @@ type Storage interface {
 	GetMe(userID int64) (*sgtmpb.User, error)
 	GetUsersList() ([]*sgtmpb.User, error)
 	GetPostList(limit int) ([]*sgtmpb.Post, error)
-	PatchUser(dbUser *sgtmpb.User) (*sgtmpb.User, error)
+	CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error)
 	GetTrackByCID(cid string) (*sgtmpb.Post, error)
 	GetTrackBySCID(scid uint64) (*sgtmpb.Post, error)
 	GetUploadsByWeek() ([]*entities.UploadsByWeekDay, error)
@@ -27,7 +27,7 @@ type Storage interface {
 	PatchPost(post *sgtmpb.Post) error
 	GetNumberOfPostsByKind() ([]*entities.PostByKind, error)
 	GetTotalDuration() (int64, error)
-	GetCustomPost(postSlug string) (*sgtmpb.Post, error)
+	GetPostBySugID(postSlug string) (*sgtmpb.Post, error)
 	GetPostComments(postID int64) ([]*sgtmpb.Post, error)
 	GetUserBySlug(slug string) (*sgtmpb.User, error)
 	GetCalendarHeatMap(authorID int64) ([]int64, error)
@@ -97,9 +97,7 @@ func (s *storage) GetPostList(limit int) ([]*sgtmpb.Post, error) {
 	return posts, nil
 }
 
-func (s *storage) PatchUser(
-	dbUser *sgtmpb.User,
-) (*sgtmpb.User, error) {
+func (s *storage) CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error) {
 	{
 		err := s.db.Where(&dbUser).First(&dbUser).Error
 		switch {
@@ -280,7 +278,7 @@ func (s *storage) GetTotalDuration() (int64, error) {
 	return totalDuration, nil
 }
 
-func (s *storage) GetCustomPost(postSlug string) (*sgtmpb.Post, error) {
+func (s *storage) GetPostBySugID(postSlug string) (*sgtmpb.Post, error) {
 	query := s.db.
 		Preload("Author").
 		Preload("RelationshipsAsSource").

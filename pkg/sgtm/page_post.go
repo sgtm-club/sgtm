@@ -33,7 +33,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// custom
 		data.PageKind = "post"
 		postSlug := chi.URLParam(r, "post_slug")
-		post, err := svc.storage.GetCustomPost(postSlug)
+		post, err := svc.storage.GetPostBySugID(postSlug)
 		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
@@ -138,7 +138,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 			return
 		}
 		postSlug := chi.URLParam(r, "post_slug")
-		post, err := svc.storage.GetCustomPost(postSlug)
+		post, err := svc.storage.GetPostBySugID(postSlug)
 		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
@@ -207,7 +207,6 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 
 					if err := tx.Model(&post).Association("RelationshipsAsSource").Append(&sgtmpb.Relationship{
 						SourcePostID: post.ID,
-						// todo: this may lead to nil pointer? Moul?
 						TargetUserID: user.ID,
 						Kind:         sgtmpb.Relationship_FeaturingUserKind,
 					}); err != nil {
@@ -265,7 +264,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 		// fetch post from db
 		{
 			postSlug := chi.URLParam(r, "post_slug")
-			post, err := svc.storage.GetCustomPost(postSlug)
+			post, err := svc.storage.GetPostBySugID(postSlug)
 			if err != nil {
 				svc.error404Page(box)(w, r)
 				return
@@ -326,7 +325,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 func (svc *Service) postDownloadPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postSlug := chi.URLParam(r, "post_slug")
-		post, err := svc.storage.GetCustomPost(postSlug)
+		post, err := svc.storage.GetPostBySugID(postSlug)
 		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
