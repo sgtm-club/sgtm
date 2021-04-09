@@ -17,15 +17,7 @@ type Storage interface {
 	GetMe(userID int64) (*sgtmpb.User, error)
 	GetUsersList() ([]*sgtmpb.User, error)
 	GetPostList(limit int) ([]*sgtmpb.Post, error)
-	PatchUser(
-		email string,
-		userID string,
-		avatar string,
-		username string,
-		locale string,
-		discordID string,
-		discriminator string,
-	) (*sgtmpb.User, error)
+	PatchUser(dbUser *sgtmpb.User) (*sgtmpb.User, error)
 	GetTrackByCID(cid string) (*sgtmpb.Post, error)
 	GetTrackBySCID(scid uint64) (*sgtmpb.Post, error)
 	GetUploadsByWeek() ([]*entities.UploadsByWeekDay, error)
@@ -102,28 +94,20 @@ func (s *storage) GetPostList(limit int) ([]*sgtmpb.Post, error) {
 }
 
 func (s *storage) PatchUser(
-	email string,
-	userID string,
-	avatar string,
-	username string,
-	locale string,
-	discordID string,
-	discriminator string,
+	dbUser *sgtmpb.User,
 ) (*sgtmpb.User, error) {
-	var dbUser sgtmpb.User
 	{
-		dbUser.Email = email
 		err := s.db.Where(&dbUser).First(&dbUser).Error
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			// user not found, creating it
-			dbUser = sgtmpb.User{
-				Email:           email,
-				Avatar:          fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", userID, avatar),
-				Slug:            slug.Make(username),
-				Locale:          locale,
-				DiscordID:       discordID,
-				DiscordUsername: fmt.Sprintf("%s#%s", username, discriminator),
+			dbUser = &sgtmpb.User{
+				Email:           dbUser.Email,
+				Avatar:          fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", dbUser.DiscordID, dbUser.Avatar),
+				Slug:            slug.Make(dbUser.Slug),
+				Locale:          dbUser.Locale,
+				DiscordID:       dbUser.DiscordID,
+				DiscordUsername: fmt.Sprintf("%s#%s", dbUser.Slug, dbUser.DiscordUsername),
 				// Firstname
 				// Lastname
 			}
@@ -161,7 +145,7 @@ func (s *storage) PatchUser(
 			return nil, err
 		}
 	}
-	return &dbUser, nil
+	return dbUser, nil
 }
 
 func (s *storage) GetTrackByCID(cid string) (*sgtmpb.Post, error) {
