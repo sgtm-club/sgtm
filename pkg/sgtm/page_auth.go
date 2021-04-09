@@ -122,22 +122,20 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 		svc.logger.Debug("get user settings", zap.Any("user", discordUser))
 	}
 
-	var dbUser *sgtmpb.User
-
-	// todo: Moul help ---   what about the loggers?
-	dbUser, err := svc.storage.PatchUser(
-		discordUser.Email,
-		discordUser.ID,
-		discordUser.Avatar,
-		discordUser.Username,
-		discordUser.Locale,
-		discordUser.ID,
-		discordUser.Discriminator,
-	)
+	dbUser := &sgtmpb.User{
+		Email:           discordUser.Email,
+		DiscordID:       discordUser.ID,
+		DiscordUsername: discordUser.Username,
+		Slug:            discordUser.Username,
+		Locale:          discordUser.Locale,
+		Avatar:          discordUser.Avatar,
+	}
+	dbUser, err := svc.storage.PatchUser(dbUser)
 	if err != nil {
 		svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 		return
 	}
+	svc.logger.Debug("new patch user", zap.Any("event", &dbUser))
 
 	// prepare JWT token
 	var tokenString string
