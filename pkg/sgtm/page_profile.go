@@ -36,7 +36,8 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewProfileKind, TargetUserID: data.Profile.User.ID}
-			if err := svc.rwdb().Create(&viewEvent).Error; err != nil {
+			err := svc.storage.PatchPost(&viewEvent)
+			if err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view profile", zap.Any("event", &viewEvent))
@@ -45,24 +46,9 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 
 		// tracks
 		{
-			query := svc.rodb().
-				Model(&sgtmpb.Post{}).
-				Where(sgtmpb.Post{
-					AuthorID:   data.Profile.User.ID,
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Public,
-				})
-			if err := query.Count(&data.Profile.Stats.Tracks).Error; err != nil {
+			data.Profile.LastTracks, err = svc.storage.GetPostList(100)
+			if err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
-			}
-			if data.Profile.Stats.Tracks > 0 {
-				if err := query.
-					Order("sort_date desc").
-					Limit(100). // FIXME: pagination
-					Find(&data.Profile.LastTracks).
-					Error; err != nil {
-					data.Error = "Cannot fetch last tracks: " + err.Error()
-				}
 			}
 			for _, track := range data.Profile.LastTracks {
 				track.ApplyDefaults()
@@ -71,16 +57,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 
 		// calendar heatmap
 		if data.Profile.Stats.Tracks > 0 {
-			timestamps := []int64{}
-			err := svc.rodb().Model(&sgtmpb.Post{}).
-				Select(`sort_date/1000000000 as timestamp`).
-				Where(sgtmpb.Post{
-					AuthorID:   data.Profile.User.ID,
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Public,
-				}).
-				Pluck("timestamp", &timestamps).
-				Error
+			timestamps, err := svc.storage.GetCalendarHeatMap(data.Profile.User.ID)
 			if err != nil {
 				data.Error = "Cannot fetch post timestamps: " + err.Error()
 			}

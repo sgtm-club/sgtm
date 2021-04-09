@@ -199,7 +199,8 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 			}
 			post := validate()
 			if post != nil {
-				if err := svc.rwdb().Create(&post).Error; err != nil {
+				err = svc.storage.PatchPost(post)
+				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
 				}

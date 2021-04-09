@@ -68,7 +68,8 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			}
 			comment := validate()
 			if comment != nil {
-				if err := svc.rwdb().Create(comment).Error; err != nil {
+				err = svc.storage.PatchPost(comment)
+				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
 				}
@@ -173,7 +174,9 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 				return
 			}
 			svc.logger.Debug("BPM extracted", zap.Float64("bpm", bpm))
-			if err := svc.rwdb().Model(&post).Update("bpm", bpm).Error; err != nil {
+			post.BPM = bpm
+			err = svc.storage.UpdatePost(post)
+			if err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
 			}
@@ -297,7 +300,8 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 			}
 			fields := validate()
 			if fields != nil {
-				if err := svc.rwdb().Model(data.PostEdit.Post).Updates(fields).Error; err != nil {
+				err = svc.storage.GenericUpdatePost(fields)
+				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
 				}
