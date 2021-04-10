@@ -9,7 +9,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"moul.io/sgtm/pkg/entities"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
@@ -20,12 +19,12 @@ type Storage interface {
 	CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error)
 	GetTrackByCID(cid string) (*sgtmpb.Post, error)
 	GetTrackBySCID(scid uint64) (*sgtmpb.Post, error)
-	GetUploadsByWeek() ([]*entities.UploadsByWeekDay, error)
+	GetUploadsByWeek() ([]*sgtmpb.UploadsByWeek, error)
 	GetLastActivities(moulID int64) ([]*sgtmpb.Post, error)
 	GetNumberOfDraftPosts() (int64, error)
 	GetNumberOfUsers() (int64, error)
 	PatchPost(post *sgtmpb.Post) error
-	GetNumberOfPostsByKind() ([]*entities.PostByKind, error)
+	GetNumberOfPostsByKind() ([]*sgtmpb.PostByKind, error)
 	GetTotalDuration() (int64, error)
 	GetPostBySugID(postSlug string) (*sgtmpb.Post, error)
 	GetPostComments(postID int64) ([]*sgtmpb.Post, error)
@@ -176,8 +175,8 @@ func (s *storage) GetTrackBySCID(scid uint64) (*sgtmpb.Post, error) {
 	return post, nil
 }
 
-func (s *storage) GetUploadsByWeek() ([]*entities.UploadsByWeekDay, error) {
-	var upbyw []*entities.UploadsByWeekDay
+func (s *storage) GetUploadsByWeek() ([]*sgtmpb.UploadsByWeek, error) {
+	var upbyw []*sgtmpb.UploadsByWeek
 	err := s.db.Model(&sgtmpb.Post{}).
 		Where(&sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
 		Select(`strftime("%w", sort_date/1000000000, "unixepoch") as weekday , count(*) as quantity`).
@@ -246,8 +245,8 @@ func (s *storage) PatchPost(post *sgtmpb.Post) error {
 	return s.db.Omit(clause.Associations).Create(&post).Error
 }
 
-func (s *storage) GetNumberOfPostsByKind() ([]*entities.PostByKind, error) {
-	var postsByKind []*entities.PostByKind
+func (s *storage) GetNumberOfPostsByKind() ([]*sgtmpb.PostByKind, error) {
+	var postsByKind []*sgtmpb.PostByKind
 	err := s.db.
 		Model(&sgtmpb.Post{}).
 		// Where(sgtmpb.Post{Visibility: sgtmpb.Visibility_Public}).
