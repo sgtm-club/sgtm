@@ -281,3 +281,13 @@ message Session {
   int64 user_id = 1 [(go.field) = {name: "UserID"}];
   string discord_access_token = 2;
 }
+
+message UploadsByWeek {
+  int64 week_day = 1;
+  int64 quantity = 2;
+}
+
+message PostByKind {
+  int64 quantity = 1;
+  Post.Kind kind = 2;
+}
