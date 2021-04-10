@@ -298,7 +298,6 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 					post.Title = r.Form.Get("title")
 				}
 				return post
-
 			}
 			fields := validate()
 			if fields != nil {
