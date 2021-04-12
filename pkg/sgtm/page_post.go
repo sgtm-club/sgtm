@@ -68,7 +68,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			}
 			comment := validate()
 			if comment != nil {
-				err = svc.storage.PatchPost(comment)
+				err = svc.storage.CreatePost(comment)
 				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
@@ -91,7 +91,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewPostKind, TargetPostID: data.Post.Post.ID}
-			if err := svc.storage.PatchPost(&viewEvent); err != nil {
+			if err := svc.storage.CreatePost(&viewEvent); err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view post", zap.Any("event", &viewEvent))

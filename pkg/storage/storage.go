@@ -23,7 +23,7 @@ type Storage interface {
 	GetLastActivities(moulID int64) ([]*sgtmpb.Post, error)
 	GetNumberOfDraftPosts() (int64, error)
 	GetNumberOfUsers() (int64, error)
-	PatchPost(post *sgtmpb.Post) error
+	CreatePost(post *sgtmpb.Post) error
 	GetNumberOfPostsByKind() ([]*sgtmpb.PostByKind, error)
 	GetTotalDuration() (int64, error)
 	GetPostBySugID(postSlug string) (*sgtmpb.Post, error)
@@ -242,7 +242,7 @@ func (s *storage) GetNumberOfUsers() (int64, error) {
 	return count, nil
 }
 
-func (s *storage) PatchPost(post *sgtmpb.Post) error {
+func (s *storage) CreatePost(post *sgtmpb.Post) error {
 	return s.db.Omit(clause.Associations).Create(&post).Error
 }
 
