@@ -175,7 +175,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 			}
 			svc.logger.Debug("BPM extracted", zap.Float64("bpm", bpm))
 			post.BPM = bpm
-			err = svc.storage.GenericUpdatePost(&sgtmpb.Post{}, post.BPM)
+			err = svc.storage.GenericUpdatePost(&post, post.BPM)
 			if err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
