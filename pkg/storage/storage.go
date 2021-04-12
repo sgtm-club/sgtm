@@ -30,8 +30,7 @@ type Storage interface {
 	GetPostComments(postID int64) ([]*sgtmpb.Post, error)
 	GetUserBySlug(slug string) (*sgtmpb.User, error)
 	GetCalendarHeatMap(authorID int64) ([]int64, error)
-	UpdatePost(post *sgtmpb.Post) error
-	GenericUpdatePost(model interface{}, fields interface{}) error
+	UpdatePost(post *sgtmpb.Post, updates interface{}) error
 	GetUserRecentPost(userID int64) (*sgtmpb.User, error)
 	GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, error)
 }
@@ -347,12 +346,8 @@ func (s *storage) GetCalendarHeatMap(authorID int64) ([]int64, error) {
 	return timestamps, nil
 }
 
-func (s *storage) UpdatePost(post *sgtmpb.Post) error {
-	return s.db.Omit(clause.Associations).Where("id = ?", post.ID).Save(post).Error
-}
-
-func (s *storage) GenericUpdatePost(model interface{}, fields interface{}) error {
-	return s.db.Omit(clause.Associations).Model(model).Updates(fields).Error
+func (s *storage) UpdatePost(post *sgtmpb.Post, updates interface{}) error {
+	return s.db.Omit(clause.Associations).Model(post).Updates(updates).Error
 }
 
 func (s *storage) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
