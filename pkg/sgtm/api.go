@@ -30,7 +30,7 @@ func (svc *Service) Me(ctx context.Context, req *sgtmpb.Me_Request) (*sgtmpb.Me_
 		return nil, err
 	}
 
-	user, err := svc.storage.GetMe(claims.Session.UserID)
+	user, err := svc.storage.GetUserByID(claims.Session.UserID)
 	if err != nil {
 		return nil, err
 	}

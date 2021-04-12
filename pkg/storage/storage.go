@@ -13,7 +13,7 @@ import (
 )
 
 type Storage interface {
-	GetMe(userID int64) (*sgtmpb.User, error)
+	GetUserByID(userID int64) (*sgtmpb.User, error)
 	GetUsersList() ([]*sgtmpb.User, error)
 	GetPostList(limit int) ([]*sgtmpb.Post, error)
 	CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error)
@@ -44,7 +44,7 @@ func NewStorage(db *gorm.DB) Storage {
 	return &storage{db: db}
 }
 
-func (s *storage) GetMe(userID int64) (*sgtmpb.User, error) {
+func (s *storage) GetUserByID(userID int64) (*sgtmpb.User, error) {
 	var user *sgtmpb.User
 
 	err := s.db.
