@@ -301,7 +301,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 			}
 			fields := validate()
 			if fields != nil {
-				err = svc.storage.UpdatePost(&sgtmpb.Post{}, fields)
+				err = svc.storage.UpdatePost(data.PostEdit.Post, fields)
 				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
