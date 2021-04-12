@@ -24,7 +24,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewHomeKind}
-			err = svc.storage.PatchPost(&viewEvent)
+			err = svc.storage.CreatePost(&viewEvent)
 			if err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {

@@ -25,7 +25,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewOpenKind}
-			if err := svc.storage.PatchPost(&viewEvent); err != nil {
+			if err := svc.storage.CreatePost(&viewEvent); err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view open", zap.Any("event", &viewEvent))
