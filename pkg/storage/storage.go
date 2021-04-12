@@ -31,8 +31,9 @@ type Storage interface {
 	GetUserBySlug(slug string) (*sgtmpb.User, error)
 	GetCalendarHeatMap(authorID int64) ([]int64, error)
 	UpdatePost(post *sgtmpb.Post) error
-	GenericUpdatePost(fields map[string]interface{}) error
+	GenericUpdatePost(model interface{}, fields interface{}) error
 	GetUserRecentPost(userID int64) (*sgtmpb.User, error)
+	GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, error)
 }
 
 type storage struct {
@@ -350,8 +351,8 @@ func (s *storage) UpdatePost(post *sgtmpb.Post) error {
 	return s.db.Omit(clause.Associations).Where("id = ?", post.ID).Save(post).Error
 }
 
-func (s *storage) GenericUpdatePost(fields map[string]interface{}) error {
-	return s.db.Omit(clause.Associations).Model(sgtmpb.Post{}).Updates(fields).Error
+func (s *storage) GenericUpdatePost(model interface{}, fields interface{}) error {
+	return s.db.Omit(clause.Associations).Model(model).Updates(fields).Error
 }
 
 func (s *storage) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
@@ -369,4 +370,34 @@ func (s *storage) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (s *storage) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, error) {
+	var tracks int64
+	var posts []*sgtmpb.Post
+	query := s.db.
+		Model(&sgtmpb.Post{}).
+		Where(sgtmpb.Post{
+			AuthorID:   userID,
+			Kind:       sgtmpb.Post_TrackKind,
+			Visibility: sgtmpb.Visibility_Public,
+		})
+	err := query.Count(&tracks).Error
+	if err != nil {
+		return nil, err
+	}
+	if tracks > 0 {
+		err := query.
+			Order("sort_date desc").
+			Limit(limit). // FIXME: pagination
+			Find(&posts).
+			Error
+		if err != nil {
+			return nil, err
+		}
+	}
+	for _, track := range posts {
+		track.ApplyDefaults()
+	}
+	return posts, nil
 }
