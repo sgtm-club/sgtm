@@ -26,7 +26,7 @@ type Storage interface {
 	CreatePost(post *sgtmpb.Post) error
 	GetNumberOfPostsByKind() ([]*sgtmpb.PostByKind, error)
 	GetTotalDuration() (int64, error)
-	GetPostBySugID(postSlug string) (*sgtmpb.Post, error)
+	GetPostBySlugOrID(postSlug string) (*sgtmpb.Post, error)
 	GetPostComments(postID int64) ([]*sgtmpb.Post, error)
 	GetUserBySlug(slug string) (*sgtmpb.User, error)
 	GetCalendarHeatMap(authorID int64) ([]int64, error)
@@ -277,7 +277,7 @@ func (s *storage) GetTotalDuration() (int64, error) {
 	return totalDuration, nil
 }
 
-func (s *storage) GetPostBySugID(postSlug string) (*sgtmpb.Post, error) {
+func (s *storage) GetPostBySlugOrID(postSlug string) (*sgtmpb.Post, error) {
 	query := s.db.
 		Preload("Author").
 		Preload("RelationshipsAsSource").
