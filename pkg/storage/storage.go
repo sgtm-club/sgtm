@@ -32,7 +32,7 @@ type Storage interface {
 	GetCalendarHeatMap(authorID int64) ([]int64, error)
 	UpdatePost(post *sgtmpb.Post, updates interface{}) error
 	GetUserRecentPost(userID int64) (*sgtmpb.User, error)
-	GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, error)
+	GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, int64, error)
 }
 
 type storage struct {
@@ -367,7 +367,7 @@ func (s *storage) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
 	return user, nil
 }
 
-func (s *storage) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, error) {
+func (s *storage) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, int64, error) {
 	var tracks int64
 	var posts []*sgtmpb.Post
 	query := s.db.
@@ -379,7 +379,7 @@ func (s *storage) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, 
 		})
 	err := query.Count(&tracks).Error
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	if tracks > 0 {
 		err := query.
@@ -388,11 +388,11 @@ func (s *storage) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, 
 			Find(&posts).
 			Error
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 	}
 	for _, track := range posts {
 		track.ApplyDefaults()
 	}
-	return posts, nil
+	return posts, tracks, nil
 }

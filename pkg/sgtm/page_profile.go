@@ -46,7 +46,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 
 		// tracks
 		{
-			data.Profile.LastTracks, err = svc.storage.GetPostListByUserID(data.Profile.User.ID, 100)
+			_, data.Profile.Stats.Tracks, err = svc.storage.GetPostListByUserID(data.Profile.User.ID, 100)
 			if err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
 			}
