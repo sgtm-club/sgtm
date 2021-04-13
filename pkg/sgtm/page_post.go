@@ -33,7 +33,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// custom
 		data.PageKind = "post"
 		postSlug := chi.URLParam(r, "post_slug")
-		post, err := svc.storage.GetPostBySugID(postSlug)
+		post, err := svc.storage.GetPostBySlugOrID(postSlug)
 		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
@@ -138,7 +138,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 			return
 		}
 		postSlug := chi.URLParam(r, "post_slug")
-		post, err := svc.storage.GetPostBySugID(postSlug)
+		post, err := svc.storage.GetPostBySlugOrID(postSlug)
 		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
@@ -175,7 +175,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 			}
 			svc.logger.Debug("BPM extracted", zap.Float64("bpm", bpm))
 			post.BPM = bpm
-			err = svc.storage.UpdatePost(post, post.BPM)
+			err = svc.storage.UpdatePost(post, &sgtmpb.Post{BPM: post.BPM})
 			if err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
@@ -264,7 +264,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 		// fetch post from db
 		{
 			postSlug := chi.URLParam(r, "post_slug")
-			post, err := svc.storage.GetPostBySugID(postSlug)
+			post, err := svc.storage.GetPostBySlugOrID(postSlug)
 			if err != nil {
 				svc.error404Page(box)(w, r)
 				return
@@ -327,7 +327,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 func (svc *Service) postDownloadPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postSlug := chi.URLParam(r, "post_slug")
-		post, err := svc.storage.GetPostBySugID(postSlug)
+		post, err := svc.storage.GetPostBySlugOrID(postSlug)
 		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
