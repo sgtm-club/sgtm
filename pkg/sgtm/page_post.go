@@ -248,22 +248,22 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 
 		// if POST
 		if r.Method == "POST" {
-			validate := func() *sgtmpb.Post {
+			validate := func() map[string]interface{} {
 				if err := r.ParseForm(); err != nil {
 					data.Error = err.Error()
 					return nil
 				}
 
 				// FIXME: blacklist, etc
-				post := &sgtmpb.Post{
-					Title:  strings.TrimSpace(r.Form.Get("title")),
-					Body:   strings.TrimSpace(r.Form.Get("body")),
-					Lyrics: strings.TrimSpace(r.Form.Get("lyrics")),
-				}
+				fields := map[string]interface{}{}
+				fields["title"] = strings.TrimSpace(r.Form.Get("title"))
+				fields["body"] = strings.TrimSpace(r.Form.Get("body"))
+				fields["lyrics"] = strings.TrimSpace(r.Form.Get("lyrics"))
+
 				if data.PostEdit.Post.Provider == sgtmpb.Provider_IPFS {
-					post.Title = r.Form.Get("title")
+					fields["title"] = r.Form.Get("title")
 				}
-				return post
+				return fields
 			}
 			fields := validate()
 			if fields != nil {
