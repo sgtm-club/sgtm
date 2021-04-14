@@ -3,7 +3,7 @@ package sgtm
 import (
 	"github.com/bwmarrin/snowflake"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
+
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
@@ -30,6 +30,3 @@ func beforeCreate(sfn *snowflake.Node) func(*gorm.DB) {
 		tx.Statement.SetColumn("ID", sfn.Generate().Int64())
 	}
 }
-
-func (svc *Service) rodb() *gorm.DB { return svc._db }
-func (svc *Service) rwdb() *gorm.DB { return svc._db.Omit(clause.Associations) }
