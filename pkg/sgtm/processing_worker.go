@@ -60,12 +60,42 @@ func (svc *Service) processingLoop(i int) error {
 
 	// track migrations
 	{
-		outdated, err := svc.storage.GetOutDatedPosts(len(svc.processingWorker.trackMigrations))
-		if err != nil {
+		var outdated []*sgtmpb.Post
+		if err := svc.rodb().
+			Where(sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
+			Where("processing_error IS NULL OR processing_error == ''").
+			Where("processing_version IS NULL OR processing_version < ?", len(svc.processingWorker.trackMigrations)).
+			Preload("Author").
+			Find(&outdated).
+			Error; err != nil {
 			return fmt.Errorf("failed to fetch tracks that need to be processed: %w", err)
 		}
 
-		err = svc.storage.UpdateProcessingTracks(outdated, svc.processingWorker.trackMigrations)
+		err := svc.rwdb().Transaction(func(tx *gorm.DB) error {
+			for _, entryPtr := range outdated {
+				entry := entryPtr
+				version := 1
+				for _, migration := range svc.processingWorker.trackMigrations {
+					err := migration(entry, tx)
+					if err != nil {
+						entry.ProcessingError = err.Error()
+						break
+					}
+					entry.ProcessingVersion = int64(version)
+					version++
+				}
+				if err := tx.
+					Model(&entry).
+					Updates(map[string]interface{}{
+						"processing_version": entry.ProcessingVersion,
+						"processing_error":   entry.ProcessingError,
+					}).
+					Error; err != nil {
+					return fmt.Errorf("failed to save processing state: %w", err)
+				}
+			}
+			return nil
+		})
 		if err != nil {
 			return fmt.Errorf("failed to run migration: %w", err)
 		}

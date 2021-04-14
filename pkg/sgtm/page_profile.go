@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
-	packr "github.com/gobuffalo/packr/v2"
+	"github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
@@ -46,7 +46,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 
 		// tracks
 		{
-			_, data.Profile.Stats.Tracks, err = svc.storage.GetPostListByUserID(data.Profile.User.ID, 100)
+			data.Profile.LastTracks, data.Profile.Stats.Tracks, err = svc.storage.GetPostListByUserID(data.Profile.User.ID, 100)
 			if err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
 			}
