@@ -61,17 +61,18 @@ func (svc *Service) processingLoop(i int) error {
 	// track migrations
 	{
 		var outdated []*sgtmpb.Post
-		if err := svc.rodb().
+		err := svc.rodb().
 			Where(sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
 			Where("processing_error IS NULL OR processing_error == ''").
 			Where("processing_version IS NULL OR processing_version < ?", len(svc.processingWorker.trackMigrations)).
 			Preload("Author").
 			Find(&outdated).
-			Error; err != nil {
+			Error
+		if err != nil {
 			return fmt.Errorf("failed to fetch tracks that need to be processed: %w", err)
 		}
 
-		err := svc.rwdb().Transaction(func(tx *gorm.DB) error {
+		err = svc.rwdb().Transaction(func(tx *gorm.DB) error {
 			for _, entryPtr := range outdated {
 				entry := entryPtr
 				version := 1
