@@ -5,10 +5,8 @@ import (
 	"strings"
 	"time"
 
-	packr "github.com/gobuffalo/packr/v2"
+	"github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
-
-	"moul.io/sgtm/pkg/sgtmpb"
 )
 
 func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +25,7 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 			return
 		}
 		if r.Method == "POST" {
-			validate := func() *sgtmpb.User {
+			validate := func() map[string]interface{} {
 				if err := r.ParseForm(); err != nil {
 					data.Error = err.Error()
 					return nil
@@ -40,26 +38,26 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 				soundcloud = strings.TrimPrefix(soundcloud, "https://soundcloud.com/")
 				soundcloud = strings.TrimPrefix(soundcloud, "@")
 
-				user := &sgtmpb.User{
-					Firstname:          strings.TrimSpace(r.Form.Get("firstname")),
-					Lastname:           strings.TrimSpace(r.Form.Get("lastname")),
-					Homepage:           strings.TrimSpace(r.Form.Get("homepage")),
-					Bio:                strings.TrimSpace(r.Form.Get("bio")),
-					Headline:           strings.TrimSpace(r.Form.Get("headline")),
-					Inspirations:       strings.TrimSpace(r.Form.Get("inspirations")),
-					Gears:              strings.TrimSpace(r.Form.Get("gears")),
-					Goals:              strings.TrimSpace(r.Form.Get("goals")),
-					Genres:             strings.TrimSpace(r.Form.Get("genres")),
-					OtherLinks:         strings.TrimSpace(r.Form.Get("other_links")),
-					TwitterUsername:    twitter,
-					SoundcloudUsername: soundcloud,
+				fields := map[string]interface{}{
+					"firstname":           strings.TrimSpace(r.Form.Get("firstname")),
+					"lastname":            strings.TrimSpace(r.Form.Get("lastname")),
+					"homepage":            strings.TrimSpace(r.Form.Get("homepage")),
+					"bio":                 strings.TrimSpace(r.Form.Get("bio")),
+					"headline":            strings.TrimSpace(r.Form.Get("headline")),
+					"inspirations":        strings.TrimSpace(r.Form.Get("inspirations")),
+					"gears":               strings.TrimSpace(r.Form.Get("gears")),
+					"goals":               strings.TrimSpace(r.Form.Get("goals")),
+					"genres":              strings.TrimSpace(r.Form.Get("genres")),
+					"other_links":         strings.TrimSpace(r.Form.Get("other_links")),
+					"twitter_username":    twitter,
+					"soundcloud_username": soundcloud,
 				}
 
-				return user
+				return fields
 			}
 			fields := validate()
 			if fields != nil {
-				err := svc.storage.UpdateUser(fields, fields)
+				err := svc.storage.UpdateUser(data.User, fields)
 				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
