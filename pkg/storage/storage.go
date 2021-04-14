@@ -424,7 +424,6 @@ func (s *storage) GetOutDatedPosts(trackMigrations int) ([]*sgtmpb.Post, error) 
 		return nil, err
 	}
 	return outdated, nil
-
 }
 
 func (s *storage) UpdateProcessingTracks(outdated []*sgtmpb.Post, trackMigrations []func(*sgtmpb.Post, *gorm.DB) error) error {
