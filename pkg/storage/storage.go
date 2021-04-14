@@ -3,13 +3,19 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/gosimple/slug"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
 	"moul.io/sgtm/pkg/sgtmpb"
+)
+
+var (
+	featRegex = regexp.MustCompile(`(?im)(feat.|feat|featuring|features)\s*[:= ]\s*@([^\s,]+)\s*`)
 )
 
 type Storage interface {
@@ -31,8 +37,12 @@ type Storage interface {
 	GetUserBySlug(slug string) (*sgtmpb.User, error)
 	GetCalendarHeatMap(authorID int64) ([]int64, error)
 	UpdatePost(post *sgtmpb.Post, updates interface{}) error
+	UpdateUser(user *sgtmpb.User, updates interface{}) error
 	GetUserRecentPost(userID int64) (*sgtmpb.User, error)
 	GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, int64, error)
+	GetOutDatedPosts(trackMigrations int) ([]*sgtmpb.Post, error)
+	UpdateProcessingTracks(outdated []*sgtmpb.Post, trackMigrations []func(*sgtmpb.Post, *gorm.DB) error) error
+	CheckAndUpdatePost(post *sgtmpb.Post) error
 }
 
 type storage struct {
@@ -350,6 +360,10 @@ func (s *storage) UpdatePost(post *sgtmpb.Post, updates interface{}) error {
 	return s.db.Omit(clause.Associations).Model(post).Updates(updates).Error
 }
 
+func (s *storage) UpdateUser(user *sgtmpb.User, updates interface{}) error {
+	return s.db.Omit(clause.Associations).Model(user).Updates(updates).Error
+}
+
 func (s *storage) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
 	var user *sgtmpb.User
 	err := s.db.
@@ -395,4 +409,80 @@ func (s *storage) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, 
 		track.ApplyDefaults()
 	}
 	return posts, tracks, nil
+}
+
+func (s *storage) GetOutDatedPosts(trackMigrations int) ([]*sgtmpb.Post, error) {
+	var outdated []*sgtmpb.Post
+	err := s.db.
+		Where(sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
+		Where("processing_error IS NULL OR processing_error == ''").
+		Where("processing_version IS NULL OR processing_version < ?", trackMigrations).
+		Preload("Author").
+		Find(&outdated).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return outdated, nil
+
+}
+
+func (s *storage) UpdateProcessingTracks(outdated []*sgtmpb.Post, trackMigrations []func(*sgtmpb.Post, *gorm.DB) error) error {
+	return s.db.Omit(clause.Associations).Transaction(func(tx *gorm.DB) error {
+		for _, entryPtr := range outdated {
+			entry := entryPtr
+			version := 1
+			for _, migration := range trackMigrations {
+				err := migration(entry, tx)
+				if err != nil {
+					entry.ProcessingError = err.Error()
+					break
+				}
+				entry.ProcessingVersion = int64(version)
+				version++
+			}
+			if err := tx.
+				Model(&entry).
+				Updates(map[string]interface{}{
+					"processing_version": entry.ProcessingVersion,
+					"processing_error":   entry.ProcessingError,
+				}).
+				Error; err != nil {
+				return fmt.Errorf("failed to save processing state: %w", err)
+			}
+		}
+		return nil
+	})
+}
+
+func (s *storage) CheckAndUpdatePost(post *sgtmpb.Post) error {
+	return s.db.Omit(clause.Associations).Transaction(func(tx *gorm.DB) error {
+		// FIXME: avoid delete/recreate associations if they didn't changed
+
+		body := post.SafeTitle() + "\n\n" + post.SafeDescription()
+
+		if err := tx.Model(&post).Association("RelationshipsAsSource").Clear(); err != nil {
+			return err
+		}
+		if err := tx.Model(&post).Association("RelationshipsAsTarget").Clear(); err != nil {
+			return err
+		}
+
+		for _, match := range featRegex.FindAllStringSubmatch(body, -1) {
+			target := strings.ToLower(strings.TrimSpace(match[len(match)-1]))
+			user, err := s.GetUserBySlug(target)
+			if err != nil {
+				continue
+			}
+
+			if err := tx.Model(&post).Association("RelationshipsAsSource").Append(&sgtmpb.Relationship{
+				SourcePostID: post.ID,
+				TargetUserID: user.ID,
+				Kind:         sgtmpb.Relationship_FeaturingUserKind,
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

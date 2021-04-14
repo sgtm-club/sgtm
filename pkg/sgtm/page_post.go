@@ -3,21 +3,15 @@ package sgtm
 import (
 	"fmt"
 	"net/http"
-	"regexp"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 	"moul.io/godev"
 
 	"moul.io/sgtm/pkg/sgtmpb"
-)
-
-var (
-	featRegex = regexp.MustCompile(`(?im)(feat.|feat|featuring|features)\s*[:= ]\s*@([^\s,]+)\s*`)
 )
 
 func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
@@ -185,37 +179,9 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 		if shouldDetectRelationships {
 			// FIXME: support more relationship kinds
 
-			err := svc.rwdb().Transaction(func(tx *gorm.DB) error {
-				// FIXME: avoid delete/recreate associations if they didn't changed
-
-				body := post.SafeTitle() + "\n\n" + post.SafeDescription()
-
-				if err := tx.Model(&post).Association("RelationshipsAsSource").Clear(); err != nil {
-					return err
-				}
-				if err := tx.Model(&post).Association("RelationshipsAsTarget").Clear(); err != nil {
-					return err
-				}
-
-				for _, match := range featRegex.FindAllStringSubmatch(body, -1) {
-					target := strings.ToLower(strings.TrimSpace(match[len(match)-1]))
-					user, err := svc.storage.GetUserBySlug(target)
-					if err != nil {
-						svc.logger.Debug("cannot find the featured artist in DB", zap.Error(err))
-						continue
-					}
-
-					if err := tx.Model(&post).Association("RelationshipsAsSource").Append(&sgtmpb.Relationship{
-						SourcePostID: post.ID,
-						TargetUserID: user.ID,
-						Kind:         sgtmpb.Relationship_FeaturingUserKind,
-					}); err != nil {
-						return err
-					}
-				}
-				return nil
-			})
+			err := svc.storage.CheckAndUpdatePost(post)
 			if err != nil {
+				svc.logger.Debug("cannot check and update post", zap.Error(err))
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
 			}
