@@ -19,30 +19,35 @@ var (
 )
 
 type Storage interface {
+	// user storage
 	GetUserByID(userID int64) (*sgtmpb.User, error)
 	GetUsersList() ([]*sgtmpb.User, error)
-	GetPostList(limit int) ([]*sgtmpb.Post, error)
 	CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error)
-	GetTrackByCID(cid string) (*sgtmpb.Post, error)
-	GetTrackBySCID(scid uint64) (*sgtmpb.Post, error)
-	GetUploadsByWeek() ([]*sgtmpb.UploadsByWeek, error)
-	GetLastActivities(moulID int64) ([]*sgtmpb.Post, error)
-	GetNumberOfDraftPosts() (int64, error)
-	GetNumberOfUsers() (int64, error)
-	CreatePost(post *sgtmpb.Post) error
-	GetNumberOfPostsByKind() ([]*sgtmpb.PostByKind, error)
-	GetTotalDuration() (int64, error)
-	GetPostBySlugOrID(postSlug string) (*sgtmpb.Post, error)
-	GetPostComments(postID int64) ([]*sgtmpb.Post, error)
 	GetUserBySlug(slug string) (*sgtmpb.User, error)
-	GetCalendarHeatMap(authorID int64) ([]int64, error)
-	UpdatePost(post *sgtmpb.Post, updates interface{}) error
 	UpdateUser(user *sgtmpb.User, updates interface{}) error
 	GetUserRecentPost(userID int64) (*sgtmpb.User, error)
+
+	// post storage
+	GetPostList(limit int) ([]*sgtmpb.Post, error)
+	GetTrackByCID(cid string) (*sgtmpb.Post, error)
+	GetTrackBySCID(scid uint64) (*sgtmpb.Post, error)
+	GetLastActivities(moulID int64) ([]*sgtmpb.Post, error)
+	CreatePost(post *sgtmpb.Post) error
+	GetPostBySlugOrID(postSlug string) (*sgtmpb.Post, error)
+	GetPostComments(postID int64) ([]*sgtmpb.Post, error)
+	UpdatePost(post *sgtmpb.Post, updates interface{}) error
 	GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, int64, error)
-	GetOutDatedPosts(trackMigrations int) ([]*sgtmpb.Post, error)
-	UpdateProcessingTracks(outdated []*sgtmpb.Post, trackMigrations []func(*sgtmpb.Post, *gorm.DB) error) error
 	CheckAndUpdatePost(post *sgtmpb.Post) error
+	UpdateProcessingTracks(outdated []*sgtmpb.Post, trackMigrations []func(*sgtmpb.Post, *gorm.DB) error) error
+	GetOutDatedPosts(trackMigrations int) ([]*sgtmpb.Post, error)
+
+	// counts
+	GetUploadsByWeek() ([]*sgtmpb.UploadsByWeek, error)
+	GetNumberOfDraftPosts() (int64, error)
+	GetNumberOfUsers() (int64, error)
+	GetNumberOfPostsByKind() ([]*sgtmpb.PostByKind, error)
+	GetTotalDuration() (int64, error)
+	GetCalendarHeatMap(authorID int64) ([]int64, error)
 }
 
 type storage struct {
