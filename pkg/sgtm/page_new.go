@@ -62,18 +62,14 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 
 					// check if track already exists
 					{
-						var alreadyExists sgtmpb.Post
-						err := svc.rodb().
-							Model(&sgtmpb.Post{}).
-							Where(sgtmpb.Post{IPFSCID: cid}).
-							First(&alreadyExists).
-							Error
-						if err == nil && alreadyExists.ID != 0 {
-							data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="/post/%d">%s</a>.`, alreadyExists.ID, alreadyExists.SafeTitle())
-							return nil
+						alreadyExists, err := svc.storage.GetTrackByCID(cid)
+						if err == nil {
+							if alreadyExists.ID != 0 {
+								data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="/post/%d">%s</a>.`, alreadyExists.ID, alreadyExists.SafeTitle())
+								return nil
+							}
 						}
 					}
-
 					mimeType := header.Header["Content-Type"][0]
 					fmt.Println("MIME", mimeType)
 					// FIXME: check that mimeType starts with audio/ maybe
@@ -143,18 +139,14 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 
 					// check if track already exists
 					{
-						var alreadyExists sgtmpb.Post
-						err := svc.rodb().
-							Model(&post).
-							Where(sgtmpb.Post{SoundCloudID: post.SoundCloudID}).
-							First(&alreadyExists).
-							Error
-						if err == nil && alreadyExists.ID != 0 {
-							data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="%s">%s</a>.`, alreadyExists.CanonicalURL(), alreadyExists.SafeTitle())
-							return nil
+						alreadyExists, err := svc.storage.GetTrackBySCID(post.SoundCloudID)
+						if err == nil {
+							if alreadyExists.ID != 0 {
+								data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="%s">%s</a>.`, alreadyExists.CanonicalURL(), alreadyExists.SafeTitle())
+								return nil
+							}
 						}
 					}
-
 					post.SoundCloudSecretToken = u.Query().Get("secret_token")
 					params := url.Values{}
 					if post.SoundCloudSecretToken != "" {
@@ -207,7 +199,8 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 			}
 			post := validate()
 			if post != nil {
-				if err := svc.rwdb().Create(&post).Error; err != nil {
+				err = svc.storage.CreatePost(post)
+				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
 				}

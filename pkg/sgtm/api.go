@@ -30,17 +30,11 @@ func (svc *Service) Me(ctx context.Context, req *sgtmpb.Me_Request) (*sgtmpb.Me_
 		return nil, err
 	}
 
-	var user sgtmpb.User
-	err = svc.rodb().
-		Where("id = ?", claims.Session.UserID).
-		First(&user).
-		Error
+	user, err := svc.storage.GetUserByID(claims.Session.UserID)
 	if err != nil {
 		return nil, err
 	}
-	ret := sgtmpb.Me_Response{User: &user}
-
-	return &ret, nil
+	return &sgtmpb.Me_Response{User: user}, nil
 }
 
 func (svc *Service) Ping(context.Context, *sgtmpb.Ping_Request) (*sgtmpb.Ping_Response, error) {
@@ -57,39 +51,18 @@ func (svc *Service) Status(context.Context, *sgtmpb.Status_Request) (*sgtmpb.Sta
 }
 
 func (svc *Service) UserList(context.Context, *sgtmpb.UserList_Request) (*sgtmpb.UserList_Response, error) {
-	ret := &sgtmpb.UserList_Response{}
-	err := svc.rodb().
-		Order("created_at desc").
-		Find(&ret.Users).
-		Error
+	users, err := svc.storage.GetLastUsersList(100)
 	if err != nil {
 		return nil, err
 	}
-
-	for _, user := range ret.Users {
-		user.Filter()
-	}
-	return ret, nil
+	return &sgtmpb.UserList_Response{Users: users}, nil
 }
 
 func (svc *Service) PostList(context.Context, *sgtmpb.PostList_Request) (*sgtmpb.PostList_Response, error) {
-	ret := &sgtmpb.PostList_Response{}
-	err := svc.rodb().
-		Order("sort_date desc").
-		Where(sgtmpb.Post{
-			Visibility: sgtmpb.Visibility_Public,
-		}).
-		Where("kind in (?)", sgtmpb.Post_TrackKind).
-		Limit(100).
-		Find(&ret.Posts).
-		Error
+	posts, err := svc.storage.GetPostList(100)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, post := range ret.Posts {
-		post.Filter()
-	}
-
-	return ret, nil
+	return &sgtmpb.PostList_Response{Posts: posts}, nil
 }

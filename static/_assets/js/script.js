@@ -1,4 +1,4 @@
-if (true || !window.sgtm.dev_mode) {
+if (!window.sgtm.dev_mode) {
   Sentry.init({
     dsn: 'https://e61830c1fa57411b9b2ce72e4edb47cc@o419562.ingest.sentry.io/5371550',
     release: window.sgtm.release.version,
@@ -11,11 +11,11 @@ $('button[type="submit"]').on("click", function() {
     $(this).prop("disabled", true);
   });
 });
-$(function () {
+$(function() {
   $('[data-toggle="tooltip"]').tooltip()
 });
 
-$("img").on("error", function () {
+$("img").on("error", function() {
   $(this).attr("src", "/_assets/img/logo-1x-no-blur.png");
 });
 
@@ -24,35 +24,35 @@ $('body.page-post').ready(function() {
     var widget = SC.Widget(this);
     widget.bind(SC.Widget.Events.PLAY, function(e) {
       //console.log("e", e);
-      amplitude.getInstance().logEvent("player_play", {event: e, iframe: this});
+      amplitude.getInstance().logEvent("player_play", { event: e, iframe: this });
     });
     widget.bind(SC.Widget.Events.PAUSE, function(e) {
       //console.log("e", e);
-      amplitude.getInstance().logEvent("player_pause", {event: e, iframe: this});
+      amplitude.getInstance().logEvent("player_pause", { event: e, iframe: this });
     });
     widget.bind(SC.Widget.Events.FINISH, function(e) {
       //console.log("e", e);
-      amplitude.getInstance().logEvent("player_finish", {event: e, iframe: this});
+      amplitude.getInstance().logEvent("player_finish", { event: e, iframe: this });
     });
     widget.bind(SC.Widget.Events.SEEK, function(e) {
       //console.log("e", e);
-      amplitude.getInstance().logEvent("player_seek", {event: e, iframe: this});
+      amplitude.getInstance().logEvent("player_seek", { event: e, iframe: this });
     });
     widget.bind(SC.Widget.Events.CLICK_DOWNLOAD, function(e) {
       //console.log("e", e);
-      amplitude.getInstance().logEvent("player_click_download", {event: e, iframe: this});
+      amplitude.getInstance().logEvent("player_click_download", { event: e, iframe: this });
     });
     widget.bind(SC.Widget.Events.CLICK_BUY, function(e) {
       //console.log("e", e);
-      amplitude.getInstance().logEvent("player_click_buy", {event: e, iframe: this});
+      amplitude.getInstance().logEvent("player_click_buy", { event: e, iframe: this });
     });
     widget.bind(SC.Widget.Events.ERROR, function(e) {
       //console.log("e", e);
-      amplitude.getInstance().logEvent("player_error", {event: e, iframe: this});
+      amplitude.getInstance().logEvent("player_error", { event: e, iframe: this });
     });
     widget.bind(SC.Widget.Events.OPEN_SHARE_PANEL, function(e) {
       //console.log("e", e);
-      amplitude.getInstance().logEvent("player_open_share_panel", {event: e, iframe: this});
+      amplitude.getInstance().logEvent("player_open_share_panel", { event: e, iframe: this });
     });
   });
 });

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	packr "github.com/gobuffalo/packr/v2"
+	"github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
 )
 
@@ -52,11 +52,13 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 					"twitter_username":    twitter,
 					"soundcloud_username": soundcloud,
 				}
+
 				return fields
 			}
 			fields := validate()
 			if fields != nil {
-				if err := svc.rwdb().Model(data.User).Updates(fields).Error; err != nil {
+				err := svc.storage.UpdateUser(data.User, fields)
+				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
 				}

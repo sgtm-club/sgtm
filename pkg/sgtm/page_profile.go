@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
-	packr "github.com/gobuffalo/packr/v2"
+	"github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
@@ -25,21 +25,23 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 		// load profile
 		{
 			userSlug := chi.URLParam(r, "user_slug")
-			var user sgtmpb.User
-			if err := svc.rodb().
-				Where(sgtmpb.User{Slug: userSlug}).
-				First(&user).
-				Error; err != nil {
+			user, err := svc.storage.GetUserBySlug(userSlug)
+			if err != nil {
 				svc.error404Page(box)(w, r)
 				return
 			}
-			data.Profile.User = &user
+			data.Profile.User = user
 		}
 
 		// tracking
 		{
-			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewProfileKind, TargetUserID: data.Profile.User.ID}
-			if err := svc.rwdb().Create(&viewEvent).Error; err != nil {
+			viewEvent := sgtmpb.Post{
+				AuthorID:     data.UserID,
+				Kind:         sgtmpb.Post_ViewProfileKind,
+				TargetUserID: data.Profile.User.ID,
+			}
+			err := svc.storage.CreatePost(&viewEvent)
+			if err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view profile", zap.Any("event", &viewEvent))
@@ -48,42 +50,15 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 
 		// tracks
 		{
-			query := svc.rodb().
-				Model(&sgtmpb.Post{}).
-				Where(sgtmpb.Post{
-					AuthorID:   data.Profile.User.ID,
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Public,
-				})
-			if err := query.Count(&data.Profile.Stats.Tracks).Error; err != nil {
+			data.Profile.LastTracks, data.Profile.Stats.Tracks, err = svc.storage.GetPostListByUserID(data.Profile.User.ID, 100)
+			if err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
-			}
-			if data.Profile.Stats.Tracks > 0 {
-				if err := query.
-					Order("sort_date desc").
-					Limit(100). // FIXME: pagination
-					Find(&data.Profile.LastTracks).
-					Error; err != nil {
-					data.Error = "Cannot fetch last tracks: " + err.Error()
-				}
-			}
-			for _, track := range data.Profile.LastTracks {
-				track.ApplyDefaults()
 			}
 		}
 
 		// calendar heatmap
 		if data.Profile.Stats.Tracks > 0 {
-			timestamps := []int64{}
-			err := svc.rodb().Model(&sgtmpb.Post{}).
-				Select(`sort_date/1000000000 as timestamp`).
-				Where(sgtmpb.Post{
-					AuthorID:   data.Profile.User.ID,
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Public,
-				}).
-				Pluck("timestamp", &timestamps).
-				Error
+			timestamps, err := svc.storage.GetCalendarHeatMap(data.Profile.User.ID)
 			if err != nil {
 				data.Error = "Cannot fetch post timestamps: " + err.Error()
 			}

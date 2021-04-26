@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	packr "github.com/gobuffalo/packr/v2"
+	"github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
@@ -24,7 +24,8 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewHomeKind}
-			if err := svc.rwdb().Create(&viewEvent).Error; err != nil {
+			err = svc.storage.CreatePost(&viewEvent)
+			if err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view home", zap.Any("event", &viewEvent))
@@ -37,17 +38,8 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 			if data.UserID == 0 {
 				limit = 10
 			}
-			if err := svc.rodb().
-				Model(&sgtmpb.Post{}).
-				Preload("Author").
-				Where(sgtmpb.Post{
-					Kind:       sgtmpb.Post_TrackKind,
-					Visibility: sgtmpb.Visibility_Public,
-				}).
-				Order("sort_date desc").
-				Limit(limit). // FIXME: pagination
-				Find(&data.Home.LastTracks).
-				Error; err != nil {
+			data.Home.LastTracks, err = svc.storage.GetPostList(limit)
+			if err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
 			}
 			for _, track := range data.Home.LastTracks {
@@ -57,16 +49,13 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// last users
 		{
-			if err := svc.rodb().
-				Model(&sgtmpb.User{}).
-				Order("created_at desc").
-				Limit(10).
-				Find(&data.Home.LastUsers).
-				Error; err != nil {
+			if data.Home.LastUsers, err = svc.storage.GetLastUsersList(10); err != nil {
 				data.Error = "Cannot fetch last users: " + err.Error() // FIXME: use slice instead of string
 			}
-			for _, user := range data.Home.LastUsers {
-				user.ApplyDefaults()
+			if data.Home.LastUsers != nil {
+				for _, user := range data.Home.LastUsers {
+					user.ApplyDefaults()
+				}
 			}
 		}
 		// end of custom
