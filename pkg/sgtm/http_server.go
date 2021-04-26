@@ -302,7 +302,7 @@ func (svc *Service) generateSitemap() *stm.Sitemap {
 	})
 	// users
 	{
-		users, err := svc.storage.GetUsersList()
+		users, err := svc.storage.GetLastUsersList(1000)
 		if err != nil {
 			svc.logger.Error("query users for sitemap", zap.Error(err))
 		} else {

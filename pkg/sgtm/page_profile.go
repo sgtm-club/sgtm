@@ -35,7 +35,11 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 
 		// tracking
 		{
-			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewProfileKind, TargetUserID: data.Profile.User.ID}
+			viewEvent := sgtmpb.Post{
+				AuthorID:     data.UserID,
+				Kind:         sgtmpb.Post_ViewProfileKind,
+				TargetUserID: data.Profile.User.ID,
+			}
 			err := svc.storage.CreatePost(&viewEvent)
 			if err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
@@ -59,8 +63,8 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 				data.Error = "Cannot fetch post timestamps: " + err.Error()
 			}
 			data.Profile.CalendarHeatmap = map[int64]int64{}
-				for _, timestamp := range timestamps {
-					data.Profile.CalendarHeatmap[timestamp] = 1
+			for _, timestamp := range timestamps {
+				data.Profile.CalendarHeatmap[timestamp] = 1
 			}
 		}
 

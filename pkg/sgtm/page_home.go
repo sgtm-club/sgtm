@@ -49,7 +49,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// last users
 		{
-			if data.Home.LastUsers, err = svc.storage.GetUsersList(); err != nil {
+			if data.Home.LastUsers, err = svc.storage.GetLastUsersList(10); err != nil {
 				data.Error = "Cannot fetch last users: " + err.Error() // FIXME: use slice instead of string
 			}
 			if data.Home.LastUsers != nil {

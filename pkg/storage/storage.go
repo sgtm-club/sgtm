@@ -21,7 +21,7 @@ var (
 type Storage interface {
 	// user storage
 	GetUserByID(userID int64) (*sgtmpb.User, error)
-	GetUsersList() ([]*sgtmpb.User, error)
+	GetLastUsersList(limit int) ([]*sgtmpb.User, error)
 	CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error)
 	GetUserBySlug(slug string) (*sgtmpb.User, error)
 	UpdateUser(user *sgtmpb.User, updates interface{}) error
@@ -57,7 +57,7 @@ func NewStorage(db *gorm.DB) Storage {
 }
 
 func (s *storage) GetUserByID(userID int64) (*sgtmpb.User, error) {
-	var user *sgtmpb.User
+	var user sgtmpb.User
 
 	err := s.db.
 		Where("id = ?", userID).
@@ -67,13 +67,14 @@ func (s *storage) GetUserByID(userID int64) (*sgtmpb.User, error) {
 		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
-func (s *storage) GetUsersList() ([]*sgtmpb.User, error) {
+func (s *storage) GetLastUsersList(limit int) ([]*sgtmpb.User, error) {
 	var users []*sgtmpb.User
 	err := s.db.
 		Order("created_at desc").
+		Limit(limit).
 		Find(&users).
 		Error
 	if err != nil {
@@ -90,11 +91,13 @@ func (s *storage) GetPostList(limit int) ([]*sgtmpb.Post, error) {
 	var posts []*sgtmpb.Post
 
 	err := s.db.
-		Order("sort_date desc").
+		Model(&sgtmpb.Post{}).
+		Preload("Author").
 		Where(sgtmpb.Post{
 			Visibility: sgtmpb.Visibility_Public,
+			Kind:       sgtmpb.Post_TrackKind,
 		}).
-		Where("kind in (?)", sgtmpb.Post_TrackKind).
+		Order("sort_date desc").
 		Limit(limit).
 		Find(&posts).
 		Error
@@ -110,60 +113,58 @@ func (s *storage) GetPostList(limit int) ([]*sgtmpb.Post, error) {
 }
 
 func (s *storage) CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error) {
-	{
-		err := s.db.Where(&dbUser).First(&dbUser).Error
-		switch {
-		case errors.Is(err, gorm.ErrRecordNotFound):
-			// user not found, creating it
-			dbUser = &sgtmpb.User{
-				Email:           dbUser.Email,
-				Avatar:          fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", dbUser.DiscordID, dbUser.Avatar),
-				Slug:            slug.Make(dbUser.Slug),
-				Locale:          dbUser.Locale,
-				DiscordID:       dbUser.DiscordID,
-				DiscordUsername: fmt.Sprintf("%s#%s", dbUser.Slug, dbUser.DiscordUsername),
-				// Firstname
-				// Lastname
-			}
-			// FIXME: check if slug already exists, if yes, append something to the slug
-			err = s.db.Omit(clause.Associations).Transaction(func(tx *gorm.DB) error {
-				if err := tx.Create(&dbUser).Error; err != nil {
-					return err
-				}
-
-				registerEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_RegisterKind}
-				if err := tx.Create(&registerEvent).Error; err != nil {
-					return err
-				}
-				linkDiscordEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LinkDiscordAccountKind}
-				if err := tx.Create(&linkDiscordEvent).Error; err != nil {
-					return err
-				}
-				return nil
-			})
-			if err != nil {
-				return nil, err
+	err := s.db.Where(&dbUser).First(&dbUser).Error
+	switch {
+	case errors.Is(err, gorm.ErrRecordNotFound):
+		// user not found, creating it
+		dbUser = &sgtmpb.User{
+			Email:           dbUser.Email,
+			Avatar:          fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.png", dbUser.DiscordID, dbUser.Avatar),
+			Slug:            slug.Make(dbUser.Slug),
+			Locale:          dbUser.Locale,
+			DiscordID:       dbUser.DiscordID,
+			DiscordUsername: fmt.Sprintf("%s#%s", dbUser.Slug, dbUser.DiscordUsername),
+			// Firstname
+			// Lastname
+		}
+		// FIXME: check if slug already exists, if yes, append something to the slug
+		err = s.db.Omit(clause.Associations).Transaction(func(tx *gorm.DB) error {
+			if err := tx.Create(&dbUser).Error; err != nil {
+				return err
 			}
 
-		case err == nil:
-			// user exists
-			// FIXME: update user in DB if needed
-
-			loginEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LoginKind}
-			if err := s.db.Omit(clause.Associations).Create(&loginEvent).Error; err != nil {
-				return nil, err
+			registerEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_RegisterKind}
+			if err := tx.Create(&registerEvent).Error; err != nil {
+				return err
 			}
-
-		default:
-			// unexpected error
+			linkDiscordEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LinkDiscordAccountKind}
+			if err := tx.Create(&linkDiscordEvent).Error; err != nil {
+				return err
+			}
+			return nil
+		})
+		if err != nil {
 			return nil, err
 		}
+
+	case err == nil:
+		// user exists
+		// FIXME: update user in DB if needed
+
+		loginEvent := sgtmpb.Post{AuthorID: dbUser.ID, Kind: sgtmpb.Post_LoginKind}
+		if err := s.db.Omit(clause.Associations).Create(&loginEvent).Error; err != nil {
+			return nil, err
+		}
+
+	default:
+		// unexpected error
+		return nil, err
 	}
 	return dbUser, nil
 }
 
 func (s *storage) GetTrackByCID(cid string) (*sgtmpb.Post, error) {
-	var post *sgtmpb.Post
+	var post sgtmpb.Post
 	err := s.db.
 		Model(&sgtmpb.Post{}).
 		Where(sgtmpb.Post{IPFSCID: cid}).
@@ -172,11 +173,11 @@ func (s *storage) GetTrackByCID(cid string) (*sgtmpb.Post, error) {
 	if err != nil {
 		return nil, err
 	}
-	return post, nil
+	return &post, nil
 }
 
 func (s *storage) GetTrackBySCID(scid uint64) (*sgtmpb.Post, error) {
-	var post *sgtmpb.Post
+	var post sgtmpb.Post
 	err := s.db.
 		Model(&sgtmpb.Post{}).
 		Where(sgtmpb.Post{SoundCloudID: scid}).
@@ -185,15 +186,17 @@ func (s *storage) GetTrackBySCID(scid uint64) (*sgtmpb.Post, error) {
 	if err != nil {
 		return nil, err
 	}
-	return post, nil
+	return &post, nil
 }
 
 func (s *storage) GetUploadsByWeek() ([]*sgtmpb.UploadsByWeek, error) {
 	var upbyw []*sgtmpb.UploadsByWeek
 	err := s.db.Model(&sgtmpb.Post{}).
+		Model(&sgtmpb.Post{}).
 		Where(&sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
 		Select(`strftime("%w", sort_date/1000000000, "unixepoch") as weekday , count(*) as quantity`).
-		Group("weekday").Find(&upbyw).
+		Group("weekday").
+		Find(&upbyw).
 		Error
 	if err != nil {
 		return nil, err
@@ -305,12 +308,12 @@ func (s *storage) GetPostBySlugOrID(postSlug string) (*sgtmpb.Post, error) {
 	} else {
 		query = query.Where(sgtmpb.Post{Slug: postSlug, Kind: sgtmpb.Post_TrackKind})
 	}
-	var post *sgtmpb.Post
+	var post sgtmpb.Post
 	err = query.First(&post).Error
 	if err != nil {
 		return nil, err
 	}
-	return post, nil
+	return &post, nil
 }
 
 func (s *storage) GetPostComments(postID int64) ([]*sgtmpb.Post, error) {
@@ -331,7 +334,7 @@ func (s *storage) GetPostComments(postID int64) ([]*sgtmpb.Post, error) {
 }
 
 func (s *storage) GetUserBySlug(slug string) (*sgtmpb.User, error) {
-	var user *sgtmpb.User
+	var user sgtmpb.User
 	err := s.db.
 		Where("LOWER(slug) = ?", slug).
 		First(&user).
@@ -339,7 +342,7 @@ func (s *storage) GetUserBySlug(slug string) (*sgtmpb.User, error) {
 	if err != nil {
 		return nil, nil
 	}
-	return user, nil
+	return &user, nil
 }
 
 func (s *storage) GetCalendarHeatMap(authorID int64) ([]int64, error) {
@@ -368,7 +371,7 @@ func (s *storage) UpdateUser(user *sgtmpb.User, updates interface{}) error {
 }
 
 func (s *storage) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
-	var user *sgtmpb.User
+	var user sgtmpb.User
 	err := s.db.
 		Preload("RecentPosts", func(db *gorm.DB) *gorm.DB {
 			return db.
@@ -381,7 +384,7 @@ func (s *storage) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }
 
 func (s *storage) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, int64, error) {

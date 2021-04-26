@@ -283,7 +283,7 @@ message Session {
 }
 
 message UploadsByWeek {
-  int64 week_day = 1;
+  int64 weekday = 1;
   int64 quantity = 2;
 }
 

@@ -51,7 +51,7 @@ func (svc *Service) Status(context.Context, *sgtmpb.Status_Request) (*sgtmpb.Sta
 }
 
 func (svc *Service) UserList(context.Context, *sgtmpb.UserList_Request) (*sgtmpb.UserList_Response, error) {
-	users, err := svc.storage.GetUsersList()
+	users, err := svc.storage.GetLastUsersList(100)
 	if err != nil {
 		return nil, err
 	}
