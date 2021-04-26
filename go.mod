@@ -4,19 +4,15 @@ go 1.14
 
 require (
 	github.com/Bearer/bearer-go v1.2.1
-	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible // indirect
-	github.com/Joker/jade v1.0.1-0.20190614124447-d475f43051e7 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/alta/protopatch v0.3.4
 	github.com/bwmarrin/discordgo v0.23.2
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/cespare/hutil v0.1.0
-	github.com/chris-ramon/douceur v0.2.0 // indirect
 	github.com/clbanning/mxj v1.8.4 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.9.0 // indirect
-	github.com/flosch/pongo2 v0.0.0-20190707114632-bbf5a6c351f4 // indirect
 	github.com/getsentry/sentry-go v0.10.0
 	github.com/githubnemo/CompileDaemon v1.2.1
 	github.com/go-chi/chi v4.1.2+incompatible
@@ -35,11 +31,10 @@ require (
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2
 	github.com/imdario/mergo v0.3.12 // indirect
-	github.com/iris-contrib/i18n v0.0.0-20171121225848-987a633949d0 // indirect
+	github.com/jinzhu/now v1.1.2 // indirect
 	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/kyokomi/emoji/v2 v2.2.8
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
-	github.com/mediocregopher/mediocre-go-lib v0.0.0-20181029021733-cb65787f37ed // indirect
 	github.com/microcosm-cc/bluemonday v1.0.9
 	github.com/mitchellh/copystructure v1.1.2 // indirect
 	github.com/oklog/run v1.1.1-0.20200508094559-c7096881717e
@@ -53,7 +48,6 @@ require (
 	github.com/yanatan16/golang-soundcloud v0.0.0-20161013200625-a182dd459b66
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
-	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
 	golang.org/x/net v0.0.0-20210423184538-5f58ad60dda6 // indirect
 	golang.org/x/oauth2 v0.0.0-20210413134643-5e61552d6c78
 	golang.org/x/sys v0.0.0-20210423185535-09eb48e85fd7 // indirect
@@ -62,16 +56,15 @@ require (
 	google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b
 	google.golang.org/grpc v1.37.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
-	google.golang.org/grpc/examples v0.0.0-20200626030347-424195440776 // indirect
 	google.golang.org/protobuf v1.26.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
-	gorm.io/driver/sqlite v1.1.4
-	gorm.io/gorm v1.21.8
+	gorm.io/driver/sqlite v1.1.3
+	gorm.io/gorm v1.20.6
 	moul.io/banner v1.0.1
 	moul.io/godev v1.7.0
 	moul.io/srand v1.6.1
 	moul.io/zapconfig v1.3.0
-	moul.io/zapgorm2 v1.0.3
+	moul.io/zapgorm2 v1.0.1
 	ultre.me/calcbiz v1.0.0
 )
