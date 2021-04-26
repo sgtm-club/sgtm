@@ -1460,6 +1460,116 @@ func (x *Session) GetDiscordAccessToken() string {
 	return ""
 }
 
+type UploadsByWeek struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Weekday  int64 `protobuf:"varint,1,opt,name=weekday,proto3" json:"weekday,omitempty"`
+	Quantity int64 `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
+}
+
+func (x *UploadsByWeek) Reset() {
+	*x = UploadsByWeek{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sgtm_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UploadsByWeek) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadsByWeek) ProtoMessage() {}
+
+func (x *UploadsByWeek) ProtoReflect() protoreflect.Message {
+	mi := &file_sgtm_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadsByWeek.ProtoReflect.Descriptor instead.
+func (*UploadsByWeek) Descriptor() ([]byte, []int) {
+	return file_sgtm_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *UploadsByWeek) GetWeekday() int64 {
+	if x != nil {
+		return x.Weekday
+	}
+	return 0
+}
+
+func (x *UploadsByWeek) GetQuantity() int64 {
+	if x != nil {
+		return x.Quantity
+	}
+	return 0
+}
+
+type PostByKind struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Quantity int64     `protobuf:"varint,1,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Kind     Post_Kind `protobuf:"varint,2,opt,name=kind,proto3,enum=sgtm.Post_Kind" json:"kind,omitempty"`
+}
+
+func (x *PostByKind) Reset() {
+	*x = PostByKind{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sgtm_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PostByKind) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PostByKind) ProtoMessage() {}
+
+func (x *PostByKind) ProtoReflect() protoreflect.Message {
+	mi := &file_sgtm_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PostByKind.ProtoReflect.Descriptor instead.
+func (*PostByKind) Descriptor() ([]byte, []int) {
+	return file_sgtm_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *PostByKind) GetQuantity() int64 {
+	if x != nil {
+		return x.Quantity
+	}
+	return 0
+}
+
+func (x *PostByKind) GetKind() Post_Kind {
+	if x != nil {
+		return x.Kind
+	}
+	return Post_UnknownKind
+}
+
 type Ping_Request struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1469,7 +1579,7 @@ type Ping_Request struct {
 func (x *Ping_Request) Reset() {
 	*x = Ping_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[11]
+		mi := &file_sgtm_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1482,7 +1592,7 @@ func (x *Ping_Request) String() string {
 func (*Ping_Request) ProtoMessage() {}
 
 func (x *Ping_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[11]
+	mi := &file_sgtm_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1507,7 +1617,7 @@ type Ping_Response struct {
 func (x *Ping_Response) Reset() {
 	*x = Ping_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[12]
+		mi := &file_sgtm_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1520,7 +1630,7 @@ func (x *Ping_Response) String() string {
 func (*Ping_Response) ProtoMessage() {}
 
 func (x *Ping_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[12]
+	mi := &file_sgtm_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1545,7 +1655,7 @@ type Status_Request struct {
 func (x *Status_Request) Reset() {
 	*x = Status_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[13]
+		mi := &file_sgtm_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1558,7 +1668,7 @@ func (x *Status_Request) String() string {
 func (*Status_Request) ProtoMessage() {}
 
 func (x *Status_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[13]
+	mi := &file_sgtm_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1587,7 +1697,7 @@ type Status_Response struct {
 func (x *Status_Response) Reset() {
 	*x = Status_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[14]
+		mi := &file_sgtm_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1600,7 +1710,7 @@ func (x *Status_Response) String() string {
 func (*Status_Response) ProtoMessage() {}
 
 func (x *Status_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[14]
+	mi := &file_sgtm_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1651,7 +1761,7 @@ type Register_Request struct {
 func (x *Register_Request) Reset() {
 	*x = Register_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[15]
+		mi := &file_sgtm_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1664,7 +1774,7 @@ func (x *Register_Request) String() string {
 func (*Register_Request) ProtoMessage() {}
 
 func (x *Register_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[15]
+	mi := &file_sgtm_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1719,7 +1829,7 @@ type Register_Response struct {
 func (x *Register_Response) Reset() {
 	*x = Register_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[16]
+		mi := &file_sgtm_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1732,7 +1842,7 @@ func (x *Register_Response) String() string {
 func (*Register_Response) ProtoMessage() {}
 
 func (x *Register_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[16]
+	mi := &file_sgtm_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1764,7 +1874,7 @@ type UserList_Request struct {
 func (x *UserList_Request) Reset() {
 	*x = UserList_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[17]
+		mi := &file_sgtm_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1777,7 +1887,7 @@ func (x *UserList_Request) String() string {
 func (*UserList_Request) ProtoMessage() {}
 
 func (x *UserList_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[17]
+	mi := &file_sgtm_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1804,7 +1914,7 @@ type UserList_Response struct {
 func (x *UserList_Response) Reset() {
 	*x = UserList_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[18]
+		mi := &file_sgtm_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1817,7 +1927,7 @@ func (x *UserList_Response) String() string {
 func (*UserList_Response) ProtoMessage() {}
 
 func (x *UserList_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[18]
+	mi := &file_sgtm_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1849,7 +1959,7 @@ type PostList_Request struct {
 func (x *PostList_Request) Reset() {
 	*x = PostList_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[19]
+		mi := &file_sgtm_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1862,7 +1972,7 @@ func (x *PostList_Request) String() string {
 func (*PostList_Request) ProtoMessage() {}
 
 func (x *PostList_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[19]
+	mi := &file_sgtm_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1889,7 +1999,7 @@ type PostList_Response struct {
 func (x *PostList_Response) Reset() {
 	*x = PostList_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[20]
+		mi := &file_sgtm_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1902,7 +2012,7 @@ func (x *PostList_Response) String() string {
 func (*PostList_Response) ProtoMessage() {}
 
 func (x *PostList_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[20]
+	mi := &file_sgtm_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1936,7 +2046,7 @@ type PostSync_Request struct {
 func (x *PostSync_Request) Reset() {
 	*x = PostSync_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[21]
+		mi := &file_sgtm_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1949,7 +2059,7 @@ func (x *PostSync_Request) String() string {
 func (*PostSync_Request) ProtoMessage() {}
 
 func (x *PostSync_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[21]
+	mi := &file_sgtm_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1981,7 +2091,7 @@ type PostSync_Response struct {
 func (x *PostSync_Response) Reset() {
 	*x = PostSync_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[22]
+		mi := &file_sgtm_proto_msgTypes[24]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1994,7 +2104,7 @@ func (x *PostSync_Response) String() string {
 func (*PostSync_Response) ProtoMessage() {}
 
 func (x *PostSync_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[22]
+	mi := &file_sgtm_proto_msgTypes[24]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2019,7 +2129,7 @@ type Me_Request struct {
 func (x *Me_Request) Reset() {
 	*x = Me_Request{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[23]
+		mi := &file_sgtm_proto_msgTypes[25]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2032,7 +2142,7 @@ func (x *Me_Request) String() string {
 func (*Me_Request) ProtoMessage() {}
 
 func (x *Me_Request) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[23]
+	mi := &file_sgtm_proto_msgTypes[25]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2059,7 +2169,7 @@ type Me_Response struct {
 func (x *Me_Response) Reset() {
 	*x = Me_Response{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sgtm_proto_msgTypes[24]
+		mi := &file_sgtm_proto_msgTypes[26]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2072,7 +2182,7 @@ func (x *Me_Response) String() string {
 func (*Me_Response) ProtoMessage() {}
 
 func (x *Me_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_sgtm_proto_msgTypes[24]
+	mi := &file_sgtm_proto_msgTypes[26]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2448,41 +2558,51 @@ var file_sgtm_proto_rawDesc = []byte{
 	0x72, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x14, 0x64, 0x69, 0x73, 0x63, 0x6f, 0x72, 0x64, 0x5f, 0x61,
 	0x63, 0x63, 0x65, 0x73, 0x73, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x12, 0x64, 0x69, 0x73, 0x63, 0x6f, 0x72, 0x64, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73,
-	0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x2a, 0x3a, 0x0a, 0x0a, 0x56, 0x69, 0x73, 0x69, 0x62, 0x69, 0x6c,
-	0x69, 0x74, 0x79, 0x12, 0x15, 0x0a, 0x11, 0x55, 0x6e, 0x6b, 0x6e, 0x6f, 0x77, 0x6e, 0x56, 0x69,
-	0x73, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x10, 0x00, 0x12, 0x0a, 0x0a, 0x06, 0x50, 0x75,
-	0x62, 0x6c, 0x69, 0x63, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x44, 0x72, 0x61, 0x66, 0x74, 0x10,
-	0x02, 0x2a, 0x39, 0x0a, 0x08, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x12, 0x13, 0x0a,
-	0x0f, 0x55, 0x6e, 0x6b, 0x6e, 0x6f, 0x77, 0x6e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
-	0x10, 0x00, 0x12, 0x0e, 0x0a, 0x0a, 0x53, 0x6f, 0x75, 0x6e, 0x64, 0x43, 0x6c, 0x6f, 0x75, 0x64,
-	0x10, 0x01, 0x12, 0x08, 0x0a, 0x04, 0x49, 0x50, 0x46, 0x53, 0x10, 0x02, 0x32, 0x8b, 0x03, 0x0a,
-	0x06, 0x57, 0x65, 0x62, 0x41, 0x50, 0x49, 0x12, 0x55, 0x0a, 0x08, 0x55, 0x73, 0x65, 0x72, 0x4c,
-	0x69, 0x73, 0x74, 0x12, 0x16, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x4c,
-	0x69, 0x73, 0x74, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e, 0x73, 0x67,
-	0x74, 0x6d, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x2e, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x18, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x12, 0x12, 0x10, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x55, 0x73, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x55,
-	0x0a, 0x08, 0x50, 0x6f, 0x73, 0x74, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x16, 0x2e, 0x73, 0x67, 0x74,
-	0x6d, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x4c, 0x69, 0x73, 0x74, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x17, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x4c, 0x69,
-	0x73, 0x74, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x18, 0x82, 0xd3, 0xe4,
-	0x93, 0x02, 0x12, 0x12, 0x10, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x50, 0x6f, 0x73,
-	0x74, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x3d, 0x0a, 0x02, 0x4d, 0x65, 0x12, 0x10, 0x2e, 0x73, 0x67,
-	0x74, 0x6d, 0x2e, 0x4d, 0x65, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x11, 0x2e,
-	0x73, 0x67, 0x74, 0x6d, 0x2e, 0x4d, 0x65, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x12, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0c, 0x12, 0x0a, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76,
-	0x31, 0x2f, 0x4d, 0x65, 0x12, 0x45, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x12, 0x12, 0x2e, 0x73,
-	0x67, 0x74, 0x6d, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x13, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x2e, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x14, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0e, 0x12, 0x0c, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x50, 0x69, 0x6e, 0x67, 0x12, 0x4d, 0x0a, 0x06, 0x53,
-	0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x14, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x53, 0x74, 0x61,
-	0x74, 0x75, 0x73, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x73, 0x67,
-	0x74, 0x6d, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x16, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x10, 0x12, 0x0e, 0x2f, 0x61, 0x70, 0x69,
-	0x2f, 0x76, 0x31, 0x2f, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x19, 0x5a, 0x17, 0x6d, 0x6f,
-	0x75, 0x6c, 0x2e, 0x69, 0x6f, 0x2f, 0x73, 0x67, 0x74, 0x6d, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x73,
-	0x67, 0x74, 0x6d, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x45, 0x0a, 0x0d, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x73,
+	0x42, 0x79, 0x57, 0x65, 0x65, 0x6b, 0x12, 0x18, 0x0a, 0x07, 0x77, 0x65, 0x65, 0x6b, 0x64, 0x61,
+	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x77, 0x65, 0x65, 0x6b, 0x64, 0x61, 0x79,
+	0x12, 0x1a, 0x0a, 0x08, 0x71, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x03, 0x52, 0x08, 0x71, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x22, 0x4d, 0x0a, 0x0a,
+	0x50, 0x6f, 0x73, 0x74, 0x42, 0x79, 0x4b, 0x69, 0x6e, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x71, 0x75,
+	0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x71, 0x75,
+	0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x23, 0x0a, 0x04, 0x6b, 0x69, 0x6e, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0e, 0x32, 0x0f, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x50, 0x6f, 0x73, 0x74,
+	0x2e, 0x4b, 0x69, 0x6e, 0x64, 0x52, 0x04, 0x6b, 0x69, 0x6e, 0x64, 0x2a, 0x3a, 0x0a, 0x0a, 0x56,
+	0x69, 0x73, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x12, 0x15, 0x0a, 0x11, 0x55, 0x6e, 0x6b,
+	0x6e, 0x6f, 0x77, 0x6e, 0x56, 0x69, 0x73, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x10, 0x00,
+	0x12, 0x0a, 0x0a, 0x06, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x05,
+	0x44, 0x72, 0x61, 0x66, 0x74, 0x10, 0x02, 0x2a, 0x39, 0x0a, 0x08, 0x50, 0x72, 0x6f, 0x76, 0x69,
+	0x64, 0x65, 0x72, 0x12, 0x13, 0x0a, 0x0f, 0x55, 0x6e, 0x6b, 0x6e, 0x6f, 0x77, 0x6e, 0x50, 0x72,
+	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x10, 0x00, 0x12, 0x0e, 0x0a, 0x0a, 0x53, 0x6f, 0x75, 0x6e,
+	0x64, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x10, 0x01, 0x12, 0x08, 0x0a, 0x04, 0x49, 0x50, 0x46, 0x53,
+	0x10, 0x02, 0x32, 0x8b, 0x03, 0x0a, 0x06, 0x57, 0x65, 0x62, 0x41, 0x50, 0x49, 0x12, 0x55, 0x0a,
+	0x08, 0x55, 0x73, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x16, 0x2e, 0x73, 0x67, 0x74, 0x6d,
+	0x2e, 0x55, 0x73, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x17, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x4c, 0x69, 0x73,
+	0x74, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x18, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x12, 0x12, 0x10, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x55, 0x73, 0x65, 0x72,
+	0x4c, 0x69, 0x73, 0x74, 0x12, 0x55, 0x0a, 0x08, 0x50, 0x6f, 0x73, 0x74, 0x4c, 0x69, 0x73, 0x74,
+	0x12, 0x16, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x4c, 0x69, 0x73, 0x74,
+	0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e,
+	0x50, 0x6f, 0x73, 0x74, 0x4c, 0x69, 0x73, 0x74, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x18, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x12, 0x12, 0x10, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x76, 0x31, 0x2f, 0x50, 0x6f, 0x73, 0x74, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x3d, 0x0a, 0x02, 0x4d,
+	0x65, 0x12, 0x10, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x4d, 0x65, 0x2e, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x11, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x4d, 0x65, 0x2e, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x12, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0c, 0x12, 0x0a,
+	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x4d, 0x65, 0x12, 0x45, 0x0a, 0x04, 0x50, 0x69,
+	0x6e, 0x67, 0x12, 0x12, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x2e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x50, 0x69,
+	0x6e, 0x67, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x14, 0x82, 0xd3, 0xe4,
+	0x93, 0x02, 0x0e, 0x12, 0x0c, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x50, 0x69, 0x6e,
+	0x67, 0x12, 0x4d, 0x0a, 0x06, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x14, 0x2e, 0x73, 0x67,
+	0x74, 0x6d, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x15, 0x2e, 0x73, 0x67, 0x74, 0x6d, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x2e,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x16, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x10,
+	0x12, 0x0e, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73,
+	0x42, 0x19, 0x5a, 0x17, 0x6d, 0x6f, 0x75, 0x6c, 0x2e, 0x69, 0x6f, 0x2f, 0x73, 0x67, 0x74, 0x6d,
+	0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x73, 0x67, 0x74, 0x6d, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2498,7 +2618,7 @@ func file_sgtm_proto_rawDescGZIP() []byte {
 }
 
 var file_sgtm_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_sgtm_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_sgtm_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_sgtm_proto_goTypes = []interface{}{
 	(Visibility)(0),           // 0: sgtm.Visibility
 	(Provider)(0),             // 1: sgtm.Provider
@@ -2516,20 +2636,22 @@ var file_sgtm_proto_goTypes = []interface{}{
 	(*Post)(nil),              // 13: sgtm.Post
 	(*Relationship)(nil),      // 14: sgtm.Relationship
 	(*Session)(nil),           // 15: sgtm.Session
-	(*Ping_Request)(nil),      // 16: sgtm.Ping.Request
-	(*Ping_Response)(nil),     // 17: sgtm.Ping.Response
-	(*Status_Request)(nil),    // 18: sgtm.Status.Request
-	(*Status_Response)(nil),   // 19: sgtm.Status.Response
-	(*Register_Request)(nil),  // 20: sgtm.Register.Request
-	(*Register_Response)(nil), // 21: sgtm.Register.Response
-	(*UserList_Request)(nil),  // 22: sgtm.UserList.Request
-	(*UserList_Response)(nil), // 23: sgtm.UserList.Response
-	(*PostList_Request)(nil),  // 24: sgtm.PostList.Request
-	(*PostList_Response)(nil), // 25: sgtm.PostList.Response
-	(*PostSync_Request)(nil),  // 26: sgtm.PostSync.Request
-	(*PostSync_Response)(nil), // 27: sgtm.PostSync.Response
-	(*Me_Request)(nil),        // 28: sgtm.Me.Request
-	(*Me_Response)(nil),       // 29: sgtm.Me.Response
+	(*UploadsByWeek)(nil),     // 16: sgtm.UploadsByWeek
+	(*PostByKind)(nil),        // 17: sgtm.PostByKind
+	(*Ping_Request)(nil),      // 18: sgtm.Ping.Request
+	(*Ping_Response)(nil),     // 19: sgtm.Ping.Response
+	(*Status_Request)(nil),    // 20: sgtm.Status.Request
+	(*Status_Response)(nil),   // 21: sgtm.Status.Response
+	(*Register_Request)(nil),  // 22: sgtm.Register.Request
+	(*Register_Response)(nil), // 23: sgtm.Register.Response
+	(*UserList_Request)(nil),  // 24: sgtm.UserList.Request
+	(*UserList_Response)(nil), // 25: sgtm.UserList.Response
+	(*PostList_Request)(nil),  // 26: sgtm.PostList.Request
+	(*PostList_Response)(nil), // 27: sgtm.PostList.Response
+	(*PostSync_Request)(nil),  // 28: sgtm.PostSync.Request
+	(*PostSync_Response)(nil), // 29: sgtm.PostSync.Response
+	(*Me_Request)(nil),        // 30: sgtm.Me.Request
+	(*Me_Response)(nil),       // 31: sgtm.Me.Response
 }
 var file_sgtm_proto_depIdxs = []int32{
 	13, // 0: sgtm.User.recent_posts:type_name -> sgtm.Post
@@ -2549,25 +2671,26 @@ var file_sgtm_proto_depIdxs = []int32{
 	13, // 14: sgtm.Relationship.target_post:type_name -> sgtm.Post
 	12, // 15: sgtm.Relationship.source_user:type_name -> sgtm.User
 	12, // 16: sgtm.Relationship.target_user:type_name -> sgtm.User
-	12, // 17: sgtm.Register.Response.user:type_name -> sgtm.User
-	12, // 18: sgtm.UserList.Response.users:type_name -> sgtm.User
-	13, // 19: sgtm.PostList.Response.posts:type_name -> sgtm.Post
-	12, // 20: sgtm.Me.Response.user:type_name -> sgtm.User
-	22, // 21: sgtm.WebAPI.UserList:input_type -> sgtm.UserList.Request
-	24, // 22: sgtm.WebAPI.PostList:input_type -> sgtm.PostList.Request
-	28, // 23: sgtm.WebAPI.Me:input_type -> sgtm.Me.Request
-	16, // 24: sgtm.WebAPI.Ping:input_type -> sgtm.Ping.Request
-	18, // 25: sgtm.WebAPI.Status:input_type -> sgtm.Status.Request
-	23, // 26: sgtm.WebAPI.UserList:output_type -> sgtm.UserList.Response
-	25, // 27: sgtm.WebAPI.PostList:output_type -> sgtm.PostList.Response
-	29, // 28: sgtm.WebAPI.Me:output_type -> sgtm.Me.Response
-	17, // 29: sgtm.WebAPI.Ping:output_type -> sgtm.Ping.Response
-	19, // 30: sgtm.WebAPI.Status:output_type -> sgtm.Status.Response
-	26, // [26:31] is the sub-list for method output_type
-	21, // [21:26] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	3,  // 17: sgtm.PostByKind.kind:type_name -> sgtm.Post.Kind
+	12, // 18: sgtm.Register.Response.user:type_name -> sgtm.User
+	12, // 19: sgtm.UserList.Response.users:type_name -> sgtm.User
+	13, // 20: sgtm.PostList.Response.posts:type_name -> sgtm.Post
+	12, // 21: sgtm.Me.Response.user:type_name -> sgtm.User
+	24, // 22: sgtm.WebAPI.UserList:input_type -> sgtm.UserList.Request
+	26, // 23: sgtm.WebAPI.PostList:input_type -> sgtm.PostList.Request
+	30, // 24: sgtm.WebAPI.Me:input_type -> sgtm.Me.Request
+	18, // 25: sgtm.WebAPI.Ping:input_type -> sgtm.Ping.Request
+	20, // 26: sgtm.WebAPI.Status:input_type -> sgtm.Status.Request
+	25, // 27: sgtm.WebAPI.UserList:output_type -> sgtm.UserList.Response
+	27, // 28: sgtm.WebAPI.PostList:output_type -> sgtm.PostList.Response
+	31, // 29: sgtm.WebAPI.Me:output_type -> sgtm.Me.Response
+	19, // 30: sgtm.WebAPI.Ping:output_type -> sgtm.Ping.Response
+	21, // 31: sgtm.WebAPI.Status:output_type -> sgtm.Status.Response
+	27, // [27:32] is the sub-list for method output_type
+	22, // [22:27] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_sgtm_proto_init() }
@@ -2709,7 +2832,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Ping_Request); i {
+			switch v := v.(*UploadsByWeek); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2721,7 +2844,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Ping_Response); i {
+			switch v := v.(*PostByKind); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2733,7 +2856,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Status_Request); i {
+			switch v := v.(*Ping_Request); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2745,7 +2868,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Status_Response); i {
+			switch v := v.(*Ping_Response); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2757,7 +2880,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Register_Request); i {
+			switch v := v.(*Status_Request); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2769,7 +2892,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Register_Response); i {
+			switch v := v.(*Status_Response); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2781,7 +2904,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UserList_Request); i {
+			switch v := v.(*Register_Request); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2793,7 +2916,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UserList_Response); i {
+			switch v := v.(*Register_Response); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2805,7 +2928,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PostList_Request); i {
+			switch v := v.(*UserList_Request); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2817,7 +2940,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PostList_Response); i {
+			switch v := v.(*UserList_Response); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2829,7 +2952,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PostSync_Request); i {
+			switch v := v.(*PostList_Request); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2841,7 +2964,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PostSync_Response); i {
+			switch v := v.(*PostList_Response); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2853,7 +2976,7 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Me_Request); i {
+			switch v := v.(*PostSync_Request); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2865,6 +2988,30 @@ func file_sgtm_proto_init() {
 			}
 		}
 		file_sgtm_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PostSync_Response); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sgtm_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Me_Request); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sgtm_proto_msgTypes[26].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Me_Response); i {
 			case 0:
 				return &v.state
@@ -2883,7 +3030,7 @@ func file_sgtm_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_sgtm_proto_rawDesc,
 			NumEnums:      5,
-			NumMessages:   25,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

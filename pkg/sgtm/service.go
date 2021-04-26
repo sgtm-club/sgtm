@@ -10,11 +10,15 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"moul.io/banner"
+
 	"moul.io/sgtm/pkg/sgtmpb"
+	"moul.io/sgtm/pkg/storage"
 )
 
 type Service struct {
 	sgtmpb.UnimplementedWebAPIServer
+
+	storage storage.Storage
 
 	_db           *gorm.DB
 	logger        *zap.Logger
@@ -32,6 +36,7 @@ type Service struct {
 	ipfs             ipfsWrapper
 }
 
+// New constructor that initializes new Service
 func New(db *gorm.DB, opts Opts) (Service, error) {
 	if err := opts.applyDefaults(); err != nil {
 		return Service{}, err
@@ -47,6 +52,7 @@ func New(db *gorm.DB, opts Opts) (Service, error) {
 		StartedAt: time.Now(),
 		ipfs:      ipfsWrapper{api: opts.IPFSAPI},
 	}
+	svc.storage = storage.NewStorage(db)
 	svc.logger.Info("service initialized", zap.Bool("dev-mode", opts.DevMode))
 	return svc, nil
 }
