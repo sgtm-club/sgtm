@@ -42,10 +42,8 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 			if err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
 			}
-			if data.Home.LastUsers != nil {
-				for _, track := range data.Home.LastTracks {
-					track.ApplyDefaults()
-				}
+			for _, track := range data.Home.LastTracks {
+				track.ApplyDefaults()
 			}
 		}
 

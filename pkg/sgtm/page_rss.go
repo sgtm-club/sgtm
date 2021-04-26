@@ -24,10 +24,8 @@ func (svc *Service) rssPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 			if err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			}
-			if data.RSS.LastTracks != nil {
-				for _, track := range data.Home.LastTracks {
-					track.ApplyDefaults()
-				}
+			for _, track := range data.Home.LastTracks {
+				track.ApplyDefaults()
 			}
 		}
 		// end of custom
