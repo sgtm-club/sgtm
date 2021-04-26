@@ -72,8 +72,10 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 				data.Error = "Cannot fetch uploads by weekday: " + err.Error()
 			}
 			data.Open.UploadsByWeekday = make([]int64, 7)
-			for _, result := range upbyweek {
-				data.Open.UploadsByWeekday[result.WeekDay] = result.Quantity
+			if upbyweek != nil {
+				for _, result := range upbyweek {
+					data.Open.UploadsByWeekday[result.WeekDay] = result.Quantity
+				}
 			}
 		}
 

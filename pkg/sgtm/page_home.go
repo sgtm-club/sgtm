@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	packr "github.com/gobuffalo/packr/v2"
+	"github.com/gobuffalo/packr/v2"
 	"go.uber.org/zap"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
@@ -42,8 +42,10 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 			if err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
 			}
-			for _, track := range data.Home.LastTracks {
-				track.ApplyDefaults()
+			if data.Home.LastUsers != nil {
+				for _, track := range data.Home.LastTracks {
+					track.ApplyDefaults()
+				}
 			}
 		}
 
@@ -52,8 +54,10 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 			if data.Home.LastUsers, err = svc.storage.GetUsersList(); err != nil {
 				data.Error = "Cannot fetch last users: " + err.Error() // FIXME: use slice instead of string
 			}
-			for _, user := range data.Home.LastUsers {
-				user.ApplyDefaults()
+			if data.Home.LastUsers != nil {
+				for _, user := range data.Home.LastUsers {
+					user.ApplyDefaults()
+				}
 			}
 		}
 		// end of custom

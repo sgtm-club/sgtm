@@ -51,11 +51,13 @@ func (svc *Service) newTemplateData(w http.ResponseWriter, r *http.Request) (*te
 		if err != nil {
 			svc.logger.Warn("load user from DB", zap.Error(err))
 		}
-		data.User = user
-		data.UserID = user.ID
-		data.IsAdmin = user.Role == "admin"
-		// w.Header().Set("SGTM-User-ID", fmt.Sprintf("%d", user.ID))
-		w.Header().Set("SGTM-User-Slug", user.Slug)
+		if user != nil {
+			data.User = user
+			data.UserID = user.ID
+			data.IsAdmin = user.Role == "admin"
+			// w.Header().Set("SGTM-User-ID", fmt.Sprintf("%d", user.ID))
+			w.Header().Set("SGTM-User-Slug", user.Slug)
+		}
 	} else {
 		w.Header().Set("SGTM-User-Slug", "-")
 	}

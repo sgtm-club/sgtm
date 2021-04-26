@@ -38,8 +38,6 @@ type Storage interface {
 	UpdatePost(post *sgtmpb.Post, updates interface{}) error
 	GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, int64, error)
 	CheckAndUpdatePost(post *sgtmpb.Post) error
-	UpdateProcessingTracks(outdated []*sgtmpb.Post, trackMigrations []func(*sgtmpb.Post, *gorm.DB) error) error
-	GetOutDatedPosts(trackMigrations int) ([]*sgtmpb.Post, error)
 
 	// counts
 	GetUploadsByWeek() ([]*sgtmpb.UploadsByWeek, error)
@@ -414,49 +412,6 @@ func (s *storage) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, 
 		track.ApplyDefaults()
 	}
 	return posts, tracks, nil
-}
-
-func (s *storage) GetOutDatedPosts(trackMigrations int) ([]*sgtmpb.Post, error) {
-	var outdated []*sgtmpb.Post
-	err := s.db.
-		Where(sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
-		Where("processing_error IS NULL OR processing_error == ''").
-		Where("processing_version IS NULL OR processing_version < ?", trackMigrations).
-		Preload("Author").
-		Find(&outdated).
-		Error
-	if err != nil {
-		return nil, err
-	}
-	return outdated, nil
-}
-
-func (s *storage) UpdateProcessingTracks(outdated []*sgtmpb.Post, trackMigrations []func(*sgtmpb.Post, *gorm.DB) error) error {
-	return s.db.Omit(clause.Associations).Transaction(func(tx *gorm.DB) error {
-		for _, entryPtr := range outdated {
-			entry := entryPtr
-			version := 1
-			for _, migration := range trackMigrations {
-				err := migration(entry, tx)
-				if err != nil {
-					entry.ProcessingError = err.Error()
-					break
-				}
-				entry.ProcessingVersion = int64(version)
-				version++
-			}
-			if err := tx.
-				Model(&entry).
-				Updates(map[string]interface{}{
-					"processing_version": entry.ProcessingVersion,
-					"processing_error":   entry.ProcessingError,
-				}).
-				Error; err != nil {
-				return fmt.Errorf("failed to save processing state: %w", err)
-			}
-		}
-		return nil
-	})
 }
 
 func (s *storage) CheckAndUpdatePost(post *sgtmpb.Post) error {
