@@ -25,7 +25,7 @@ require (
 	github.com/gosimple/slug v1.9.0
 	github.com/grokify/html-strip-tags-go v0.0.0-20200923094847-079d207a09f1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
-	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/grpc-ecosystem/grpc-gateway/v2/v2 v2.0.1
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2
