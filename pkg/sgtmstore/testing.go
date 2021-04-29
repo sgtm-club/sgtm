@@ -5,18 +5,17 @@ import (
 
 	"github.com/bwmarrin/snowflake"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"moul.io/zapconfig"
 	"moul.io/zapgorm2"
 )
 
-func TestingStore(t *testing.T) Store {
+func TestingStore(t *testing.T, logger *zap.Logger) Store {
 	t.Helper()
 
-	logger := zapconfig.Configurator{}.MustBuild()
 	zg := zapgorm2.New(logger)
 	zg.LogLevel = gormlogger.Info
 	zg.SetAsDefault()

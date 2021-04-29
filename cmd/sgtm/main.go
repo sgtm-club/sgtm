@@ -150,7 +150,7 @@ func runCmd(ctx context.Context, _ []string) error {
 	}
 
 	// init service
-	var svc sgtm.Service
+	var svc *sgtm.Service
 	{
 		var err error
 		svc, err = sgtm.New(store, svcOpts)

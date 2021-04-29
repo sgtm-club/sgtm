@@ -11,6 +11,7 @@ import (
 	"os"
 	"runtime/debug"
 	"strings"
+	"sync"
 
 	"github.com/cespare/hutil/apachelog"
 	"github.com/go-chi/chi"
@@ -41,17 +42,30 @@ import (
 
 type serverDriver struct {
 	listener net.Listener
+	lock     sync.Mutex
 }
 
 func (svc *Service) StartServer() error {
-	fmt.Fprintln(os.Stderr, banner.Inline("server"))
+	svc.server.lock.Lock()
+	gr, err := svc.prepareStartServer()
+	if err != nil {
+		return fmt.Errorf("prepare start server: %w", err)
+	}
+	svc.server.lock.Unlock()
+	return gr.Run()
+}
+
+func (svc *Service) prepareStartServer() (*run.Group, error) {
+	if !svc.unittest {
+		fmt.Fprintln(os.Stderr, banner.Inline("server"))
+	}
 	svc.logger.Debug("starting server", zap.String("bind", svc.opts.ServerBind))
 
 	// listeners
 	var err error
 	svc.server.listener, err = net.Listen("tcp", svc.opts.ServerBind)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("net listen: %w", err)
 	}
 	smux := cmux.New(svc.server.listener)
 	smux.HandleError(func(err error) bool {
@@ -80,7 +94,7 @@ func (svc *Service) StartServer() error {
 	// http server
 	httpServer, err := svc.httpServer()
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("http server: %w", err)
 	}
 	gr.Add(func() error {
 		err := httpServer.Serve(httpListener)
@@ -120,10 +134,13 @@ func (svc *Service) StartServer() error {
 		return nil
 	}, func(error) {})
 
-	return gr.Run()
+	return &gr, nil
 }
 
 func (svc *Service) CloseServer(err error) {
+	svc.server.lock.Lock()
+	defer svc.server.lock.Unlock()
+
 	svc.logger.Debug("closing server", zap.Bool("was-started", svc.server.listener != nil), zap.Error(err))
 	if svc.server.listener != nil {
 		svc.server.listener.Close()
@@ -132,6 +149,12 @@ func (svc *Service) CloseServer(err error) {
 }
 
 func (svc *Service) ServerListenerAddr() string {
+	svc.server.lock.Lock()
+	defer svc.server.lock.Unlock()
+
+	if svc.server.listener == nil || svc.server.listener.Addr() == nil {
+		return ""
+	}
 	return svc.server.listener.Addr().String()
 }
 
@@ -147,7 +170,9 @@ func (svc *Service) httpServer() (*http.Server, error) {
 	}).Handler)
 	r.Use(chilogger.Logger(svc.logger))
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(svc.opts.ServerRequestTimeout))
+	if svc.opts.ServerRequestTimeout > 0 {
+		r.Use(middleware.Timeout(svc.opts.ServerRequestTimeout))
+	}
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RequestID)
 	r.Use(render.SetContentType(render.ContentTypeJSON))
@@ -179,7 +204,7 @@ func (svc *Service) httpServer() (*http.Server, error) {
 	var gwmux http.Handler = runtimeMux
 	dialOpts := []grpc.DialOption{grpc.WithInsecure()}
 
-	err := sgtmpb.RegisterWebAPIHandlerFromEndpoint(svc.ctx, runtimeMux, svc.ServerListenerAddr(), dialOpts)
+	err := sgtmpb.RegisterWebAPIHandlerFromEndpoint(svc.ctx, runtimeMux, svc.server.listener.Addr().String(), dialOpts)
 	if err != nil {
 		return nil, err
 	}

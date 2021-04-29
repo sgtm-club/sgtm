@@ -31,12 +31,13 @@ type Service struct {
 	server           serverDriver
 	processingWorker processingWorkerDriver
 	ipfs             ipfsWrapper
+	unittest         bool
 }
 
 // New constructor that initializes new Service
-func New(store sgtmstore.Store, opts Opts) (Service, error) {
+func New(store sgtmstore.Store, opts Opts) (*Service, error) {
 	if err := opts.applyDefaults(); err != nil {
-		return Service{}, err
+		return nil, err
 	}
 	fmt.Fprintln(os.Stderr, banner.Inline("sgtm"))
 	ctx, cancel := context.WithCancel(opts.Context)
@@ -50,11 +51,13 @@ func New(store sgtmstore.Store, opts Opts) (Service, error) {
 		ipfs:      ipfsWrapper{api: opts.IPFSAPI},
 	}
 	svc.logger.Info("service initialized", zap.Bool("dev-mode", opts.DevMode))
-	return svc, nil
+	return &svc, nil
 }
 
 func (svc *Service) Close() {
 	svc.logger.Debug("closing service")
 	svc.cancel()
-	fmt.Fprintln(os.Stderr, banner.Inline("kthxbie"))
+	if !svc.unittest {
+		fmt.Fprintln(os.Stderr, banner.Inline("kthxbie"))
+	}
 }
