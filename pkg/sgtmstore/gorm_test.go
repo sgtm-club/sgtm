@@ -1,14 +1,16 @@
-package sgtm
+package sgtmstore_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"moul.io/sgtm/pkg/sgtmpb"
+	"moul.io/sgtm/pkg/sgtmstore"
 )
 
 func TestDBUserCreate(t *testing.T) {
-	db := TestingDB(t)
+	store := sgtmstore.TestingStore(t)
+	db := store.DB()
 
 	tests := []struct {
 		name            string

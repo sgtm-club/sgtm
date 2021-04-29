@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"math/rand"
 	"os"
@@ -20,11 +21,13 @@ import (
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"moul.io/sgtm/internal/sgtmversion"
-	"moul.io/sgtm/pkg/sgtm"
 	"moul.io/srand"
 	"moul.io/zapconfig"
 	"moul.io/zapgorm2"
+
+	"moul.io/sgtm/internal/sgtmversion"
+	"moul.io/sgtm/pkg/sgtm"
+	"moul.io/sgtm/pkg/sgtmstore"
 )
 
 func main() {
@@ -119,7 +122,7 @@ func runCmd(ctx context.Context, _ []string) error {
 	}
 
 	// init db
-	var db *gorm.DB
+	var store sgtmstore.Store
 	{
 		var err error
 		zg := zapgorm2.New(svcOpts.Logger.Named("gorm"))
@@ -130,19 +133,19 @@ func runCmd(ctx context.Context, _ []string) error {
 			NamingStrategy:                           schema.NamingStrategy{TablePrefix: "sgtm_", SingularTable: true},
 			DisableForeignKeyConstraintWhenMigrating: true,
 		}
-		db, err = gorm.Open(sqlite.Open(svcOpts.DBPath), config)
+		db, err := gorm.Open(sqlite.Open(svcOpts.DBPath), config)
 		if err != nil {
-			return err
+			return fmt.Errorf("gorm init: %w", err)
 		}
 
 		sfn, err := snowflake.NewNode(1)
 		if err != nil {
-			return err
+			return fmt.Errorf("snowflake init: %w", err)
 		}
 		svcOpts.Snowflake = sfn
-		db, err = sgtm.DBInit(db, sfn)
+		store, err = sgtmstore.New(db, sfn)
 		if err != nil {
-			return err
+			return fmt.Errorf("store init: %w", err)
 		}
 	}
 
@@ -150,7 +153,7 @@ func runCmd(ctx context.Context, _ []string) error {
 	var svc sgtm.Service
 	{
 		var err error
-		svc, err = sgtm.New(db, svcOpts)
+		svc, err = sgtm.New(store, svcOpts)
 		if err != nil {
 			return err
 		}

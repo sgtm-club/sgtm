@@ -130,7 +130,7 @@ func (svc *Service) httpAuthCallback(w http.ResponseWriter, r *http.Request) {
 		Locale:          discordUser.Locale,
 		Avatar:          discordUser.Avatar,
 	}
-	dbUser, err := svc.storage.CreateUser(dbUser)
+	dbUser, err := svc.store.CreateUser(dbUser)
 	if err != nil {
 		svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 		return

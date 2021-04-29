@@ -1,4 +1,4 @@
-package storage
+package sgtmstore
 
 import (
 	"errors"
@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bwmarrin/snowflake"
 	"github.com/gosimple/slug"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -14,12 +15,8 @@ import (
 	"moul.io/sgtm/pkg/sgtmpb"
 )
 
-var (
-	featRegex = regexp.MustCompile(`(?im)(feat.|feat|featuring|features)\s*[:= ]\s*@([^\s,]+)\s*`)
-)
-
-type Storage interface {
-	// user storage
+type Store interface {
+	// user store
 	GetUserByID(userID int64) (*sgtmpb.User, error)
 	GetLastUsersList(limit int) ([]*sgtmpb.User, error)
 	CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error)
@@ -27,7 +24,7 @@ type Storage interface {
 	UpdateUser(user *sgtmpb.User, updates interface{}) error
 	GetUserRecentPost(userID int64) (*sgtmpb.User, error)
 
-	// post storage
+	// post store
 	GetPostList(limit int) ([]*sgtmpb.Post, error)
 	GetTrackByCID(cid string) (*sgtmpb.Post, error)
 	GetTrackBySCID(scid uint64) (*sgtmpb.Post, error)
@@ -46,17 +43,26 @@ type Storage interface {
 	GetNumberOfPostsByKind() ([]*sgtmpb.PostByKind, error)
 	GetTotalDuration() (int64, error)
 	GetCalendarHeatMap(authorID int64) ([]int64, error)
+
+	// internal
+	DB() *gorm.DB
 }
 
-type storage struct {
+type store struct {
 	db *gorm.DB
 }
 
-func NewStorage(db *gorm.DB) Storage {
-	return &storage{db: db}
+func New(db *gorm.DB, sfn *snowflake.Node) (Store, error) {
+	db, err := dbInit(db, sfn)
+	if err != nil {
+		return nil, fmt.Errorf("db init: %w", err)
+	}
+	return &store{db: db}, nil
 }
 
-func (s *storage) GetUserByID(userID int64) (*sgtmpb.User, error) {
+func (s *store) DB() *gorm.DB { return s.db }
+
+func (s *store) GetUserByID(userID int64) (*sgtmpb.User, error) {
 	var user sgtmpb.User
 
 	err := s.db.
@@ -70,7 +76,7 @@ func (s *storage) GetUserByID(userID int64) (*sgtmpb.User, error) {
 	return &user, nil
 }
 
-func (s *storage) GetLastUsersList(limit int) ([]*sgtmpb.User, error) {
+func (s *store) GetLastUsersList(limit int) ([]*sgtmpb.User, error) {
 	var users []*sgtmpb.User
 	err := s.db.
 		Order("created_at desc").
@@ -87,7 +93,7 @@ func (s *storage) GetLastUsersList(limit int) ([]*sgtmpb.User, error) {
 	return users, nil
 }
 
-func (s *storage) GetPostList(limit int) ([]*sgtmpb.Post, error) {
+func (s *store) GetPostList(limit int) ([]*sgtmpb.Post, error) {
 	var posts []*sgtmpb.Post
 
 	err := s.db.
@@ -112,7 +118,7 @@ func (s *storage) GetPostList(limit int) ([]*sgtmpb.Post, error) {
 	return posts, nil
 }
 
-func (s *storage) CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error) {
+func (s *store) CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error) {
 	err := s.db.Where(&dbUser).First(&dbUser).Error
 	switch {
 	case errors.Is(err, gorm.ErrRecordNotFound):
@@ -163,7 +169,7 @@ func (s *storage) CreateUser(dbUser *sgtmpb.User) (*sgtmpb.User, error) {
 	return dbUser, nil
 }
 
-func (s *storage) GetTrackByCID(cid string) (*sgtmpb.Post, error) {
+func (s *store) GetTrackByCID(cid string) (*sgtmpb.Post, error) {
 	var post sgtmpb.Post
 	err := s.db.
 		Model(&sgtmpb.Post{}).
@@ -176,7 +182,7 @@ func (s *storage) GetTrackByCID(cid string) (*sgtmpb.Post, error) {
 	return &post, nil
 }
 
-func (s *storage) GetTrackBySCID(scid uint64) (*sgtmpb.Post, error) {
+func (s *store) GetTrackBySCID(scid uint64) (*sgtmpb.Post, error) {
 	var post sgtmpb.Post
 	err := s.db.
 		Model(&sgtmpb.Post{}).
@@ -189,7 +195,7 @@ func (s *storage) GetTrackBySCID(scid uint64) (*sgtmpb.Post, error) {
 	return &post, nil
 }
 
-func (s *storage) GetUploadsByWeek() ([]*sgtmpb.UploadsByWeek, error) {
+func (s *store) GetUploadsByWeek() ([]*sgtmpb.UploadsByWeek, error) {
 	var upbyw []*sgtmpb.UploadsByWeek
 	err := s.db.Model(&sgtmpb.Post{}).
 		Model(&sgtmpb.Post{}).
@@ -204,7 +210,7 @@ func (s *storage) GetUploadsByWeek() ([]*sgtmpb.UploadsByWeek, error) {
 	return upbyw, nil
 }
 
-func (s *storage) GetLastActivities(moulID int64) ([]*sgtmpb.Post, error) {
+func (s *store) GetLastActivities(moulID int64) ([]*sgtmpb.Post, error) {
 	var lastAct []*sgtmpb.Post
 	err := s.db.
 		Preload("Author").
@@ -229,7 +235,7 @@ func (s *storage) GetLastActivities(moulID int64) ([]*sgtmpb.Post, error) {
 	return lastAct, nil
 }
 
-func (s *storage) GetNumberOfDraftPosts() (int64, error) {
+func (s *store) GetNumberOfDraftPosts() (int64, error) {
 	var count int64
 	err := s.db.
 		Model(&sgtmpb.Post{}).
@@ -245,7 +251,7 @@ func (s *storage) GetNumberOfDraftPosts() (int64, error) {
 	return count, nil
 }
 
-func (s *storage) GetNumberOfUsers() (int64, error) {
+func (s *store) GetNumberOfUsers() (int64, error) {
 	var count int64
 	err := s.db.
 		Model(&sgtmpb.User{}).
@@ -257,11 +263,11 @@ func (s *storage) GetNumberOfUsers() (int64, error) {
 	return count, nil
 }
 
-func (s *storage) CreatePost(post *sgtmpb.Post) error {
+func (s *store) CreatePost(post *sgtmpb.Post) error {
 	return s.db.Omit(clause.Associations).Create(&post).Error
 }
 
-func (s *storage) GetNumberOfPostsByKind() ([]*sgtmpb.PostByKind, error) {
+func (s *store) GetNumberOfPostsByKind() ([]*sgtmpb.PostByKind, error) {
 	var postsByKind []*sgtmpb.PostByKind
 	err := s.db.
 		Model(&sgtmpb.Post{}).
@@ -276,7 +282,7 @@ func (s *storage) GetNumberOfPostsByKind() ([]*sgtmpb.PostByKind, error) {
 	return postsByKind, nil
 }
 
-func (s *storage) GetTotalDuration() (int64, error) {
+func (s *store) GetTotalDuration() (int64, error) {
 	var totalDuration int64
 	err := s.db.
 		Model(&sgtmpb.Post{}).
@@ -293,7 +299,7 @@ func (s *storage) GetTotalDuration() (int64, error) {
 	return totalDuration, nil
 }
 
-func (s *storage) GetPostBySlugOrID(postSlug string) (*sgtmpb.Post, error) {
+func (s *store) GetPostBySlugOrID(postSlug string) (*sgtmpb.Post, error) {
 	query := s.db.
 		Preload("Author").
 		Preload("RelationshipsAsSource").
@@ -316,7 +322,7 @@ func (s *storage) GetPostBySlugOrID(postSlug string) (*sgtmpb.Post, error) {
 	return &post, nil
 }
 
-func (s *storage) GetPostComments(postID int64) ([]*sgtmpb.Post, error) {
+func (s *store) GetPostComments(postID int64) ([]*sgtmpb.Post, error) {
 	var postComments []*sgtmpb.Post
 	err := s.db.
 		Where(sgtmpb.Post{
@@ -333,7 +339,7 @@ func (s *storage) GetPostComments(postID int64) ([]*sgtmpb.Post, error) {
 	return postComments, nil
 }
 
-func (s *storage) GetUserBySlug(slug string) (*sgtmpb.User, error) {
+func (s *store) GetUserBySlug(slug string) (*sgtmpb.User, error) {
 	var user sgtmpb.User
 	err := s.db.
 		Where("LOWER(slug) = ?", slug).
@@ -345,7 +351,7 @@ func (s *storage) GetUserBySlug(slug string) (*sgtmpb.User, error) {
 	return &user, nil
 }
 
-func (s *storage) GetCalendarHeatMap(authorID int64) ([]int64, error) {
+func (s *store) GetCalendarHeatMap(authorID int64) ([]int64, error) {
 	var timestamps []int64
 	err := s.db.Model(&sgtmpb.Post{}).
 		Select(`sort_date/1000000000 as timestamp`).
@@ -362,15 +368,15 @@ func (s *storage) GetCalendarHeatMap(authorID int64) ([]int64, error) {
 	return timestamps, nil
 }
 
-func (s *storage) UpdatePost(post *sgtmpb.Post, updates interface{}) error {
+func (s *store) UpdatePost(post *sgtmpb.Post, updates interface{}) error {
 	return s.db.Omit(clause.Associations).Model(post).Updates(updates).Error
 }
 
-func (s *storage) UpdateUser(user *sgtmpb.User, updates interface{}) error {
+func (s *store) UpdateUser(user *sgtmpb.User, updates interface{}) error {
 	return s.db.Omit(clause.Associations).Model(user).Updates(updates).Error
 }
 
-func (s *storage) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
+func (s *store) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
 	var user sgtmpb.User
 	err := s.db.
 		Preload("RecentPosts", func(db *gorm.DB) *gorm.DB {
@@ -387,7 +393,7 @@ func (s *storage) GetUserRecentPost(userID int64) (*sgtmpb.User, error) {
 	return &user, nil
 }
 
-func (s *storage) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, int64, error) {
+func (s *store) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, int64, error) {
 	var tracks int64
 	var posts []*sgtmpb.Post
 	query := s.db.
@@ -417,7 +423,9 @@ func (s *storage) GetPostListByUserID(userID int64, limit int) ([]*sgtmpb.Post, 
 	return posts, tracks, nil
 }
 
-func (s *storage) CheckAndUpdatePost(post *sgtmpb.Post) error {
+var featRegex = regexp.MustCompile(`(?im)(feat.|feat|featuring|features)\s*[:= ]\s*@([^\s,]+)\s*`)
+
+func (s *store) CheckAndUpdatePost(post *sgtmpb.Post) error {
 	return s.db.Omit(clause.Associations).Transaction(func(tx *gorm.DB) error {
 		// FIXME: avoid delete/recreate associations if they didn't changed
 

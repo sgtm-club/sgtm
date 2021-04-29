@@ -24,7 +24,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewHomeKind}
-			err = svc.storage.CreatePost(&viewEvent)
+			err = svc.store.CreatePost(&viewEvent)
 			if err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
@@ -38,7 +38,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 			if data.UserID == 0 {
 				limit = 10
 			}
-			data.Home.LastTracks, err = svc.storage.GetPostList(limit)
+			data.Home.LastTracks, err = svc.store.GetPostList(limit)
 			if err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
 			}
@@ -49,7 +49,7 @@ func (svc *Service) homePage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// last users
 		{
-			if data.Home.LastUsers, err = svc.storage.GetLastUsersList(10); err != nil {
+			if data.Home.LastUsers, err = svc.store.GetLastUsersList(10); err != nil {
 				data.Error = "Cannot fetch last users: " + err.Error() // FIXME: use slice instead of string
 			}
 			if data.Home.LastUsers != nil {
