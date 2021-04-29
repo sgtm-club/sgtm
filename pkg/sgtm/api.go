@@ -30,7 +30,7 @@ func (svc *Service) Me(ctx context.Context, req *sgtmpb.Me_Request) (*sgtmpb.Me_
 		return nil, err
 	}
 
-	user, err := svc.storage.GetUserByID(claims.Session.UserID)
+	user, err := svc.store.GetUserByID(claims.Session.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (svc *Service) Status(context.Context, *sgtmpb.Status_Request) (*sgtmpb.Sta
 }
 
 func (svc *Service) UserList(context.Context, *sgtmpb.UserList_Request) (*sgtmpb.UserList_Response, error) {
-	users, err := svc.storage.GetLastUsersList(100)
+	users, err := svc.store.GetLastUsersList(100)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (svc *Service) UserList(context.Context, *sgtmpb.UserList_Request) (*sgtmpb
 }
 
 func (svc *Service) PostList(context.Context, *sgtmpb.PostList_Request) (*sgtmpb.PostList_Response, error) {
-	posts, err := svc.storage.GetPostList(100)
+	posts, err := svc.store.GetPostList(100)
 	if err != nil {
 		return nil, err
 	}

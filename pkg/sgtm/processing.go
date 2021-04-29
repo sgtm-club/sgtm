@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"moul.io/sgtm/pkg/sgtmpb"
+	"moul.io/u"
 )
 
 type Download struct {
@@ -36,7 +37,7 @@ func DownloadPost(post *sgtmpb.Post, force bool) (*Download, error) {
 	}
 
 	// wrap youtube-dl
-	if force || !pathExists(download.YoutubeDLFile) {
+	if force || !u.FileExists(download.YoutubeDLFile) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		cmd := exec.CommandContext(

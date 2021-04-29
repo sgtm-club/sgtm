@@ -25,7 +25,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 		// load profile
 		{
 			userSlug := chi.URLParam(r, "user_slug")
-			user, err := svc.storage.GetUserBySlug(userSlug)
+			user, err := svc.store.GetUserBySlug(userSlug)
 			if err != nil {
 				svc.error404Page(box)(w, r)
 				return
@@ -40,7 +40,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 				Kind:         sgtmpb.Post_ViewProfileKind,
 				TargetUserID: data.Profile.User.ID,
 			}
-			err := svc.storage.CreatePost(&viewEvent)
+			err := svc.store.CreatePost(&viewEvent)
 			if err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
@@ -50,7 +50,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 
 		// tracks
 		{
-			data.Profile.LastTracks, data.Profile.Stats.Tracks, err = svc.storage.GetPostListByUserID(data.Profile.User.ID, 100)
+			data.Profile.LastTracks, data.Profile.Stats.Tracks, err = svc.store.GetPostListByUserID(data.Profile.User.ID, 100)
 			if err != nil {
 				data.Error = "Cannot fetch last tracks: " + err.Error()
 			}
@@ -58,7 +58,7 @@ func (svc *Service) profilePage(box *packr.Box) func(w http.ResponseWriter, r *h
 
 		// calendar heatmap
 		if data.Profile.Stats.Tracks > 0 {
-			timestamps, err := svc.storage.GetCalendarHeatMap(data.Profile.User.ID)
+			timestamps, err := svc.store.GetCalendarHeatMap(data.Profile.User.ID)
 			if err != nil {
 				data.Error = "Cannot fetch post timestamps: " + err.Error()
 			}

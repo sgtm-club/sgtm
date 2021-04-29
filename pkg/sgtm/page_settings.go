@@ -57,7 +57,7 @@ func (svc *Service) settingsPage(box *packr.Box) func(w http.ResponseWriter, r *
 			}
 			fields := validate()
 			if fields != nil {
-				err := svc.storage.UpdateUser(data.User, fields)
+				err := svc.store.UpdateUser(data.User, fields)
 				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return

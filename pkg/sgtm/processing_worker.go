@@ -8,6 +8,7 @@ import (
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"moul.io/banner"
 	"moul.io/sgtm/pkg/sgtmpb"
 )
@@ -61,7 +62,7 @@ func (svc *Service) processingLoop(i int) error {
 	// track migrations
 	{
 		var outdated []*sgtmpb.Post
-		err := svc.rodb().
+		err := svc.store.DB().
 			Where(sgtmpb.Post{Kind: sgtmpb.Post_TrackKind}).
 			Where("processing_error IS NULL OR processing_error == ''").
 			Where("processing_version IS NULL OR processing_version < ?", len(svc.processingWorker.trackMigrations)).
@@ -72,7 +73,7 @@ func (svc *Service) processingLoop(i int) error {
 			return fmt.Errorf("failed to fetch tracks that need to be processed: %w", err)
 		}
 
-		err = svc.rwdb().Transaction(func(tx *gorm.DB) error {
+		err = svc.store.DB().Omit(clause.Associations).Transaction(func(tx *gorm.DB) error {
 			for _, entryPtr := range outdated {
 				entry := entryPtr
 				version := 1

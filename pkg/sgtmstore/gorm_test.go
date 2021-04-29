@@ -1,14 +1,18 @@
-package sgtm
+package sgtmstore_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	"moul.io/sgtm/pkg/sgtmpb"
+	"moul.io/sgtm/pkg/sgtmstore"
 )
 
 func TestDBUserCreate(t *testing.T) {
-	db := TestingDB(t)
+	logger := zap.NewNop()
+	store := sgtmstore.TestingStore(t, logger)
+	db := store.DB()
 
 	tests := []struct {
 		name            string

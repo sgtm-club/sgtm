@@ -20,7 +20,7 @@ func (svc *Service) rssPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 		w.Header().Add("Content-Type", "application/xml")
 		// last tracks
 		{
-			data.RSS.LastTracks, err = svc.storage.GetPostList(50)
+			data.RSS.LastTracks, err = svc.store.GetPostList(50)
 			if err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 			}

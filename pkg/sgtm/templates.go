@@ -47,7 +47,7 @@ func (svc *Service) newTemplateData(w http.ResponseWriter, r *http.Request) (*te
 			return nil, fmt.Errorf("parse jwt token: %w", err)
 		}
 		var user *sgtmpb.User
-		user, err = svc.storage.GetUserRecentPost(data.Claims.Session.UserID)
+		user, err = svc.store.GetUserRecentPost(data.Claims.Session.UserID)
 		if err != nil {
 			svc.logger.Warn("load user from DB", zap.Error(err))
 		}

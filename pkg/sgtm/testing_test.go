@@ -6,64 +6,41 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bwmarrin/snowflake"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-	gormlogger "gorm.io/gorm/logger"
-	"gorm.io/gorm/schema"
+	"moul.io/sgtm/pkg/sgtmstore"
 	"moul.io/zapconfig"
-	"moul.io/zapgorm2"
 )
 
 var debugFlag = flag.Bool("debug", false, "more verbose logging")
 
-func TestingService(t *testing.T) Service {
-	db := TestingDB(t)
+func TestingService(t *testing.T) (Service, func()) {
 	opts := Opts{
-		Logger: TestingLogger(t),
+		Logger:     TestingLogger(t),
+		ServerBind: "127.0.0.1:0",
 	}
 	opts.applyDefaults()
+	store := sgtmstore.TestingStore(t, opts.Logger)
 	ctx, cancel := context.WithCancel(opts.Context)
 	svc := Service{
-		_db:       db,
+		store:     store,
 		logger:    opts.Logger,
 		opts:      opts,
 		ctx:       ctx,
 		cancel:    cancel,
 		StartedAt: time.Now(),
+		ipfs:      ipfsWrapper{api: opts.IPFSAPI},
+		unittest:  true,
 	}
-	return svc
-}
-
-func TestingDB(t *testing.T) *gorm.DB {
-	t.Helper()
-
-	logger := TestingLogger(t)
-	zg := zapgorm2.New(logger)
-	zg.LogLevel = gormlogger.Info
-	zg.SetAsDefault()
-
-	config := &gorm.Config{
-		Logger:         zg,
-		NamingStrategy: schema.NamingStrategy{TablePrefix: "sgtm_", SingularTable: true},
+	gr, err := svc.prepareStartServer()
+	require.NoError(t, err)
+	go gr.Run()
+	// wait for the server to be started
+	time.Sleep(50 * time.Millisecond) // FIXME: replace by a better method
+	cleanup := func() {
+		svc.CloseServer(nil)
 	}
-	db, err := gorm.Open(sqlite.Open(":memory:"), config)
-	if err != nil {
-		t.Fatalf("gorm.Open")
-	}
-
-	sfn, err := snowflake.NewNode(1)
-	if err != nil {
-		t.Fatalf("snowflake.NewNode")
-	}
-
-	db, err = DBInit(db, sfn)
-	if err != nil {
-		t.Fatalf("DBInit")
-	}
-
-	return db
+	return svc, cleanup
 }
 
 func TestingLogger(t *testing.T) *zap.Logger {

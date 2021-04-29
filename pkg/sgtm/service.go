@@ -8,19 +8,16 @@ import (
 	"time"
 
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 	"moul.io/banner"
 
 	"moul.io/sgtm/pkg/sgtmpb"
-	"moul.io/sgtm/pkg/storage"
+	"moul.io/sgtm/pkg/sgtmstore"
 )
 
 type Service struct {
 	sgtmpb.UnimplementedWebAPIServer
 
-	storage storage.Storage
-
-	_db           *gorm.DB
+	store         sgtmstore.Store
 	logger        *zap.Logger
 	opts          Opts
 	ctx           context.Context
@@ -34,17 +31,18 @@ type Service struct {
 	server           serverDriver
 	processingWorker processingWorkerDriver
 	ipfs             ipfsWrapper
+	unittest         bool
 }
 
 // New constructor that initializes new Service
-func New(db *gorm.DB, opts Opts) (Service, error) {
+func New(store sgtmstore.Store, opts Opts) (*Service, error) {
 	if err := opts.applyDefaults(); err != nil {
-		return Service{}, err
+		return nil, err
 	}
 	fmt.Fprintln(os.Stderr, banner.Inline("sgtm"))
 	ctx, cancel := context.WithCancel(opts.Context)
 	svc := Service{
-		_db:       db,
+		store:     store,
 		logger:    opts.Logger,
 		opts:      opts,
 		ctx:       ctx,
@@ -52,13 +50,14 @@ func New(db *gorm.DB, opts Opts) (Service, error) {
 		StartedAt: time.Now(),
 		ipfs:      ipfsWrapper{api: opts.IPFSAPI},
 	}
-	svc.storage = storage.NewStorage(db)
 	svc.logger.Info("service initialized", zap.Bool("dev-mode", opts.DevMode))
-	return svc, nil
+	return &svc, nil
 }
 
 func (svc *Service) Close() {
 	svc.logger.Debug("closing service")
 	svc.cancel()
-	fmt.Fprintln(os.Stderr, banner.Inline("kthxbie"))
+	if !svc.unittest {
+		fmt.Fprintln(os.Stderr, banner.Inline("kthxbie"))
+	}
 }

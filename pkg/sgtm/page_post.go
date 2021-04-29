@@ -27,7 +27,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// custom
 		data.PageKind = "post"
 		postSlug := chi.URLParam(r, "post_slug")
-		post, err := svc.storage.GetPostBySlugOrID(postSlug)
+		post, err := svc.store.GetPostBySlugOrID(postSlug)
 		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
@@ -62,7 +62,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 			}
 			comment := validate()
 			if comment != nil {
-				err = svc.storage.CreatePost(comment)
+				err = svc.store.CreatePost(comment)
 				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
@@ -75,7 +75,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// load comments
 		{
-			data.Post.Comments, err = svc.storage.GetPostComments(data.Post.Post.ID)
+			data.Post.Comments, err = svc.store.GetPostComments(data.Post.Post.ID)
 			if err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
@@ -85,7 +85,7 @@ func (svc *Service) postPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewPostKind, TargetPostID: data.Post.Post.ID}
-			if err := svc.storage.CreatePost(&viewEvent); err != nil {
+			if err := svc.store.CreatePost(&viewEvent); err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view post", zap.Any("event", &viewEvent))
@@ -132,7 +132,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 			return
 		}
 		postSlug := chi.URLParam(r, "post_slug")
-		post, err := svc.storage.GetPostBySlugOrID(postSlug)
+		post, err := svc.store.GetPostBySlugOrID(postSlug)
 		if err != nil {
 			svc.error404Page(box)(w, r)
 			return
@@ -169,7 +169,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 			}
 			svc.logger.Debug("BPM extracted", zap.Float64("bpm", bpm))
 			post.BPM = bpm
-			err = svc.storage.UpdatePost(post, &sgtmpb.Post{BPM: post.BPM})
+			err = svc.store.UpdatePost(post, &sgtmpb.Post{BPM: post.BPM})
 			if err != nil {
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 				return
@@ -179,7 +179,7 @@ func (svc *Service) postMaintenancePage(box *packr.Box) func(w http.ResponseWrit
 		if shouldDetectRelationships {
 			// FIXME: support more relationship kinds
 
-			err := svc.storage.CheckAndUpdatePost(post)
+			err := svc.store.CheckAndUpdatePost(post)
 			if err != nil {
 				svc.logger.Debug("cannot check and update post", zap.Error(err))
 				svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
@@ -230,7 +230,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 		// fetch post from db
 		{
 			postSlug := chi.URLParam(r, "post_slug")
-			post, err := svc.storage.GetPostBySlugOrID(postSlug)
+			post, err := svc.store.GetPostBySlugOrID(postSlug)
 			if err != nil {
 				svc.error404Page(box)(w, r)
 				return
@@ -267,7 +267,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 			}
 			fields := validate()
 			if fields != nil {
-				err = svc.storage.UpdatePost(data.PostEdit.Post, fields)
+				err = svc.store.UpdatePost(data.PostEdit.Post, fields)
 				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return
@@ -293,7 +293,7 @@ func (svc *Service) postEditPage(box *packr.Box) func(w http.ResponseWriter, r *
 func (svc *Service) postDownloadPage(box *packr.Box) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postSlug := chi.URLParam(r, "post_slug")
-		post, err := svc.storage.GetPostBySlugOrID(postSlug)
+		post, err := svc.store.GetPostBySlugOrID(postSlug)
 		if err != nil {
 			svc.error404Page(box)(w, r)
 			return

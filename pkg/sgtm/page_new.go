@@ -62,7 +62,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 
 					// check if track already exists
 					{
-						alreadyExists, err := svc.storage.GetTrackByCID(cid)
+						alreadyExists, err := svc.store.GetTrackByCID(cid)
 						if err == nil {
 							if alreadyExists.ID != 0 {
 								data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="/post/%d">%s</a>.`, alreadyExists.ID, alreadyExists.SafeTitle())
@@ -139,7 +139,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 
 					// check if track already exists
 					{
-						alreadyExists, err := svc.storage.GetTrackBySCID(post.SoundCloudID)
+						alreadyExists, err := svc.store.GetTrackBySCID(post.SoundCloudID)
 						if err == nil {
 							if alreadyExists.ID != 0 {
 								data.New.URLInvalidMsg = fmt.Sprintf(`This track already exists: <a href="%s">%s</a>.`, alreadyExists.CanonicalURL(), alreadyExists.SafeTitle())
@@ -199,7 +199,7 @@ func (svc *Service) newPage(box *packr.Box) func(w http.ResponseWriter, r *http.
 			}
 			post := validate()
 			if post != nil {
-				err = svc.storage.CreatePost(post)
+				err = svc.store.CreatePost(post)
 				if err != nil {
 					svc.errRenderHTML(w, r, err, http.StatusUnprocessableEntity)
 					return

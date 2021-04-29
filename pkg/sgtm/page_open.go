@@ -25,7 +25,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		// tracking
 		{
 			viewEvent := sgtmpb.Post{AuthorID: data.UserID, Kind: sgtmpb.Post_ViewOpenKind}
-			if err := svc.storage.CreatePost(&viewEvent); err != nil {
+			if err := svc.store.CreatePost(&viewEvent); err != nil {
 				data.Error = "Cannot write activity: " + err.Error()
 			} else {
 				svc.logger.Debug("new view open", zap.Any("event", &viewEvent))
@@ -34,7 +34,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// events
 		{
-			postByKind, err := svc.storage.GetNumberOfPostsByKind()
+			postByKind, err := svc.store.GetNumberOfPostsByKind()
 			if err != nil {
 				data.Error = "Cannot fetch events: " + err.Error()
 			} else {
@@ -59,7 +59,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// tracks' duration
 		{
-			totalDuration, err := svc.storage.GetTotalDuration()
+			totalDuration, err := svc.store.GetTotalDuration()
 			if err != nil {
 				data.Error = "Cannot fetch last track durations: " + err.Error()
 			}
@@ -67,7 +67,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 		}
 
 		{
-			upbyweek, err := svc.storage.GetUploadsByWeek()
+			upbyweek, err := svc.store.GetUploadsByWeek()
 			if err != nil {
 				data.Error = "Cannot fetch uploads by weekday: " + err.Error()
 			}
@@ -79,7 +79,7 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// last activities
 		{
-			data.Open.LastActivities, err = svc.storage.GetLastActivities(moulID)
+			data.Open.LastActivities, err = svc.store.GetLastActivities(moulID)
 			if err != nil {
 				data.Error = "Cannot fetch last activities: " + err.Error()
 			}
@@ -87,14 +87,14 @@ func (svc *Service) openPage(box *packr.Box) func(w http.ResponseWriter, r *http
 
 		// track drafts
 		{
-			data.Open.Count.TrackDrafts, err = svc.storage.GetNumberOfDraftPosts()
+			data.Open.Count.TrackDrafts, err = svc.store.GetNumberOfDraftPosts()
 			if err != nil {
 				data.Error = "Cannot fetch last track drafts: " + err.Error()
 			}
 		}
 		// users
 		{
-			data.Open.Count.Users, err = svc.storage.GetNumberOfUsers()
+			data.Open.Count.Users, err = svc.store.GetNumberOfUsers()
 			if err != nil {
 				data.Error = "Cannot fetch last users: " + err.Error()
 			}
