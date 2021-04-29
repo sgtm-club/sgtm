@@ -4,7 +4,7 @@ ARG             VCS_REF
 ARG             VERSION
 
 # build
-FROM            golang:1.15.4-alpine as builder
+FROM            golang:1.16-alpine as builder
 RUN             apk add --no-cache git gcc musl-dev make
 RUN             go get -u github.com/gobuffalo/packr/v2/packr2
 ENV             GO111MODULE=on
@@ -17,12 +17,12 @@ RUN             make install
 
 # "minimalist" runtime
 FROM            jpauwels/sonic-annotator:v1.5-ubuntu18.04
-RUN             apt update && apt -y install curl python && rm -rf /var/lib/apt/lists/*
+RUN             apt update && apt -y install curl python ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN             curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl \
  &&             chmod a+rx /usr/local/bin/youtube-dl
 RUN             set -xe \
- &&             curl https://aubio.org/bin/vamp-aubio-plugins/0.5.1/vamp-aubio-plugins-0.5.1-x86_64.tar.bz2 -o /tmp/aubio-vamp.tar.bz2 \
- &&             curl https://code.soundsoftware.ac.uk/attachments/download/2625/qm-vamp-plugins-1.8.0-linux64.tar.gz -o /tmp/qm-vamp.tar.gz \
+ &&             curl -k https://aubio.org/bin/vamp-aubio-plugins/0.5.1/vamp-aubio-plugins-0.5.1-x86_64.tar.bz2 -o /tmp/aubio-vamp.tar.bz2 \
+ &&             curl -k https://code.soundsoftware.ac.uk/attachments/download/2625/qm-vamp-plugins-1.8.0-linux64.tar.gz -o /tmp/qm-vamp.tar.gz \
  &&             mkdir -p /usr/lib/vamp/ \
  &&             cd /tmp \
  &&             for file in *-vamp.t*; do tar xf $file; done \
