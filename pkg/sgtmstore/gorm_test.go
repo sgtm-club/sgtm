@@ -10,6 +10,7 @@ import (
 )
 
 func TestDBUserCreate(t *testing.T) {
+	// logger := zapconfig.Configurator{}.MustBuild()
 	logger := zap.NewNop()
 	store := sgtmstore.TestingStore(t, logger)
 	db := store.DB()

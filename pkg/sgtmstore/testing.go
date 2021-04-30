@@ -21,10 +21,13 @@ func TestingStore(t *testing.T, logger *zap.Logger) Store {
 	zg.SetAsDefault()
 
 	config := &gorm.Config{
-		Logger:         zg,
-		NamingStrategy: schema.NamingStrategy{TablePrefix: "sgtm_", SingularTable: true},
+		Logger: zg,
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix:   "sgtm_",
+			SingularTable: true,
+		},
 	}
-	db, err := gorm.Open(sqlite.Open(":memory:"), config)
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), config)
 	require.NoError(t, err)
 
 	sfn, err := snowflake.NewNode(1)
