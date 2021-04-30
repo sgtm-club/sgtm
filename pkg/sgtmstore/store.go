@@ -53,11 +53,11 @@ type store struct {
 }
 
 func New(db *gorm.DB, sfn *snowflake.Node) (Store, error) {
-	db, err := dbInit(db, sfn)
+	wrap, err := dbInit(db, sfn)
 	if err != nil {
 		return nil, fmt.Errorf("db init: %w", err)
 	}
-	return &store{db: db}, nil
+	return &store{db: wrap}, nil
 }
 
 func (s *store) DB() *gorm.DB { return s.db }

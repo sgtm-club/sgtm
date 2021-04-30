@@ -31,7 +31,6 @@ require (
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/ikeikeikeike/go-sitemap-generator/v2 v2.0.2
 	github.com/imdario/mergo v0.3.12 // indirect
-	github.com/jinzhu/now v1.1.2 // indirect
 	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/kyokomi/emoji/v2 v2.2.8
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
