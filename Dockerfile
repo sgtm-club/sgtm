@@ -4,7 +4,7 @@ ARG             VCS_REF
 ARG             VERSION
 
 # build
-FROM            golang:1.16-alpine as builder
+FROM            golang:1.17.2-alpine as builder
 RUN             apk add --no-cache git gcc musl-dev make
 RUN             go get -u github.com/gobuffalo/packr/v2/packr2
 ENV             GO111MODULE=on
