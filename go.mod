@@ -8,7 +8,7 @@ require (
 	github.com/alta/protopatch v0.3.4
 	github.com/bwmarrin/discordgo v0.23.2
 	github.com/bwmarrin/snowflake v0.3.0
-	github.com/cespare/hutil v0.1.0
+	github.com/cespare/hutil v0.2.0
 	github.com/clbanning/mxj v1.8.4 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
