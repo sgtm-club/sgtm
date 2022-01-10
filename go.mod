@@ -13,7 +13,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.9.0 // indirect
-	github.com/getsentry/sentry-go v0.10.0
+	github.com/getsentry/sentry-go v0.12.0
 	github.com/githubnemo/CompileDaemon v1.2.1
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/jsonp v0.0.0-20170809160916-b971022286e2
@@ -47,10 +47,7 @@ require (
 	github.com/treastech/logger v0.0.0-20180705232552-e381e9ecf2e3
 	github.com/yanatan16/golang-soundcloud v0.0.0-20161013200625-a182dd459b66
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
-	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781 // indirect
 	golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c
-	golang.org/x/sys v0.0.0-20210426230700-d19ff857e887 // indirect
 	golang.org/x/term v0.0.0-20210429154555-c04ba851c2a4 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20210429181445-86c259c2b4ab
