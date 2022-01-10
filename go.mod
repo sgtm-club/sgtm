@@ -63,8 +63,8 @@ require (
 	moul.io/banner v1.0.1
 	moul.io/godev v1.7.0
 	moul.io/srand v1.6.1
-	moul.io/u v1.22.0
-	moul.io/zapconfig v1.3.0
+	moul.io/u v1.23.0
+	moul.io/zapconfig v1.4.0
 	moul.io/zapgorm2 v1.0.3
 	ultre.me/calcbiz v1.0.0
 )
