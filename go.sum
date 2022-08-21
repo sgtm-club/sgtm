@@ -88,8 +88,8 @@ github.com/bwmarrin/discordgo v0.23.2/go.mod h1:c1WtWUGN6nREDmzIpyTp/iD3VYt4Fpx+
 github.com/bwmarrin/snowflake v0.3.0 h1:xm67bEhkKh6ij1790JB83OujPR5CzNe8QuQqAgISZN0=
 github.com/bwmarrin/snowflake v0.3.0/go.mod h1:NdZxfVWX+oR6y2K0o6qAYv6gIOP9rjG0/E9WsDpxqwE=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
-github.com/cespare/hutil v0.1.0 h1:jk0t0JFJwnfWiLpHt601OYTZgQxsXDk8a3+5SNvfBL4=
-github.com/cespare/hutil v0.1.0/go.mod h1:+HkWBMI2fhinEu3LedD6gV0IRw3WmmHM6lf03a5QqfY=
+github.com/cespare/hutil v0.2.0 h1:CS6CnGgVeZQZ+MM39W3rjQXYhf9X8SgnfwJMiyrdx1I=
+github.com/cespare/hutil v0.2.0/go.mod h1:7E5C/hnny66rB5PIOMdwoUyHHI8n7KczubVPl9oHzjI=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927/go.mod h1:h/aW8ynjgkuj+NQRlZcDbAbM1ORAbXjXX77sX7T289U=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
